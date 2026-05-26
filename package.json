@@ -1,9 +1,9 @@
 {
-  "name": "prioritize",
+  "name": "tarazu",
   "private": true,
   "version": "2.0.0",
   "type": "module",
-  "description": "AI-powered product prioritization engine using the RICE framework",
+  "description": "Tarazu — decision intelligence for product teams. Score with RICE, visualize tradeoffs, and capture rationale with explainable AI.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
