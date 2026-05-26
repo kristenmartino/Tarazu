@@ -1,10 +1,10 @@
-# Prioritize
+# Tarazu
 
-**AI-powered product prioritization using the RICE framework.**
+**Decision intelligence for product teams. Weigh what matters.**
 
-Score features by Reach, Impact, Confidence, and Effort — visualize trade-offs on an interactive priority matrix — and get strategic recommendations from an AI advisor powered by Claude.
+Tarazu helps product teams prioritize ideas, compare tradeoffs, capture context, and generate explainable recommendations with structured frameworks like RICE — powered by Claude.
 
-[**→ Live Demo**](https://prioritize-app.vercel.app) · [**→ Read the PRD**](./docs/Prioritize_PRD.pdf)
+[**→ Live Demo**](https://tarazu.kristenmartino.ai) · [**→ Read the PRD**](./docs/Tarazu_PRD.pdf)
 
 ---
 
@@ -15,12 +15,12 @@ Score features by Reach, Impact, Confidence, and Effort — visualize trade-offs
 | **RICE Scoring** | Slider-based input for each dimension with real-time score calculation |
 | **Priority Matrix** | Canvas-rendered Effort vs. Impact scatter plot with labeled quadrants |
 | **AI Strategy Advisor** | One-click backlog analysis via Claude — returns top priority, quick win, risk flag, sprint plan, and strategic insight |
-| **Persistent Storage** | Features save across sessions via localStorage |
+| **Persistent Storage** | Features save across sessions via localStorage and cloud sync |
 | **Responsive** | Two-column desktop → single-column mobile via `matchMedia` |
 
 ## Why I Built This
 
-Product managers spend 4–6 hours per sprint planning cycle on prioritization — most of it in spreadsheets. This tool replaces that workflow with a purpose-built interface that enforces RICE discipline and adds AI analysis that would otherwise require a senior PM or consultant.
+Product managers spend 4–6 hours per sprint planning cycle on prioritization — most of it in spreadsheets. Tarazu replaces that workflow with a purpose-built decision system that enforces RICE discipline, visualizes tradeoffs, and adds AI analysis that would otherwise require a senior PM or consultant.
 
 It sits at the intersection of **product management domain expertise** and **AI engineering** — the exact skillset I bring to PM and technical leadership roles.
 
@@ -28,9 +28,10 @@ It sits at the intersection of **product management domain expertise** and **AI 
 
 | Layer | Choice | Why |
 |-------|--------|-----|
-| Frontend | React + Vite | Component model, fast builds |
+| Frontend | React + Next.js | Component model, fast builds, file-based routing |
 | Visualization | Canvas 2D API | No library dependency; native DPI scaling, custom hit-testing |
 | AI | Anthropic Claude Opus 4.6 | Structured JSON output; advanced reasoning for strategic analysis |
+| Auth & Data | Clerk + Supabase | Hosted auth with cloud-synced settings and feedback |
 | Deploy | Vercel | Zero-config with serverless API routes for the Claude proxy |
 
 ## Architecture Highlights
@@ -44,8 +45,8 @@ It sits at the intersection of **product management domain expertise** and **AI 
 ## Getting Started
 
 ```bash
-git clone https://github.com/kristenmartino/prioritize.git
-cd prioritize
+git clone https://github.com/kristenmartino/Tarazu.git
+cd Tarazu
 npm install
 npm run dev
 ```
@@ -63,7 +64,7 @@ npm run dev
    npm run dev
    ```
 
-The Vite dev server proxies `/api` requests to the local API server.
+The Next.js dev server proxies `/api` requests to the local API server.
 
 ### Production Deployment
 
@@ -73,7 +74,7 @@ Without the API key, the app runs in demo mode with locally-generated analysis.
 
 ## Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/kristenmartino/prioritize&env=ANTHROPIC_API_KEY)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/kristenmartino/Tarazu&env=ANTHROPIC_API_KEY)
 
 Add `ANTHROPIC_API_KEY` as an environment variable in Vercel's dashboard.
 
@@ -81,7 +82,6 @@ Add `ANTHROPIC_API_KEY` as an environment variable in Vercel's dashboard.
 
 ## Project Context
 
-This project was built as part of a portfolio demonstrating PM + AI capabilities. The full PRD — including competitive analysis, requirements with acceptance criteria, technical architecture, risk mitigations, and launch plan — is available in [`docs/Prioritize_PRD.pdf`](./docs/Prioritize_PRD.pdf).
+Tarazu was built as part of a portfolio demonstrating PM + AI capabilities. The full PRD — including competitive analysis, requirements with acceptance criteria, technical architecture, risk mitigations, and launch plan — is available in [`docs/Tarazu_PRD.pdf`](./docs/Tarazu_PRD.pdf). The complete brand system and product redesign spec lives in [`tarazu-brand-system-spec.md`](./tarazu-brand-system-spec.md).
 
 **Built by [Kristen Martino](https://linkedin.com/in/kristenmartino)** · Product & AI Strategist · MS Business Analytics & AI, UT Dallas
-
