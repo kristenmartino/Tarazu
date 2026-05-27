@@ -211,7 +211,7 @@ export const CenterCanvas = ({
                   </div>
                 )}
                 {listFiltersActive && (
-                  <button onClick={() => { setListFilterOwner("all"); setListFilterTheme("all"); setListFilterStatus("all"); }} style={{ padding: "4px 8px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 9, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Clear filters</button>
+                  <button onClick={() => { setListFilterOwner("all"); setListFilterTheme("all"); setListFilterStatus("all"); setSearchQuery(""); }} style={{ padding: "4px 8px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 9, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Clear filters</button>
                 )}
               </div>
             )}

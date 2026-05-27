@@ -12,11 +12,12 @@ Tarazu helps product teams prioritize ideas, compare tradeoffs, capture context,
 
 | Feature | Description |
 |---------|-------------|
-| **RICE Scoring** | Slider-based input for each dimension with real-time score calculation |
+| **Normalized RICE Scoring** | Slider-based input for each dimension on a 1–100 scale with real-time score calculation |
 | **Priority Matrix** | Canvas-rendered Effort vs. Impact scatter plot with labeled quadrants |
-| **AI Strategy Advisor** | One-click backlog analysis via Claude — returns top priority, quick win, risk flag, sprint plan, and strategic insight |
+| **AI Strategy Advisor** | One-click backlog analysis via Claude Opus — returns top priority, quick win, risk flag, sprint plan, and strategic insight |
+| **AI Score Suggestions** | Per-candidate scoring via Claude Sonnet, grounded in product context and prior feedback |
 | **Persistent Storage** | Features save across sessions via localStorage and cloud sync |
-| **Responsive** | Two-column desktop → single-column mobile via `matchMedia` |
+| **Responsive Shell** | Three-panel desktop layout (left rail / center canvas / right rail) collapses to a two-column tablet overlay and a bottom-tab mobile layout via `matchMedia` |
 
 ## Why I Built This
 
@@ -30,7 +31,8 @@ It sits at the intersection of **product management domain expertise** and **AI 
 |-------|--------|-----|
 | Frontend | React + Next.js | Component model, fast builds, file-based routing |
 | Visualization | Canvas 2D API | No library dependency; native DPI scaling, custom hit-testing |
-| AI | Anthropic Claude Opus 4.6 | Structured JSON output; advanced reasoning for strategic analysis |
+| AI — Analysis | Anthropic Claude Opus 4.7 | Structured JSON output for backlog-level strategic analysis (configurable via `ANTHROPIC_MODEL_ANALYSIS`) |
+| AI — Scoring | Anthropic Claude Sonnet 4.6 | Fast per-candidate RICE score suggestions (configurable via `ANTHROPIC_MODEL_SUGGESTIONS`) |
 | Auth & Data | Clerk + Supabase | Hosted auth with cloud-synced settings and feedback |
 | Deploy | Vercel | Zero-config with serverless API routes for the Claude proxy |
 
@@ -40,7 +42,7 @@ It sits at the intersection of **product management domain expertise** and **AI 
 - **Memoized canvas positions** — hover/selection interactions don't trigger position recalculation
 - **Responsive breakpoint** via `window.matchMedia` hook — not CSS-in-JS or broken inline media queries
 - **Dual-mode AI** — live Claude analysis via serverless proxy when available; smart demo fallback when not
-- **Serverless proxy** — API key stays server-side in `/api/analyze.js`
+- **Serverless proxies** — API keys stay server-side in `app/api/analyze/route.js` and `app/api/suggest-scores/route.js`
 
 ## Getting Started
 
@@ -54,17 +56,13 @@ npm run dev
 ### Enable Live AI Analysis (Local Development)
 
 1. Copy `.env.example` to `.env.local`
-2. Add your Anthropic API key
-3. Run both servers:
+2. Add your Anthropic API key (and any optional Clerk / Supabase / GA values)
+3. Start the dev server:
    ```bash
-   # Terminal 1: Start the API server
-   npm run dev:api
-
-   # Terminal 2: Start the frontend
    npm run dev
    ```
 
-The Next.js dev server proxies `/api` requests to the local API server.
+Next.js serves both the app and the `/api/*` routes from a single process at `http://localhost:3000`.
 
 ### Production Deployment
 

@@ -50,7 +50,7 @@ Respond ONLY with a JSON object (no markdown, no backticks):
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-6",
+        model: process.env.ANTHROPIC_MODEL_SUGGESTIONS || "claude-sonnet-4-6",
         max_tokens: 600,
         messages: [{ role: "user", content: prompt }],
       }),
