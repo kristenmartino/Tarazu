@@ -1,8 +1,12 @@
--- Tarazu Database Schema — reference snapshot
+-- Baseline schema for Tarazu (migration #0001)
 --
--- This file mirrors the full current schema for easy reading. The authoritative
--- definitions live in supabase/migrations/ — see migrations/README.md. When you
--- add a migration, update this snapshot to match.
+-- This captures the schema as it existed before migrations were introduced.
+-- It is the canonical starting point for bootstrapping a fresh database.
+--
+-- IMPORTANT for the existing production database (which already has these
+-- tables): do NOT run this migration against it. Mark it as already applied:
+--     supabase migration repair --status applied 20260529130001
+-- then apply only later migrations. See migrations/README.md.
 
 -- Workspaces table
 create table public.workspaces (
@@ -38,27 +42,12 @@ create table public.features (
   theme text default null,
   status text default null,
   position int not null default 0,
-  created_at timestamptz default now(),
-  updated_at timestamptz not null default now()
+  created_at timestamptz default now()
 );
 
 -- Indexes
 create index idx_workspaces_user on public.workspaces(user_id);
 create index idx_features_workspace on public.features(workspace_id);
-
--- Auto-stamp features.updated_at on every update
-create or replace function public.set_current_timestamp_updated_at()
-returns trigger as $$
-begin
-  new.updated_at = now();
-  return new;
-end;
-$$ language plpgsql;
-
-create trigger set_features_updated_at
-  before update on public.features
-  for each row
-  execute function public.set_current_timestamp_updated_at();
 
 -- ─── Agent Feedback Loop Tables ─────────────────────────────────────
 
@@ -106,9 +95,6 @@ create table public.feature_revisions (
   snapshot_impact int not null,
   snapshot_confidence int not null,
   snapshot_effort int not null,
-  snapshot_owner text,
-  snapshot_theme text,
-  snapshot_status text,
   change_type text not null default 'updated'
     check (change_type in ('created', 'updated', 'reverted')),
   changed_fields jsonb not null default '[]'::jsonb,
