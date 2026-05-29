@@ -29,7 +29,7 @@ export async function GET(request, { params }) {
 
     const { data: revisions, error } = await supabase
       .from("feature_revisions")
-      .select("id, revision_number, change_type, changed_fields, change_summary, reverted_to_revision, created_at, snapshot_name, snapshot_description, snapshot_reach, snapshot_impact, snapshot_confidence, snapshot_effort")
+      .select("id, revision_number, change_type, changed_fields, change_summary, reverted_to_revision, created_at, snapshot_name, snapshot_description, snapshot_reach, snapshot_impact, snapshot_confidence, snapshot_effort, snapshot_owner, snapshot_theme, snapshot_status")
       .eq("feature_id", featureId)
       .order("revision_number", { ascending: false })
       .range(offset, offset + limit - 1);
