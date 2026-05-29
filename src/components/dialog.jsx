@@ -105,7 +105,7 @@ export function DialogHost() {
       if (e.key === "Escape") {
         e.preventDefault();
         cancel();
-      } else if (e.key === "Enter" && state?.type === "prompt") {
+      } else if (e.key === "Enter" && state?.type === "prompt" && document.activeElement === inputRef.current) {
         e.preventDefault();
         accept();
       } else if (e.key === "Tab") {
