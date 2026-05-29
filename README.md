@@ -6,6 +6,10 @@ Tarazu helps product teams prioritize ideas, compare tradeoffs, capture context,
 
 [**→ Live Demo**](https://tarazu.kristenmartino.ai) · [**→ Read the PRD**](./docs/Tarazu_PRD.pdf)
 
+![Tarazu — the Priorities list with RICE-scored candidates and the AI Decision Advisor](docs/screenshots/hero.png)
+
+*RICE-scored candidates on the left, the AI Decision Advisor's recommendation on the right. [Try it live →](https://tarazu.kristenmartino.ai)*
+
 ---
 
 ## What It Does
@@ -19,9 +23,20 @@ Tarazu helps product teams prioritize ideas, compare tradeoffs, capture context,
 | **Persistent Storage** | Features save across sessions via localStorage and cloud sync |
 | **Responsive Shell** | Three-panel desktop layout (left rail / center canvas / right rail) collapses to a two-column tablet overlay and a bottom-tab mobile layout via `matchMedia` |
 
+## A Closer Look
+
+**From a scored backlog to an AI recommendation in one click:**
+
+![Score a backlog, then generate an AI recommendation](docs/screenshots/score-to-recommend.gif)
+
+| Tradeoff map | Candidate detail |
+| :---: | :---: |
+| ![Effort vs. Impact priority map with labeled quadrants](docs/screenshots/map.png) | ![Per-candidate RICE breakdown and metadata](docs/screenshots/candidate-detail.png) |
+| Effort × Impact with QUICK WIN / STRATEGIC / FILL-IN / AVOID quadrants | Per-candidate RICE breakdown, formula, and metadata |
+
 ## Why I Built This
 
-Product managers spend 4–6 hours per sprint planning cycle on prioritization — most of it in spreadsheets. Tarazu replaces that workflow with a purpose-built decision system that enforces RICE discipline, visualizes tradeoffs, and adds AI analysis that would otherwise require a senior PM or consultant.
+Prioritization often consumes hours per sprint-planning cycle, especially when teams rely on spreadsheets. Tarazu replaces that workflow with a purpose-built decision system that enforces RICE discipline, visualizes tradeoffs, and adds AI analysis that would otherwise require a senior PM or consultant.
 
 It sits at the intersection of **product management domain expertise** and **AI engineering** — the exact skillset I bring to PM and technical leadership roles.
 
@@ -31,12 +46,43 @@ It sits at the intersection of **product management domain expertise** and **AI 
 |-------|--------|-----|
 | Frontend | React + Next.js | Component model, fast builds, file-based routing |
 | Visualization | Canvas 2D API | No library dependency; native DPI scaling, custom hit-testing |
-| AI — Analysis | Anthropic Claude Opus 4.7 | Structured JSON output for backlog-level strategic analysis (configurable via `ANTHROPIC_MODEL_ANALYSIS`) |
-| AI — Scoring | Anthropic Claude Sonnet 4.6 | Fast per-candidate RICE score suggestions (configurable via `ANTHROPIC_MODEL_SUGGESTIONS`) |
+| AI — Analysis | Anthropic Claude Opus 4.8 | Structured JSON output for backlog-level strategic analysis (default model, configurable via `ANTHROPIC_MODEL_ANALYSIS`) |
+| AI — Scoring | Anthropic Claude Sonnet 4.6 | Fast per-candidate RICE score suggestions (default model, configurable via `ANTHROPIC_MODEL_SUGGESTIONS`) |
 | Auth & Data | Clerk + Supabase | Hosted auth with cloud-synced settings and feedback |
 | Deploy | Vercel | Zero-config with serverless API routes for the Claude proxy |
 
-## Architecture Highlights
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Browser
+      UI["React UI<br/>Next.js App Router"]
+      LS[("localStorage<br/>guest mode")]
+    end
+    subgraph Vercel["Vercel — serverless"]
+      AIAPI["AI API routes<br/>analyze · suggest-scores"]
+      DataAPI["Data API routes<br/>workspaces · …"]
+    end
+    Clerk["Clerk<br/>auth"]
+    Supa[("Supabase<br/>Postgres + RLS")]
+    Claude["Anthropic Claude<br/>Opus · Sonnet"]
+
+    UI -->|guest| LS
+    UI -->|AI request| AIAPI
+    UI -->|signed in| DataAPI
+    AIAPI -->|hardened JSON calls| Claude
+    DataAPI -->|verify session| Clerk
+    DataAPI -->|service-role key| Supa
+```
+
+In guest mode the app is fully usable against `localStorage`. The AI API routes
+(`analyze` / `suggest-scores`) don't verify Clerk or touch Supabase — they read the
+request body and proxy Claude with `ANTHROPIC_API_KEY` so the key never reaches the
+browser. The data API routes (workspaces and related) are the ones that verify the
+Clerk session and talk to Supabase with the service-role key (RLS enabled as
+defense-in-depth).
+
+### Highlights
 
 - **Centralized scoring** via `useScored` hook — RICE calculated once per state change, consumed by all components
 - **Memoized canvas positions** — hover/selection interactions don't trigger position recalculation
