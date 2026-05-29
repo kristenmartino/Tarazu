@@ -23,6 +23,17 @@ Tarazu helps product teams prioritize ideas, compare tradeoffs, capture context,
 | **Persistent Storage** | Features save across sessions via localStorage and cloud sync |
 | **Responsive Shell** | Three-panel desktop layout (left rail / center canvas / right rail) collapses to a two-column tablet overlay and a bottom-tab mobile layout via `matchMedia` |
 
+## A Closer Look
+
+**From a scored backlog to an AI recommendation in one click:**
+
+![Score a backlog, then generate an AI recommendation](docs/screenshots/score-to-recommend.gif)
+
+| Tradeoff map | Candidate detail |
+| :---: | :---: |
+| ![Effort vs. Impact priority map with labeled quadrants](docs/screenshots/map.png) | ![Per-candidate RICE breakdown and metadata](docs/screenshots/candidate-detail.png) |
+| Effort × Impact with QUICK WIN / STRATEGIC / FILL-IN / AVOID quadrants | Per-candidate RICE breakdown, formula, and metadata |
+
 ## Why I Built This
 
 Product managers spend 4–6 hours per sprint planning cycle on prioritization — most of it in spreadsheets. Tarazu replaces that workflow with a purpose-built decision system that enforces RICE discipline, visualizes tradeoffs, and adds AI analysis that would otherwise require a senior PM or consultant.
