@@ -85,6 +85,15 @@ export default function App() {
     selectedId ? scored.find(f => f.id === selectedId) || null : null,
   [selectedId, scored]);
 
+  // ── Redirect off the advisor screen when resizing to desktop ──
+  // The advisor only renders specially on mobile/tablet; on desktop
+  // CenterCanvas returns null for it, leaving a blank center.
+  useEffect(() => {
+    if (!isMobile && !isTablet && activeScreen === "advisor") {
+      setActiveScreen("priorities");
+    }
+  }, [isMobile, isTablet, activeScreen]);
+
   // ── Init: load data from cloud or localStorage ──
   useEffect(() => {
     if (!authLoaded) return;
