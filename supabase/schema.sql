@@ -182,3 +182,15 @@ create table public.scenarios (
   updated_at timestamptz default now()
 );
 create index idx_scenarios_workspace on public.scenarios(workspace_id);
+
+-- ─── Row Level Security ─────────────────────────────────────────────────
+-- Deny-all for anon/authenticated; the server's service-role key bypasses RLS.
+-- See migrations/20260529130003_enable_rls.sql for the rationale.
+alter table public.workspaces          enable row level security;
+alter table public.features            enable row level security;
+alter table public.ai_score_events     enable row level security;
+alter table public.ai_analysis_events  enable row level security;
+alter table public.feature_revisions   enable row level security;
+alter table public.decisions           enable row level security;
+alter table public.signals             enable row level security;
+alter table public.scenarios           enable row level security;
