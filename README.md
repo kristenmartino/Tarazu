@@ -6,6 +6,10 @@ Tarazu helps product teams prioritize ideas, compare tradeoffs, capture context,
 
 [**→ Live Demo**](https://tarazu.kristenmartino.ai) · [**→ Read the PRD**](./docs/Tarazu_PRD.pdf)
 
+> 📸 **See it live:** the [interactive demo](https://tarazu.kristenmartino.ai) runs in guest mode — no signup. A hero screenshot/GIF will live here.
+<!-- Hero image: drop a capture at docs/screenshots/hero.png (≈1600×1000, the Priorities view with samples loaded + the AI advisor open) and replace the line above with:
+![Tarazu — priority matrix and AI advisor](docs/screenshots/hero.png) -->
+
 ---
 
 ## What It Does
@@ -36,7 +40,34 @@ It sits at the intersection of **product management domain expertise** and **AI 
 | Auth & Data | Clerk + Supabase | Hosted auth with cloud-synced settings and feedback |
 | Deploy | Vercel | Zero-config with serverless API routes for the Claude proxy |
 
-## Architecture Highlights
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Browser
+      UI["React UI<br/>Next.js App Router"]
+      LS[("localStorage<br/>guest mode")]
+    end
+    subgraph Vercel["Vercel — serverless"]
+      API["/api routes<br/>analyze · suggest-scores · workspaces"]
+    end
+    Clerk["Clerk<br/>auth"]
+    Supa[("Supabase<br/>Postgres + RLS")]
+    Claude["Anthropic Claude<br/>Opus · Sonnet"]
+
+    UI -->|guest| LS
+    UI -->|signed in| API
+    API -->|verify session| Clerk
+    API -->|service-role key| Supa
+    API -->|hardened JSON calls| Claude
+```
+
+In guest mode the app is fully usable against `localStorage`. When signed in, all
+data access goes through serverless API routes that verify the Clerk session, talk
+to Supabase with the service-role key (RLS enabled as defense-in-depth), and proxy
+Claude so the API key never reaches the browser.
+
+### Highlights
 
 - **Centralized scoring** via `useScored` hook — RICE calculated once per state change, consumed by all components
 - **Memoized canvas positions** — hover/selection interactions don't trigger position recalculation
