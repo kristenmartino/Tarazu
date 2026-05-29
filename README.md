@@ -36,7 +36,7 @@ Tarazu helps product teams prioritize ideas, compare tradeoffs, capture context,
 
 ## Why I Built This
 
-Product managers spend 4–6 hours per sprint planning cycle on prioritization — most of it in spreadsheets. Tarazu replaces that workflow with a purpose-built decision system that enforces RICE discipline, visualizes tradeoffs, and adds AI analysis that would otherwise require a senior PM or consultant.
+Prioritization often consumes hours per sprint-planning cycle, especially when teams rely on spreadsheets. Tarazu replaces that workflow with a purpose-built decision system that enforces RICE discipline, visualizes tradeoffs, and adds AI analysis that would otherwise require a senior PM or consultant.
 
 It sits at the intersection of **product management domain expertise** and **AI engineering** — the exact skillset I bring to PM and technical leadership roles.
 
@@ -46,8 +46,8 @@ It sits at the intersection of **product management domain expertise** and **AI 
 |-------|--------|-----|
 | Frontend | React + Next.js | Component model, fast builds, file-based routing |
 | Visualization | Canvas 2D API | No library dependency; native DPI scaling, custom hit-testing |
-| AI — Analysis | Anthropic Claude Opus 4.7 | Structured JSON output for backlog-level strategic analysis (configurable via `ANTHROPIC_MODEL_ANALYSIS`) |
-| AI — Scoring | Anthropic Claude Sonnet 4.6 | Fast per-candidate RICE score suggestions (configurable via `ANTHROPIC_MODEL_SUGGESTIONS`) |
+| AI — Analysis | Anthropic Claude Opus 4.8 | Structured JSON output for backlog-level strategic analysis (default model, configurable via `ANTHROPIC_MODEL_ANALYSIS`) |
+| AI — Scoring | Anthropic Claude Sonnet 4.6 | Fast per-candidate RICE score suggestions (default model, configurable via `ANTHROPIC_MODEL_SUGGESTIONS`) |
 | Auth & Data | Clerk + Supabase | Hosted auth with cloud-synced settings and feedback |
 | Deploy | Vercel | Zero-config with serverless API routes for the Claude proxy |
 
@@ -60,23 +60,27 @@ flowchart LR
       LS[("localStorage<br/>guest mode")]
     end
     subgraph Vercel["Vercel — serverless"]
-      API["/api routes<br/>analyze · suggest-scores · workspaces"]
+      AIAPI["AI API routes<br/>analyze · suggest-scores"]
+      DataAPI["Data API routes<br/>workspaces · …"]
     end
     Clerk["Clerk<br/>auth"]
     Supa[("Supabase<br/>Postgres + RLS")]
     Claude["Anthropic Claude<br/>Opus · Sonnet"]
 
     UI -->|guest| LS
-    UI -->|signed in| API
-    API -->|verify session| Clerk
-    API -->|service-role key| Supa
-    API -->|hardened JSON calls| Claude
+    UI -->|AI request| AIAPI
+    UI -->|signed in| DataAPI
+    AIAPI -->|hardened JSON calls| Claude
+    DataAPI -->|verify session| Clerk
+    DataAPI -->|service-role key| Supa
 ```
 
-In guest mode the app is fully usable against `localStorage`. When signed in, all
-data access goes through serverless API routes that verify the Clerk session, talk
-to Supabase with the service-role key (RLS enabled as defense-in-depth), and proxy
-Claude so the API key never reaches the browser.
+In guest mode the app is fully usable against `localStorage`. The AI API routes
+(`analyze` / `suggest-scores`) don't verify Clerk or touch Supabase — they read the
+request body and proxy Claude with `ANTHROPIC_API_KEY` so the key never reaches the
+browser. The data API routes (workspaces and related) are the ones that verify the
+Clerk session and talk to Supabase with the service-role key (RLS enabled as
+defense-in-depth).
 
 ### Highlights
 
