@@ -16,6 +16,11 @@ const okText = (obj) => ({
   status: 200,
   json: () => Promise.resolve({ content: [{ type: "text", text: JSON.stringify(obj) }] }),
 });
+const okRaw = (text) => ({
+  ok: true,
+  status: 200,
+  json: () => Promise.resolve({ content: [{ type: "text", text }] }),
+});
 
 const features = [
   { name: "A", reach: 80, impact: 70, confidence: 90, effort: 30, score: 1000 },
@@ -29,6 +34,7 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllGlobals();
   delete process.env.ANTHROPIC_API_KEY;
+  delete process.env.ANTHROPIC_MODEL_ANALYSIS;
 });
 
 describe("POST /api/analyze", () => {
@@ -68,5 +74,28 @@ describe("POST /api/analyze", () => {
     expect(res.status).toBe(500);
     const data = await res.json();
     expect(data.category).toBe("config");
+  });
+
+  it("sends the default model id to Anthropic when ANTHROPIC_MODEL_ANALYSIS is unset", async () => {
+    delete process.env.ANTHROPIC_MODEL_ANALYSIS;
+    fetch.mockResolvedValueOnce(okText(validAnalysis));
+    const res = await POST(makeRequest({ features }));
+    expect(res.status).toBe(200);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    const [, init] = fetch.mock.calls[0];
+    const sentBody = JSON.parse(init.body);
+    expect(sentBody.model).toBe("claude-opus-4-8");
+  });
+
+  it("succeeds after one repair retry when the first response is malformed", async () => {
+    fetch
+      .mockResolvedValueOnce(okRaw("not json at all"))
+      .mockResolvedValueOnce(okText(validAnalysis));
+    const res = await POST(makeRequest({ features }));
+    expect(res.status).toBe(200);
+    expect(fetch).toHaveBeenCalledTimes(2);
+    const data = await res.json();
+    expect(data.topPick.name).toBe("A");
+    expect(data.sprintPlan).toEqual(["A", "C", "B"]);
   });
 });
