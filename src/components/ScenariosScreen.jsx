@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { C } from "../theme";
 import { rice } from "../utils";
 import { SCENARIO_TEMPLATES } from "../scenarios";
-import { useWeightedScored } from "../hooks/useWeightedScored";
+import { useWeightedScored, scenarioContributions } from "../hooks/useWeightedScored";
 import { Pill } from "./Pill";
 import * as cloud from "../../lib/cloud-storage";
 import { saveWsScenarios, loadWsScenarios } from "../../lib/local-storage";
@@ -212,7 +212,7 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
                   }}>
                     <span style={{ fontSize: 10, fontWeight: 700, color: moveColor, fontFamily: "'JetBrains Mono', monospace", width: 20, textAlign: "right" }}>#{m.scenarioRank}</span>
                     <span style={{ fontSize: 11, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.name}</span>
-                    <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", marginLeft: "auto" }}>{m.weightedScore.toLocaleString()}</span>
+                    <span title="Normalized 0–100 index relative to the top-ranked candidate" style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", marginLeft: "auto" }}>{m.scenarioIndex}</span>
                   </div>,
                 ];
               })}
@@ -242,13 +242,10 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
                 {bigMovers.map(m => {
                   const moveColor = m.movement > 0 ? C.accent : C.danger;
                   const direction = m.movement > 0 ? "up" : "down";
-                  // Find which dimension benefited/hurt most
-                  const dimScores = DIMS.map(d => {
-                    const raw = d === "effort" ? 100 - m[d] : m[d];
-                    return { dim: d, weighted: raw * weights[d], raw };
-                  });
-                  dimScores.sort((a, b) => b.weighted - a.weighted);
-                  const topDim = dimScores[0].dim;
+                  // Principled attribution: the dimension whose weight change
+                  // most drove this candidate's shift vs standard RICE.
+                  const driver = scenarioContributions(m, weights)[0];
+                  const driverWeight = weights[driver.dim];
 
                   return (
                     <div key={m.id} style={{ padding: 10, border: `1px solid ${moveColor}20`, borderRadius: 8, background: moveColor + "08" }}>
@@ -257,11 +254,8 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
                         <span style={{ fontSize: 11, fontWeight: 600, color: C.text }}>{m.name}</span>
                       </div>
                       <div style={{ fontSize: 10, color: C.textMuted, lineHeight: 1.5 }}>
-                        Moved {direction} from #{m.defaultRank} to #{m.scenarioRank}.
-                        {m.movement > 0
-                          ? ` Benefits from ${topDim} weight (${m[topDim]}% score, ${weights[topDim]}x weight).`
-                          : ` Penalized by ${topDim} weight change.`
-                        }
+                        Moved {direction} from #{m.defaultRank} to #{m.scenarioRank}. Most affected by the{" "}
+                        <span style={{ color: DIM_COLORS[driver.dim] }}>{driver.dim}</span> weight ({driverWeight.toFixed(1)}\u00d7, {m[driver.dim]}/100).
                       </div>
                     </div>
                   );
