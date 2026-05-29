@@ -10,6 +10,7 @@ import { MigrationBanner } from "./components/MigrationBanner";
 import { LeftRail } from "./components/LeftRail";
 import { CenterCanvas } from "./components/CenterCanvas";
 import { RightRail } from "./components/RightRail";
+import { AdvisorPanel } from "./components/AdvisorPanel";
 import { ShortcutsOverlay } from "./components/ShortcutsOverlay";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { StatusToast } from "./components/StatusToast";
@@ -88,6 +89,15 @@ export default function App() {
   const selectedFeature = useMemo(() =>
     selectedId ? scored.find(f => f.id === selectedId) || null : null,
   [selectedId, scored]);
+
+  // ── Redirect off the advisor screen when resizing to desktop ──
+  // The advisor only renders specially on mobile/tablet; on desktop
+  // CenterCanvas returns null for it, leaving a blank center.
+  useEffect(() => {
+    if (!isMobile && !isTablet && activeScreen === "advisor") {
+      setActiveScreen("priorities");
+    }
+  }, [isMobile, isTablet, activeScreen]);
 
   // ── Init: load data from cloud or localStorage ──
   useEffect(() => {
@@ -785,11 +795,25 @@ export default function App() {
             activeWs={activeWs} workspaces={workspaces}
             onSwitchWorkspace={switchWorkspace} onAddWorkspace={addWorkspace}
             onDeleteWorkspace={deleteWorkspace} onRenameWorkspace={renameWorkspace}
-            isMobile={false} isSignedIn={isSignedIn}
+            isMobile={false} isSignedIn={isSignedIn} advisorInNav={isTablet}
           />
         )}
 
         <ErrorBoundary name="Content">
+        {(isMobile || isTablet) && activeScreen === "advisor" ? (
+          <div role="main" id="main-content" style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "20px 20px 88px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: 0 }}>Advisor</h2>
+            </div>
+            <AdvisorPanel
+              scored={scored}
+              productContext={productContext} onProductContextChange={setProductContext}
+              onAnalysisEvent={handleAnalysisEvent} onAnalysisFeedback={handleAnalysisFeedback}
+              feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
+              onAddDecision={handleAddDecision} onScreenChange={handleScreenChange}
+            />
+          </div>
+        ) : (
         <CenterCanvas
           activeScreen={activeScreen} viewMode={viewMode} onViewModeChange={setViewMode}
           features={features} scored={scored} sorted={sorted} displayOrder={displayOrder}
@@ -822,6 +846,7 @@ export default function App() {
           onScreenChange={handleScreenChange}
           searchRef={searchRef}
         />
+        )}
         </ErrorBoundary>
 
         {!isMobile && !isTablet && (
@@ -888,7 +913,7 @@ export default function App() {
           activeWs={activeWs} workspaces={workspaces}
           onSwitchWorkspace={switchWorkspace} onAddWorkspace={addWorkspace}
           onDeleteWorkspace={deleteWorkspace} onRenameWorkspace={renameWorkspace}
-          isMobile={true} isSignedIn={isSignedIn}
+          isMobile={true} isSignedIn={isSignedIn} advisorInNav={true}
         />
       )}
 
