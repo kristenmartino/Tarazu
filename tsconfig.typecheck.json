@@ -1,0 +1,18 @@
+{
+  "// note": "Standalone JSDoc typecheck config. Deliberately NOT named tsconfig.json so Next.js does not switch the project into TypeScript mode. Only files with a `// @ts-check` pragma are type-checked (checkJs is false). Run via `npm run typecheck`.",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "types": ["node"]
+  },
+  "include": ["lib/**/*.js"],
+  "exclude": ["**/*.test.js", "node_modules", ".next"]
+}
