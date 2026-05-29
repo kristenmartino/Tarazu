@@ -1,15 +1,13 @@
 -- Baseline schema for Tarazu (migration #0001)
 --
--- This captures the schema as it existed before migrations were introduced.
--- It is the canonical starting point for bootstrapping a fresh database.
---
--- IMPORTANT for the existing production database (which already has these
--- tables): do NOT run this migration against it. Mark it as already applied:
---     supabase migration repair --status applied 20260529130001
--- then apply only later migrations. See migrations/README.md.
+-- The canonical schema for bootstrapping a fresh database. Every statement is
+-- idempotent (IF NOT EXISTS), so it is safe to run against a database that
+-- already has these tables — true of the original production project, which was
+-- created before migrations existed. CI `supabase db push` (see
+-- migrations/README.md) therefore applies it harmlessly on first run.
 
 -- Workspaces table
-create table public.workspaces (
+create table if not exists public.workspaces (
   id uuid primary key default gen_random_uuid(),
   user_id text not null,
   name text not null default 'My Backlog',
@@ -29,7 +27,7 @@ create table public.workspaces (
 );
 
 -- Features table
-create table public.features (
+create table if not exists public.features (
   id uuid primary key default gen_random_uuid(),
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   name text not null,
@@ -46,13 +44,13 @@ create table public.features (
 );
 
 -- Indexes
-create index idx_workspaces_user on public.workspaces(user_id);
-create index idx_features_workspace on public.features(workspace_id);
+create index if not exists idx_workspaces_user on public.workspaces(user_id);
+create index if not exists idx_features_workspace on public.features(workspace_id);
 
 -- ─── Agent Feedback Loop Tables ─────────────────────────────────────
 
 -- Tracks AI score suggestions and whether users accepted/adjusted/rejected them
-create table public.ai_score_events (
+create table if not exists public.ai_score_events (
   id uuid primary key default gen_random_uuid(),
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   feature_id text not null,
@@ -63,10 +61,10 @@ create table public.ai_score_events (
   outcome text not null default 'pending' check (outcome in ('pending', 'accepted', 'adjusted', 'rejected')),
   created_at timestamptz default now()
 );
-create index idx_score_events_ws on public.ai_score_events(workspace_id);
+create index if not exists idx_score_events_ws on public.ai_score_events(workspace_id);
 
 -- Tracks AI analysis runs and user engagement signals
-create table public.ai_analysis_events (
+create table if not exists public.ai_analysis_events (
   id uuid primary key default gen_random_uuid(),
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   feature_count int not null,
@@ -79,12 +77,12 @@ create table public.ai_analysis_events (
   thumbs_up boolean,
   created_at timestamptz default now()
 );
-create index idx_analysis_events_ws on public.ai_analysis_events(workspace_id);
+create index if not exists idx_analysis_events_ws on public.ai_analysis_events(workspace_id);
 
 -- ─── Feature Version Control ────────────────────────────────────────
 
 -- Full snapshot per revision with field-level change tracking
-create table public.feature_revisions (
+create table if not exists public.feature_revisions (
   id uuid primary key default gen_random_uuid(),
   feature_id uuid not null references public.features(id) on delete cascade,
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
@@ -102,13 +100,13 @@ create table public.feature_revisions (
   reverted_to_revision int,
   created_at timestamptz not null default now()
 );
-create unique index idx_revisions_feature_number on public.feature_revisions(feature_id, revision_number);
-create index idx_revisions_feature_created on public.feature_revisions(feature_id, created_at desc);
-create index idx_revisions_workspace on public.feature_revisions(workspace_id);
+create unique index if not exists idx_revisions_feature_number on public.feature_revisions(feature_id, revision_number);
+create index if not exists idx_revisions_feature_created on public.feature_revisions(feature_id, created_at desc);
+create index if not exists idx_revisions_workspace on public.feature_revisions(workspace_id);
 
 -- ─── Decisions ────────────────────────────────────────────────────────
 
-create table public.decisions (
+create table if not exists public.decisions (
   id uuid primary key default gen_random_uuid(),
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   title text not null,
@@ -130,11 +128,11 @@ create table public.decisions (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create index idx_decisions_workspace on public.decisions(workspace_id);
+create index if not exists idx_decisions_workspace on public.decisions(workspace_id);
 
 -- ─── Signals ──────────────────────────────────────────────────────────
 
-create table public.signals (
+create table if not exists public.signals (
   id uuid primary key default gen_random_uuid(),
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   type text not null default 'note',
@@ -150,11 +148,11 @@ create table public.signals (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create index idx_signals_workspace on public.signals(workspace_id);
+create index if not exists idx_signals_workspace on public.signals(workspace_id);
 
 -- ─── Scenarios ────────────────────────────────────────────────────────
 
-create table public.scenarios (
+create table if not exists public.scenarios (
   id uuid primary key default gen_random_uuid(),
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   name text not null,
@@ -167,4 +165,4 @@ create table public.scenarios (
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
-create index idx_scenarios_workspace on public.scenarios(workspace_id);
+create index if not exists idx_scenarios_workspace on public.scenarios(workspace_id);
