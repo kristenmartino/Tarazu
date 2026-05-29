@@ -37,6 +37,9 @@ describe("weightedRice", () => {
   });
 });
 
+// These tests assert the ordering of each dimension's contribution to a single
+// candidate's weighted score. They do NOT assert pairwise rank causality —
+// rank movement is comparative across the whole list, which this does not model.
 describe("scenarioContributions", () => {
   it("returns no effect at unit weights", () => {
     for (const c of scenarioContributions(reachHeavy, UNIT)) {

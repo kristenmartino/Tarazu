@@ -19,12 +19,15 @@ export const weightedRice = (f, w) =>
   );
 
 /**
- * Explains why a candidate's standing shifts relative to standard RICE, per
- * dimension. In log space the score is additive:
+ * Ranks each dimension by its largest contribution to this candidate's weighted
+ * score vs. baseline (all weights 1). This is a per-candidate score-contribution
+ * / sensitivity measure — it does NOT explain the candidate's rank or
+ * displacement, which is comparative across the whole list. In log space the
+ * score is additive:
  *   ln(score) = w_r·ln(reach) + w_i·ln(impact) + w_c·ln(confidence) − w_e·ln(effort)
- * so the shift from baseline (all weights 1) attributable to dimension d is
+ * so the contribution of dimension d to the shift from baseline is
  * (w_d − 1)·ln(value_d), negated for effort (more effort lowers the score).
- * Returned sorted by absolute impact, largest driver first.
+ * Returned sorted by absolute contribution, largest first.
  */
 export const scenarioContributions = (f, w) => {
   const ln = (v) => Math.log(Math.max(v, 1));

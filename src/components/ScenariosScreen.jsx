@@ -242,8 +242,11 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
                 {bigMovers.map(m => {
                   const moveColor = m.movement > 0 ? C.accent : C.danger;
                   const direction = m.movement > 0 ? "up" : "down";
-                  // Principled attribution: the dimension whose weight change
-                  // most drove this candidate's shift vs standard RICE.
+                  // Identifies the dimension contributing most to THIS candidate's
+                  // weighted score under the current weighting vs standard RICE.
+                  // This is a score-contribution/sensitivity signal, not proof of
+                  // why the candidate's rank moved relative to others (rank
+                  // movement is comparative across the whole list).
                   const driver = scenarioContributions(m, weights)[0];
                   const driverWeight = weights[driver.dim];
 
@@ -254,8 +257,8 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
                         <span style={{ fontSize: 11, fontWeight: 600, color: C.text }}>{m.name}</span>
                       </div>
                       <div style={{ fontSize: 10, color: C.textMuted, lineHeight: 1.5 }}>
-                        Moved {direction} from #{m.defaultRank} to #{m.scenarioRank}. Most affected by the{" "}
-                        <span style={{ color: DIM_COLORS[driver.dim] }}>{driver.dim}</span> weight ({driverWeight.toFixed(1)}\u00d7, {m[driver.dim]}/100).
+                        Moved {direction} from #{m.defaultRank} to #{m.scenarioRank}. Largest score contribution under this weighting:{" "}
+                        <span style={{ color: DIM_COLORS[driver.dim] }}>{driver.dim}</span> ({driverWeight.toFixed(1)}\u00d7, {m[driver.dim]}/100).
                       </div>
                     </div>
                   );
