@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
-    include: ["**/*.test.js"],
+    include: ["**/*.{test,spec}.{js,jsx}"],
     exclude: ["node_modules", ".next"],
   },
 });

@@ -21,16 +21,20 @@ export default function RootLayout({ children }) {
       <body style={{ margin: 0, background: "#0E1116" }}>
         {children}
         <Analytics />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-RQS13QYCBG"
-          strategy="afterInteractive"
-        />
-        <Script id="ga" strategy="afterInteractive">{`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-RQS13QYCBG');
-        `}</Script>
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga" strategy="afterInteractive">{`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
+            `}</Script>
+          </>
+        )}
       </body>
     </html>
   );

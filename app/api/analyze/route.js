@@ -51,7 +51,7 @@ For confidence: "high" means strong data supports this pick, "medium" means reas
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-opus-4-6",
+        model: process.env.ANTHROPIC_MODEL_ANALYSIS || "claude-opus-4-7",
         max_tokens: 1000,
         messages: [{ role: "user", content: prompt }],
       }),
