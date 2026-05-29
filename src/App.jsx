@@ -67,6 +67,10 @@ export default function App() {
   const fileInputRef = useRef(null);
   const searchRef = useRef(null);
   const saveTimer = useRef(null);
+  // Feature IDs the user explicitly deleted but that may not yet be removed
+  // from the cloud (e.g. deleted while offline). syncFeatures deletes only
+  // these — never "remote not in local" — so another device's features survive.
+  const deletedIdsRef = useRef(new Set());
   const ctxSaveTimer = useRef(null);
   const settingsSaveTimer = useRef(null);
   const loadedRef = useRef(false);
@@ -189,7 +193,9 @@ export default function App() {
           return;
         }
         try {
-          const idMap = await cloud.syncFeatures(activeWsId, features, manualOrder);
+          const pendingDeletes = [...deletedIdsRef.current];
+          const idMap = await cloud.syncFeatures(activeWsId, features, manualOrder, pendingDeletes);
+          pendingDeletes.forEach(id => deletedIdsRef.current.delete(id));
           if (idMap && Object.keys(idMap).length > 0) {
             setFeatures(prev => prev.map(f => idMap[f.id] ? { ...f, id: idMap[f.id] } : f));
             setManualOrder(prev => prev.map(id => idMap[id] || id));
@@ -261,7 +267,9 @@ export default function App() {
     let cancelled = false;
     async function sync() {
       try {
-        await cloud.syncFeatures(activeWsId, features, manualOrder);
+        const pendingDeletes = [...deletedIdsRef.current];
+        await cloud.syncFeatures(activeWsId, features, manualOrder, pendingDeletes);
+        pendingDeletes.forEach(id => deletedIdsRef.current.delete(id));
         await cloud.saveProductContext(activeWsId, productContext);
         await cloud.saveWorkspaceSettings(activeWsId, { viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode });
         if (!cancelled) {
@@ -283,6 +291,9 @@ export default function App() {
     setManualOrder(prev => prev.filter(x => x !== id));
     if (selectedId === id) setSelectedId(null);
     if (isSignedIn && activeWsId) {
+      // Tombstone it so a later sync re-deletes it if this direct call fails
+      // (e.g. offline). Cleared once a sync confirms the deletion.
+      deletedIdsRef.current.add(id);
       cloud.deleteFeatureApi(activeWsId, id).catch(console.error);
     }
   };
