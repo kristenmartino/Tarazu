@@ -31,8 +31,8 @@ describe("GET /api/workspaces/[id]/features", () => {
         eq: vi.fn().mockReturnValue({
           order: vi.fn().mockResolvedValue({
             data: [
-              { id: "f-1", name: "Auth", description: "Login", reach: 80, impact: 70, confidence: 90, effort: 30, owner: "Bob", theme: "Core", status: "active", position: 0 },
-              { id: "f-2", name: "Search", description: null, reach: 50, impact: 50, confidence: 50, effort: 50, owner: null, theme: null, status: null, position: 1 },
+              { id: "f-1", name: "Auth", description: "Login", reach: 80, impact: 70, confidence: 90, effort: 30, owner: "Bob", theme: "Core", status: "active", position: 0, created_at: "2026-01-01T00:00:00Z", updated_at: "2026-02-02T00:00:00Z" },
+              { id: "f-2", name: "Search", description: null, reach: 50, impact: 50, confidence: 50, effort: 50, owner: null, theme: null, status: null, position: 1, created_at: "2026-01-03T00:00:00Z", updated_at: "2026-01-03T00:00:00Z" },
             ],
             error: null,
           }),
@@ -48,9 +48,30 @@ describe("GET /api/workspaces/[id]/features", () => {
       id: "f-1", name: "Auth", description: "Login",
       reach: 80, impact: 70, confidence: 90, effort: 30,
       owner: "Bob", theme: "Core", status: "active",
+      created_at: "2026-01-01T00:00:00Z", updated_at: "2026-02-02T00:00:00Z",
     });
     expect(data.features[1].owner).toBeNull();
     expect(data.manualOrder).toEqual(["f-1", "f-2"]);
+  });
+
+  it("returns created_at and updated_at timestamps", async () => {
+    mockSupabase.from.mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({
+            data: [
+              { id: "f-1", name: "Auth", description: "", reach: 50, impact: 50, confidence: 50, effort: 50, owner: null, theme: null, status: null, position: 0, created_at: "2026-01-01T00:00:00Z", updated_at: "2026-02-02T00:00:00Z" },
+            ],
+            error: null,
+          }),
+        }),
+      }),
+    });
+
+    const response = await GET({}, makeParams("ws-1"));
+    const data = await response.json();
+    expect(data.features[0].created_at).toBe("2026-01-01T00:00:00Z");
+    expect(data.features[0].updated_at).toBe("2026-02-02T00:00:00Z");
   });
 
   it("returns empty arrays when no features", async () => {
@@ -146,6 +167,61 @@ describe("POST /api/workspaces/[id]/features", () => {
     verifyWorkspaceOwner.mockResolvedValueOnce(false);
     const response = await POST(makeRequest({ name: "Test" }), makeParams("ws-bad"));
     expect(response.status).toBe(404);
+  });
+
+  it("snapshots owner/theme/status in the created revision", async () => {
+    const revisionInsert = vi.fn().mockResolvedValue({ error: null });
+    mockSupabase.from.mockImplementation((table) => {
+      if (table === "features") {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                limit: vi.fn().mockResolvedValue({ data: [{ position: 0 }] }),
+              }),
+            }),
+          }),
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({ data: { id: "new-uuid" }, error: null }),
+            }),
+          }),
+        };
+      }
+      if (table === "feature_revisions") {
+        return {
+          insert: revisionInsert,
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                limit: vi.fn().mockReturnValue({
+                  single: vi.fn().mockResolvedValue({ data: null }),
+                }),
+              }),
+            }),
+          }),
+        };
+      }
+      return {};
+    });
+
+    const request = makeRequest({
+      name: "Owned Feature", description: "",
+      reach: 60, impact: 70, confidence: 80, effort: 40,
+      owner: "Alice", theme: "Growth", status: "active",
+    });
+
+    const response = await POST(request, makeParams("ws-1"));
+    expect(response.status).toBe(201);
+    expect(revisionInsert).toHaveBeenCalledTimes(1);
+    expect(revisionInsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        snapshot_owner: "Alice",
+        snapshot_theme: "Growth",
+        snapshot_status: "active",
+        change_type: "created",
+      })
+    );
   });
 });
 

@@ -45,6 +45,9 @@ async function createRevision(supabase, { featureId, workspaceId, snapshot, chan
       snapshot_impact: snapshot.impact,
       snapshot_confidence: snapshot.confidence,
       snapshot_effort: snapshot.effort,
+      snapshot_owner: snapshot.owner ?? null,
+      snapshot_theme: snapshot.theme ?? null,
+      snapshot_status: snapshot.status ?? null,
       change_type: changeType,
       changed_fields: changedFields || [],
       change_summary: summary,
@@ -78,6 +81,8 @@ export async function GET(request, { params }) {
       owner: r.owner || null,
       theme: r.theme || null,
       status: r.status || null,
+      created_at: r.created_at,
+      updated_at: r.updated_at,
     }));
     const manualOrder = (data || []).map((r) => r.id);
     return NextResponse.json({ features, manualOrder });
@@ -180,6 +185,9 @@ export async function POST(request, { params }) {
         impact: feature.impact ?? 50,
         confidence: feature.confidence ?? 50,
         effort: feature.effort ?? 50,
+        owner: feature.owner || null,
+        theme: feature.theme || null,
+        status: feature.status || null,
       },
       changeType: "created",
       changedFields: [],
