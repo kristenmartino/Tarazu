@@ -6,9 +6,9 @@ Tarazu helps product teams prioritize ideas, compare tradeoffs, capture context,
 
 [**→ Live Demo**](https://tarazu.kristenmartino.ai) · [**→ Read the PRD**](./docs/Tarazu_PRD.pdf)
 
-> 📸 **See it live:** the [interactive demo](https://tarazu.kristenmartino.ai) runs in guest mode — no signup. A hero screenshot/GIF will live here.
-<!-- Hero image: drop a capture at docs/screenshots/hero.png (≈1600×1000, the Priorities view with samples loaded + the AI advisor open) and replace the line above with:
-![Tarazu — priority matrix and AI advisor](docs/screenshots/hero.png) -->
+![Tarazu — the Priorities list with RICE-scored candidates and the AI Decision Advisor](docs/screenshots/hero.png)
+
+*RICE-scored candidates on the left, the AI Decision Advisor's recommendation on the right. [Try it live →](https://tarazu.kristenmartino.ai)*
 
 ---
 
