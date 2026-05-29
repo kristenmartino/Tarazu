@@ -66,7 +66,7 @@ For confidence: "high" means strong data supports this pick, "medium" means reas
 
     const analysis = await requestJson({
       apiKey: process.env.ANTHROPIC_API_KEY,
-      model: process.env.ANTHROPIC_MODEL_ANALYSIS || "claude-opus-4-7",
+      model: process.env.ANTHROPIC_MODEL_ANALYSIS || "claude-opus-4-8",
       maxTokens: 1000,
       prompt,
       schema: AnalysisSchema,
