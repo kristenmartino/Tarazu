@@ -4,6 +4,7 @@ import { rice } from "../utils";
 import { SCENARIO_TEMPLATES } from "../scenarios";
 import { useWeightedScored } from "../hooks/useWeightedScored";
 import { Pill } from "./Pill";
+import { dialog } from "./dialog";
 import * as cloud from "../../lib/cloud-storage";
 import { saveWsScenarios, loadWsScenarios } from "../../lib/local-storage";
 
@@ -45,7 +46,7 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
   }, []);
 
   const saveCustomScenario = useCallback(async () => {
-    const name = prompt("Scenario name:");
+    const name = await dialog.prompt({ title: "Save scenario", label: "Scenario name", placeholder: "e.g. Reach-weighted", confirmText: "Save" });
     if (!name?.trim()) return;
     const scenario = { name: name.trim(), description: "Custom weights", weight_reach: weights.reach, weight_impact: weights.impact, weight_confidence: weights.confidence, weight_effort: weights.effort };
     if (isSignedIn && activeWsId) {

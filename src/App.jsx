@@ -14,6 +14,7 @@ import { ShortcutsOverlay } from "./components/ShortcutsOverlay";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { StatusToast } from "./components/StatusToast";
 import { OfflineBanner } from "./components/OfflineBanner";
+import { dialog, DialogHost } from "./components/dialog";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import * as feedbackLocal from "../lib/feedback-storage";
 import { computeSummaryMetrics, buildScoreCalibration, buildAnalysisContext } from "../lib/feedback-context";
@@ -388,7 +389,7 @@ export default function App() {
   }, [isSignedIn, loaded, activeWsId, features, manualOrder]);
 
   const addWorkspace = async () => {
-    const name = prompt("Workspace name:");
+    const name = await dialog.prompt({ title: "New workspace", label: "Workspace name", placeholder: "e.g. Q3 Roadmap", confirmText: "Create" });
     if (!name?.trim()) return;
     if (isSignedIn) {
       try {
@@ -410,6 +411,14 @@ export default function App() {
   };
   const deleteWorkspace = async (wsId) => {
     if (workspaces.length <= 1) return;
+    const ws = workspaces.find(w => w.id === wsId);
+    const ok = await dialog.confirm({
+      title: "Delete workspace?",
+      message: `"${ws?.name ?? "This workspace"}" and all its candidates, decisions, and signals will be permanently removed. This can't be undone.`,
+      confirmText: "Delete",
+      danger: true,
+    });
+    if (!ok) return;
     if (isSignedIn) {
       try { await cloud.deleteWorkspaceApi(wsId); } catch (err) { console.error(err); return; }
     } else {
@@ -426,7 +435,7 @@ export default function App() {
   };
   const renameWorkspace = async (wsId, newName) => {
     const ws = workspaces.find(w => w.id === wsId);
-    const name = newName || prompt("New name:", ws?.name);
+    const name = newName || await dialog.prompt({ title: "Rename workspace", label: "Workspace name", defaultValue: ws?.name, confirmText: "Rename" });
     if (!name?.trim()) return;
     if (isSignedIn) {
       try { await cloud.renameWorkspaceApi(wsId, name.trim()); } catch (err) { console.error(err); return; }
@@ -874,6 +883,7 @@ export default function App() {
 
       {showShortcuts && <ShortcutsOverlay onClose={() => setShowShortcuts(false)} />}
       <StatusToast message={toast?.message} type={toast?.type} onDismiss={() => setToast(null)} />
+      <DialogHost />
     </div>
   );
 }
