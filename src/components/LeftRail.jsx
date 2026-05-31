@@ -9,6 +9,9 @@ const NAV_ITEMS = [
   { id: "priorities", label: "Priorities", icon: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
   ), enabled: true },
+  { id: "validate", label: "Validate", icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
+  ), enabled: true },
   { id: "signals", label: "Signals", icon: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M4 20h4V10H4z"/><path d="M10 20h4V4h-4z"/><path d="M16 20h4v-8h-4z"/></svg>
   ), enabled: true },
@@ -56,7 +59,9 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
         display: "flex", alignItems: "center", justifyContent: "space-around",
         zIndex: 100, paddingBottom: "env(safe-area-inset-bottom)",
       }}>
-        {[...NAV_ITEMS.filter(n => n.id !== "settings" && n.id !== "scenarios"), ADVISOR_ITEM].map(item => (
+        {/* Mobile bottom bar omits Validate/Scenarios/Settings to avoid crowding;
+            those stay desktop/tablet-first. Validate is reachable on the vertical rail. */}
+        {[...NAV_ITEMS.filter(n => n.id !== "settings" && n.id !== "scenarios" && n.id !== "validate"), ADVISOR_ITEM].map(item => (
           <button key={item.id} onClick={() => item.enabled && onScreenChange(item.id)}
             aria-current={activeScreen === item.id ? "page" : undefined}
             style={{
