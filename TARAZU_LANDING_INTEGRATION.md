@@ -1,5 +1,12 @@
 # Tarazu Landing Page — Integration Brief
 
+> **📌 Historical — implemented (PR #54).** This was the original brief for porting the landing
+> into the app; it is **no longer a to-do list**. The landing now lives at `/`
+> (`src/components/landing/Landing.jsx` + `landing.css`), brass design tokens are in
+> `app/tokens.css`, fonts load via `next/font`, and the CTAs point to a public `/sign-in` +
+> `/sign-up` front door (superseding the old `prioritize.*` URL referenced below). Kept for
+> historical context.
+
 **Design source of truth:** `tarazu-landing-page.html` (a complete, self-contained marketing landing page — HTML + inline CSS + vanilla JS, dark theme).
 **Goal:** Wire this into the real Tarazu app as a proper Next.js route, preserving the design exactly while matching the project's existing conventions. Do **not** introduce a new styling paradigm or new dependencies.
 
