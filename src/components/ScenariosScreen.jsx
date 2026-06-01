@@ -115,7 +115,7 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
           {SCENARIO_TEMPLATES.map(tpl => (
             <button key={tpl.key} onClick={() => selectTemplate(tpl)} style={{
               padding: 12, border: `1px solid ${activeKey === tpl.key && !isCustom ? C.accent : C.border}`, borderRadius: 8,
-              background: activeKey === tpl.key && !isCustom ? C.accent + "10" : C.surface, textAlign: "left", cursor: "pointer",
+              background: activeKey === tpl.key && !isCustom ? "color-mix(in srgb, var(--success) 6%, transparent)" : C.surface, textAlign: "left", cursor: "pointer",
               ...(activeKey === tpl.key && !isCustom ? { borderLeftWidth: 3, borderLeftColor: C.accent } : {}),
             }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: activeKey === tpl.key && !isCustom ? C.accent : C.text, marginBottom: 4 }}>{tpl.name}</div>
@@ -140,7 +140,7 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
                 <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 4 }}>
                   <button onClick={() => selectCustom(s)} style={{
                     flex: 1, padding: 10, border: `1px solid ${activeKey === s.id ? C.blue : C.border}`, borderRadius: 8,
-                    background: activeKey === s.id ? C.blue + "10" : C.surface, textAlign: "left", cursor: "pointer",
+                    background: activeKey === s.id ? "color-mix(in srgb, var(--accent) 6%, transparent)" : C.surface, textAlign: "left", cursor: "pointer",
                   }}>
                     <div style={{ fontSize: 11, fontWeight: 600, color: activeKey === s.id ? C.blue : C.text }}>{s.name}</div>
                   </button>

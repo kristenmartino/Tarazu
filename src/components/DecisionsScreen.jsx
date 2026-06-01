@@ -6,7 +6,7 @@ const STATUS_COLORS = { draft: C.warn, approved: C.accent, archived: C.textDim }
 const STATUS_OPTIONS = ["draft", "approved", "archived"];
 const EMPTY_FORM = { title: "", chosen_candidate_id: null, chosen_candidate_name: "", summary_rationale: "", final_rationale: "", framework_used: "RICE", tradeoffs_considered: "", risks_accepted: "", expected_outcome: "", owner: "", status: "draft", decision_date: new Date().toISOString().split("T")[0], review_date: "" };
 
-const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
+const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
 const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
 const selectStyle = { ...inputStyle, cursor: "pointer" };
 
@@ -80,11 +80,11 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
           {["all", ...STATUS_OPTIONS].map(s => (
             <button key={s} onClick={() => setFilterStatus(s)} style={{
               padding: "4px 10px", borderRadius: 6, border: `1px solid ${filterStatus === s ? C.accent : C.border}`,
-              background: filterStatus === s ? C.accent + "15" : "transparent", color: filterStatus === s ? C.accent : C.textMuted,
+              background: filterStatus === s ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent", color: filterStatus === s ? C.accent : C.textMuted,
               fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase",
             }}>{s}</button>
           ))}
-          <button onClick={() => openForm()} style={{ padding: "6px 14px", border: `1px solid ${C.accent}30`, borderRadius: 8, background: C.accent + "10", color: C.accent, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>+ New Decision</button>
+          <button onClick={() => openForm()} style={{ padding: "6px 14px", border: `1px solid color-mix(in srgb, var(--success) 19%, transparent)`, borderRadius: 8, background: "color-mix(in srgb, var(--success) 6%, transparent)", color: C.accent, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>+ New Decision</button>
         </div>
       </div>
 
@@ -239,8 +239,8 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
                       </div>
                     )}
                     <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                      <button onClick={(e) => { e.stopPropagation(); openForm(d); }} style={{ flex: 1, padding: "8px 12px", border: `1px solid ${C.blue}30`, borderRadius: 6, background: C.blueDim, color: C.blue, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Edit</button>
-                      <button onClick={(e) => { e.stopPropagation(); onDelete(d.id); setExpandedId(null); }} style={{ padding: "8px 12px", border: `1px solid ${C.danger}30`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Delete</button>
+                      <button onClick={(e) => { e.stopPropagation(); openForm(d); }} style={{ flex: 1, padding: "8px 12px", border: `1px solid color-mix(in srgb, var(--accent) 19%, transparent)`, borderRadius: 6, background: C.blueDim, color: C.blue, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Edit</button>
+                      <button onClick={(e) => { e.stopPropagation(); onDelete(d.id); setExpandedId(null); }} style={{ padding: "8px 12px", border: `1px solid color-mix(in srgb, var(--danger) 19%, transparent)`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Delete</button>
                     </div>
                   </div>
                 </div>
