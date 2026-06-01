@@ -60,10 +60,10 @@ export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselec
       </div>
 
       <div style={{ display: "flex", gap: 8 }}>
-        <button onClick={() => onEdit(feature)} style={{ flex: 1, padding: "8px 12px", border: `1px solid ${C.blue}30`, borderRadius: 6, background: C.blueDim, color: C.blue, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s" }}>
+        <button onClick={() => onEdit(feature)} style={{ flex: 1, padding: "8px 12px", border: `1px solid color-mix(in srgb, var(--accent) 19%, transparent)`, borderRadius: 6, background: C.blueDim, color: C.blue, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s" }}>
           ✎ Edit
         </button>
-        <button onClick={() => onDelete(feature.id)} style={{ padding: "8px 12px", border: `1px solid ${C.danger}30`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s" }}>
+        <button onClick={() => onDelete(feature.id)} style={{ padding: "8px 12px", border: `1px solid color-mix(in srgb, var(--danger) 19%, transparent)`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s" }}>
           ✕ Remove
         </button>
       </div>
@@ -81,7 +81,7 @@ export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselec
             </div>
           ))}
           {linkedSignals.length > 3 && (
-            <button onClick={() => onScreenChange?.("signals")} style={{ padding: "4px 10px", border: `1px solid ${C.blue}20`, borderRadius: 6, background: "transparent", color: C.blue, fontSize: 10, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>
+            <button onClick={() => onScreenChange?.("signals")} style={{ padding: "4px 10px", border: `1px solid color-mix(in srgb, var(--accent) 13%, transparent)`, borderRadius: 6, background: "transparent", color: C.blue, fontSize: 10, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>
               View all {linkedSignals.length} signals
             </button>
           )}

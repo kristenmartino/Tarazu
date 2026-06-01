@@ -35,20 +35,20 @@ const FieldDiff = ({ change }) => {
       <span style={{ color, width: 80, fontWeight: 600 }}>{field.toUpperCase()}</span>
       {isScore ? (
         <>
-          <span style={{ color: C.danger + "90" }}>{oldVal}</span>
+          <span style={{ color: "color-mix(in srgb, var(--danger) 56%, transparent)" }}>{oldVal}</span>
           <span style={{ color: C.textDim }}>{"\u2192"}</span>
-          <span style={{ color: C.accent + "90" }}>{newVal}</span>
+          <span style={{ color: "color-mix(in srgb, var(--success) 56%, transparent)" }}>{newVal}</span>
           <span style={{ color: newVal > oldVal ? C.accent : C.danger, fontSize: 9 }}>
             ({newVal > oldVal ? "+" : ""}{newVal - oldVal})
           </span>
         </>
       ) : (
         <>
-          <span style={{ color: C.danger + "60", textDecoration: "line-through", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={String(oldVal)}>
+          <span style={{ color: "color-mix(in srgb, var(--danger) 38%, transparent)", textDecoration: "line-through", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={String(oldVal)}>
             {oldVal || "(empty)"}
           </span>
           <span style={{ color: C.textDim }}>{"\u2192"}</span>
-          <span style={{ color: C.accent + "90", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={String(newVal)}>
+          <span style={{ color: "color-mix(in srgb, var(--success) 56%, transparent)", maxWidth: 100, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={String(newVal)}>
             {newVal || "(empty)"}
           </span>
         </>
