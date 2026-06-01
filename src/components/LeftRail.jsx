@@ -34,7 +34,7 @@ const ADVISOR_ITEM = { id: "advisor", label: "Advisor", icon: (
 ), enabled: true };
 
 const Logo = () => (
-  <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${C.blue}, ${C.purple})`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 20px ${C.blue}30`, flexShrink: 0 }}>
+  <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${C.brass}, ${C.brassDeep})`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 20px color-mix(in srgb, var(--accent) 19%, transparent)`, flexShrink: 0 }}>
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.bg} strokeWidth="2"><line x1="4" y1="6" x2="20" y2="6" strokeLinecap="round"/><line x1="12" y1="6" x2="12" y2="20" strokeLinecap="round"/><circle cx="5" cy="6" r="2" fill={C.bg} stroke="none"/><circle cx="19" cy="6" r="2" fill={C.bg} stroke="none"/></svg>
   </div>
 );
@@ -105,7 +105,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
           <div style={{
             position: "absolute", top: 0, left: "calc(100% + 8px)", minWidth: 200,
             background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10,
-            boxShadow: `0 8px 24px ${C.bg}80`, zIndex: 200, overflow: "hidden",
+            boxShadow: `0 8px 24px color-mix(in srgb, var(--surface-base) 50%, transparent)`, zIndex: 200, overflow: "hidden",
           }}>
             {workspaces.map(w => (
               <div key={w.id} style={{
@@ -115,7 +115,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
               }} onClick={() => { if (w.id !== activeWs?.id) onSwitchWorkspace(w.id); setWsDropdownOpen(false); }}>
                 <span style={{ flex: 1, fontSize: 12, color: w.id === activeWs?.id ? C.accent : C.text, fontWeight: w.id === activeWs?.id ? 700 : 400 }}>{w.name}</span>
                 <button onClick={e => { e.stopPropagation(); onRenameWorkspace(w.id); }} style={{ padding: "2px 5px", border: "none", background: "transparent", color: C.textMuted, fontSize: 10, cursor: "pointer" }} title="Rename">✎</button>
-                {workspaces.length > 1 && <button onClick={e => { e.stopPropagation(); onDeleteWorkspace(w.id); }} style={{ padding: "2px 5px", border: "none", background: "transparent", color: C.danger + "80", fontSize: 10, cursor: "pointer" }} title="Delete">✕</button>}
+                {workspaces.length > 1 && <button onClick={e => { e.stopPropagation(); onDeleteWorkspace(w.id); }} style={{ padding: "2px 5px", border: "none", background: "transparent", color: "color-mix(in srgb, var(--danger) 50%, transparent)", fontSize: 10, cursor: "pointer" }} title="Delete">✕</button>}
               </div>
             ))}
             <button onClick={() => { onAddWorkspace(); setWsDropdownOpen(false); }} style={{

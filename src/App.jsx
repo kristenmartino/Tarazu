@@ -715,7 +715,7 @@ export default function App() {
   }, [activeScreen, viewMode, handleScreenChange]);
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
+    <div className="tz-app" style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
       <style>{printStyles}</style>
       <style>{animStyles}</style>
       <style>{`.skip-link { position: absolute; top: -40px; left: 0; padding: 8px 16px; background: ${C.accent}; color: ${C.bg}; font-size: 12px; font-weight: 700; z-index: 1000; text-decoration: none; border-radius: 0 0 8px 0; } .skip-link:focus { top: 0; }`}</style>
@@ -751,7 +751,7 @@ export default function App() {
               <div style={{
                 position: "absolute", top: "calc(100% + 4px)", right: 0, minWidth: 200,
                 background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10,
-                boxShadow: `0 8px 24px ${C.bg}80`, zIndex: 300, overflow: "hidden",
+                boxShadow: `0 8px 24px color-mix(in srgb, var(--surface-base) 50%, transparent)`, zIndex: 300, overflow: "hidden",
               }}>
                 {workspaces.map(w => (
                   <button key={w.id} onClick={() => { if (w.id !== activeWsId) switchWorkspace(w.id); setMobileWsOpen(false); }}

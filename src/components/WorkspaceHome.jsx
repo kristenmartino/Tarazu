@@ -94,7 +94,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
 
         {/* Needs validation */}
         {needsValidation.length > 0 && (
-          <div style={{ padding: 16, border: `1px solid ${C.warn}20`, borderRadius: 10, background: `${C.warn}08` }}>
+          <div style={{ padding: 16, border: `1px solid color-mix(in srgb, var(--warning) 13%, transparent)`, borderRadius: 10, background: "color-mix(in srgb, var(--warning) 3%, transparent)" }}>
             <span style={{ fontSize: 9, fontWeight: 700, color: C.warn, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>NEEDS VALIDATION</span>
             <p style={{ fontSize: 10, color: C.textMuted, margin: "4px 0 8px" }}>Candidates with confidence below 50 — consider gathering more evidence.</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -106,7 +106,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
               ))}
             </div>
             {scored.filter(f => f.confidence < 50).length > 3 && (
-              <button onClick={() => onScreenChange("priorities")} style={{ marginTop: 8, padding: "4px 10px", border: `1px solid ${C.warn}30`, borderRadius: 6, background: "transparent", color: C.warn, fontSize: 10, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>
+              <button onClick={() => onScreenChange("priorities")} style={{ marginTop: 8, padding: "4px 10px", border: `1px solid color-mix(in srgb, var(--warning) 19%, transparent)`, borderRadius: 6, background: "transparent", color: C.warn, fontSize: 10, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>
                 View all {scored.filter(f => f.confidence < 50).length} candidates
               </button>
             )}

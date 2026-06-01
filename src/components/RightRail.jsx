@@ -94,7 +94,7 @@ export const RightRail = ({
           borderTopRightRadius: isMobile ? 16 : 0,
           zIndex: 200,
           overflowY: "auto", padding: "8px 20px 20px",
-          boxShadow: `-8px 0 32px ${C.bg}80`,
+          boxShadow: `-8px 0 32px color-mix(in srgb, var(--surface-base) 50%, transparent)`,
           animation: isMobile ? "slideUp 0.3s ease" : "slideInRight 0.25s ease",
           outline: "none",
         }}>
