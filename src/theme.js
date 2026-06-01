@@ -1,18 +1,34 @@
-// Tarazu "brass" palette (Phase 2 dark-brass migration), aligned to app/tokens.css.
-// NOTE: `blue` historically meant the primary/brand accent; its VALUE is now brass
-// so every existing C.blue usage recolors without a repo-wide rename. `accent`
-// (success/high-confidence) is now jade. Data-viz semantics kept: danger=coral,
-// warn=gold, purple=AI.
+// Tarazu "brass" palette — the JS mirror of the SEMANTIC tokens in app/tokens.css
+// (hex, not var() refs, because existing inline-style components append alpha like
+// `${C.x}20` — var() refs would break that; migrating those ~49 sites to color-mix
+// is the 2b cleanup). Keys keep their historical meaning so existing usages recolor
+// in place: `blue` = primary/brand (brass), `accent` = success/high-confidence (jade),
+// `warn` = warning (now orange, distinct from brass), `danger` = danger, `purple` = AI.
+// New components should prefer the CSS vars (var(--accent), var(--surface-raised)…).
 export const C = {
+  // surfaces / elevation
   bg: "#0E0F12", surface: "#15171C", surfaceAlt: "#1B1E25",
+  surfaceSunken: "#121316", overlay: "#1F2128",
+  // borders
   border: "#2A2D35", borderActive: "#3A3D47",
+  // text
   text: "#ECEAE4", textMuted: "#A7A294", textDim: "#706B5F",
+  textOnAccent: "#1A1406", textAccent: "#E8BD6A",
+  // success / high-confidence (jade)
   accent: "#74D2A8", accentDim: "#74D2A830", accentGlow: "#74D2A818",
-  danger: "#DF726A", dangerDim: "#DF726A20",
-  warn: "#D4A24C", warnDim: "#D4A24C20",
-  blue: "#E2AC4D", blueDim: "#E2AC4D24", // primary/brand accent → brass
+  success: "#74D2A8", successDim: "#74D2A820",
+  // status
+  danger: "#E5675A", dangerDim: "#E5675A20",
+  warn: "#E89B3C", warnDim: "#E89B3C20",   // warning → orange (≠ brass brand)
+  info: "#6FB1D8", infoDim: "#6FB1D820",
+  // primary / brand (brass) — `blue` key kept so existing call sites recolor in place
+  blue: "#E2AC4D", blueDim: "#E2AC4D24",
+  accentHover: "#ECBB63", accentPressed: "#C8923A", accentSubtle: "#E2AC4D1F", ring: "#E2AC4D",
+  // AI / scenarios (violet)
   purple: "#8A7DF4", purpleDim: "#8A7DF41A",
+  // chrome
   navBg: "#0B0C0F", navBorder: "#1A1C22",
+  // raw brand aliases
   brass: "#E2AC4D", brassDeep: "#B8842F", jade: "#74D2A8",
 };
 

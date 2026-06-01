@@ -106,7 +106,7 @@ export const CenterCanvas = ({
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <div style={{ padding: "16px 20px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 10 }}>
           <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{ph.title}</h2>
-          <Pill color={C.textDim} dimColor={C.border} small>COMING SOON</Pill>
+          <Pill color={C.textMuted} dimColor={C.border} small>COMING SOON</Pill>
         </div>
         <PlaceholderScreen title={ph.title} description={ph.description} icon={ph.icon} />
       </div>

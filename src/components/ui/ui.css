@@ -1,0 +1,128 @@
+/* ============================================================
+   Tarazu UI primitives — token-based, full state coverage.
+   Namespaced `tzui-` so they're safe to drop into any screen (2b).
+   Consume ONLY semantic vars from app/tokens.css (no raw hex).
+   ============================================================ */
+.tzui-root { font-family: var(--body); color: var(--text-primary); }
+
+/* shared focus ring — never rely on color alone */
+.tzui-btn:focus-visible,
+.tzui-input:focus-visible,
+.tzui-textarea:focus-visible,
+.tzui-select:focus-visible,
+.tzui-tab:focus-visible,
+.tzui-menu-item:focus-visible,
+.tzui-switch:focus-visible,
+.tzui-checkbox:focus-visible,
+.tzui-radio:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* ---- Button ---- */
+.tzui-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: var(--body); font-weight: 600; font-size: 14px; line-height: 1;
+  padding: 9px 16px; border-radius: var(--radius-md); border: 1px solid transparent;
+  cursor: pointer; transition: background .18s, color .18s, border-color .18s, transform .12s;
+  white-space: nowrap; user-select: none;
+}
+.tzui-btn--sm { padding: 6px 11px; font-size: 12.5px; }
+.tzui-btn:active { transform: translateY(1px); }
+.tzui-btn:disabled, .tzui-btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; transform: none; }
+.tzui-btn--primary { background: var(--accent); color: var(--text-on-accent); font-weight: 700; }
+.tzui-btn--primary:hover:not(:disabled) { background: var(--accent-hover); }
+.tzui-btn--primary:active:not(:disabled) { background: var(--accent-pressed); }
+.tzui-btn--secondary { background: transparent; color: var(--text-primary); border-color: var(--border); }
+.tzui-btn--secondary:hover:not(:disabled) { border-color: var(--border-strong); background: rgba(236,234,228,.04); }
+.tzui-btn--ghost { background: transparent; color: var(--text-secondary); }
+.tzui-btn--ghost:hover:not(:disabled) { background: rgba(236,234,228,.05); color: var(--text-primary); }
+.tzui-btn--danger { background: var(--danger); color: #1a0d0b; font-weight: 700; }
+.tzui-btn--danger:hover:not(:disabled) { filter: brightness(1.08); }
+
+/* ---- Inputs ---- */
+.tzui-input, .tzui-textarea, .tzui-select {
+  width: 100%; font-family: var(--body); font-size: 13px; color: var(--text-primary);
+  background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 9px 12px; outline: none; transition: border-color .18s, box-shadow .18s; box-sizing: border-box;
+}
+.tzui-textarea { resize: vertical; min-height: 84px; line-height: 1.5; }
+.tzui-input::placeholder, .tzui-textarea::placeholder { color: var(--text-tertiary); }
+.tzui-input:hover, .tzui-textarea:hover, .tzui-select:hover { border-color: var(--border-strong); }
+.tzui-input:focus-visible, .tzui-textarea:focus-visible, .tzui-select:focus-visible { border-color: var(--accent); }
+.tzui-input:disabled, .tzui-textarea:disabled, .tzui-select:disabled { opacity: .5; cursor: not-allowed; }
+.tzui-input[aria-invalid="true"], .tzui-textarea[aria-invalid="true"], .tzui-select[aria-invalid="true"] { border-color: var(--danger); }
+.tzui-field-label { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+.tzui-field-error { color: var(--danger); font-size: 11.5px; margin-top: 5px; }
+
+/* ---- Checkbox / Radio / Switch ---- */
+.tzui-checkbox, .tzui-radio { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+.tzui-switch { position: relative; width: 36px; height: 20px; border-radius: 999px; background: var(--surface-sunken); border: 1px solid var(--border); cursor: pointer; transition: background .18s, border-color .18s; flex: none; }
+.tzui-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--text-secondary); transition: transform .18s, background .18s; }
+.tzui-switch[aria-checked="true"] { background: var(--accent); border-color: var(--accent); }
+.tzui-switch[aria-checked="true"]::after { transform: translateX(16px); background: var(--text-on-accent); }
+.tzui-switch:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---- Badge / Chip ---- */
+.tzui-badge { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .03em; padding: 2px 8px; border-radius: 999px; border: 1px solid transparent; }
+.tzui-badge--neutral { color: var(--text-secondary); background: rgba(236,234,228,.06); border-color: var(--border-subtle); }
+.tzui-badge--accent  { color: var(--text-accent); background: var(--accent-subtle); }
+.tzui-badge--success { color: var(--success); background: var(--success-subtle); }
+.tzui-badge--warning { color: var(--warning); background: var(--warning-subtle); }
+.tzui-badge--danger  { color: var(--danger);  background: var(--danger-subtle); }
+.tzui-badge--info    { color: var(--info);    background: var(--info-subtle); }
+.tzui-chip-rank { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 5px; font-family: var(--mono); font-size: 10px; background: var(--surface-raised); color: var(--text-tertiary); border: 1px solid var(--border); }
+.tzui-chip-rank--top { background: var(--accent); color: var(--text-on-accent); border-color: var(--accent); font-weight: 700; }
+.tzui-chip-score { font-family: var(--mono); font-weight: 500; color: var(--text-primary); }
+.tzui-chip-score--top { color: var(--accent); }
+
+/* ---- Card / Panel ---- */
+.tzui-card { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+.tzui-card--overlay { background: var(--surface-overlay); }
+
+/* ---- Tabs ---- */
+.tzui-tabs { display: inline-flex; gap: 2px; background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 3px; }
+.tzui-tab { font-family: var(--body); font-size: 13px; font-weight: 600; color: var(--text-secondary); background: transparent; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; transition: background .15s, color .15s; }
+.tzui-tab:hover:not(.tzui-tab--active) { color: var(--text-primary); }
+.tzui-tab--active { background: var(--accent-subtle); color: var(--text-accent); }
+
+/* ---- Menu / Dropdown ---- */
+.tzui-menu { background: var(--surface-overlay); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 5px; min-width: 180px; box-shadow: 0 16px 40px -16px rgba(0,0,0,.7); }
+.tzui-menu-item { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left; font-family: var(--body); font-size: 13px; color: var(--text-primary); background: transparent; border: 0; border-radius: 6px; padding: 8px 10px; cursor: pointer; }
+.tzui-menu-item:hover { background: rgba(236,234,228,.05); }
+.tzui-menu-item--danger { color: var(--danger); }
+
+/* ---- Modal / Sheet ---- */
+.tzui-scrim { position: fixed; inset: 0; background: rgba(8,8,10,.62); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 200; }
+.tzui-modal { background: var(--surface-overlay); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; max-width: 480px; width: 100%; box-shadow: 0 40px 90px -40px rgba(0,0,0,.85); }
+.tzui-modal h3 { font-family: var(--display); font-weight: 700; font-size: 1.15rem; margin: 0 0 8px; color: var(--text-primary); }
+
+/* ---- Tooltip ---- */
+.tzui-tooltip { font-family: var(--body); font-size: 12px; color: var(--text-primary); background: var(--surface-overlay); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 9px; box-shadow: 0 8px 20px -8px rgba(0,0,0,.7); }
+
+/* ---- Alert / Toast ---- */
+.tzui-alert { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.45; color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 11px 14px; background: var(--surface-raised); }
+.tzui-alert__dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex: none; }
+.tzui-alert--success { border-color: rgba(116,210,168,.3); background: var(--success-subtle); }
+.tzui-alert--success .tzui-alert__dot { background: var(--success); }
+.tzui-alert--warning { border-color: rgba(232,155,60,.3); background: var(--warning-subtle); }
+.tzui-alert--warning .tzui-alert__dot { background: var(--warning); }
+.tzui-alert--danger { border-color: rgba(229,103,90,.3); background: var(--danger-subtle); }
+.tzui-alert--danger .tzui-alert__dot { background: var(--danger); }
+.tzui-alert--info { border-color: rgba(111,177,216,.3); background: var(--info-subtle); }
+.tzui-alert--info .tzui-alert__dot { background: var(--info); }
+
+/* ---- Skeleton / Spinner (motion-gated) ---- */
+.tzui-skeleton { background: var(--surface-raised); border-radius: var(--radius-sm); }
+.tzui-spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--accent); }
+@media (prefers-reduced-motion: no-preference) {
+  .tzui-skeleton { background: linear-gradient(90deg, var(--surface-raised) 25%, var(--surface-overlay) 37%, var(--surface-raised) 63%); background-size: 400% 100%; animation: tzui-shimmer 1.4s ease infinite; }
+  .tzui-spinner { animation: tzui-spin .7s linear infinite; }
+  @keyframes tzui-shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
+  @keyframes tzui-spin { to { transform: rotate(360deg); } }
+}
+
+/* ---- Empty state ---- */
+.tzui-empty { text-align: center; padding: 40px 24px; border: 1px dashed var(--border); border-radius: var(--radius-lg); background: var(--surface-sunken); }
+.tzui-empty h4 { font-family: var(--display); font-weight: 700; color: var(--text-primary); margin: 0 0 6px; }
+.tzui-empty p { color: var(--text-secondary); font-size: 13.5px; margin: 0 0 16px; }
