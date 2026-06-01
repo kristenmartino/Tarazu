@@ -13,7 +13,7 @@ const SIGNAL_TYPES = {
 const TYPE_KEYS = Object.keys(SIGNAL_TYPES);
 const CONFIDENCE_OPTIONS = ["", "increases", "decreases", "neutral"];
 
-const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
+const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
 const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
 const selectStyle = { ...inputStyle, cursor: "pointer" };
 
@@ -121,7 +121,7 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           <button onClick={() => setFilterType("all")} style={{
             padding: "4px 10px", borderRadius: 6, border: `1px solid ${filterType === "all" ? C.accent : C.border}`,
-            background: filterType === "all" ? C.accent + "15" : "transparent", color: filterType === "all" ? C.accent : C.textMuted,
+            background: filterType === "all" ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent", color: filterType === "all" ? C.accent : C.textMuted,
             fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace",
           }}>ALL</button>
           {TYPE_KEYS.map(t => (
@@ -133,13 +133,13 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
             }}>{SIGNAL_TYPES[t].label}{typeCounts[t] ? ` (${typeCounts[t]})` : ""}</button>
           ))}
           <button onClick={() => fileInputRef.current?.click()} style={{ padding: "6px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Import CSV</button>
-          <button onClick={() => openForm()} style={{ padding: "6px 14px", border: `1px solid ${C.accent}30`, borderRadius: 8, background: C.accent + "10", color: C.accent, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>+ Add Signal</button>
+          <button onClick={() => openForm()} style={{ padding: "6px 14px", border: `1px solid color-mix(in srgb, var(--success) 19%, transparent)`, borderRadius: 8, background: "color-mix(in srgb, var(--success) 6%, transparent)", color: C.accent, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>+ Add Signal</button>
         </div>
       </div>
 
       {/* Import preview */}
       {importData && (
-        <div style={{ padding: 16, border: `1px solid ${C.warn}40`, borderRadius: 12, background: C.surface, marginBottom: 16 }}>
+        <div style={{ padding: 16, border: `1px solid color-mix(in srgb, var(--warning) 25%, transparent)`, borderRadius: 12, background: C.surface, marginBottom: 16 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: C.text, marginBottom: 12 }}>Import {importData.length} signals</div>
           <div style={{ maxHeight: 200, overflowY: "auto", marginBottom: 12 }}>
             {importData.slice(0, 10).map((s, i) => (
