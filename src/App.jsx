@@ -715,7 +715,7 @@ export default function App() {
   }, [activeScreen, viewMode, handleScreenChange]);
 
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
       <style>{printStyles}</style>
       <style>{animStyles}</style>
       <style>{`.skip-link { position: absolute; top: -40px; left: 0; padding: 8px 16px; background: ${C.accent}; color: ${C.bg}; font-size: 12px; font-weight: 700; z-index: 1000; text-decoration: none; border-radius: 0 0 8px 0; } .skip-link:focus { top: 0; }`}</style>
@@ -731,10 +731,10 @@ export default function App() {
         position: "sticky", top: 0, zIndex: 50, background: C.bg,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg, ${C.blue}, ${C.purple})`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${C.blue}25` }}>
+          <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg, ${C.brass}, ${C.brassDeep})`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${C.brass}25` }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.bg} strokeWidth="2"><line x1="4" y1="6" x2="20" y2="6" strokeLinecap="round"/><line x1="12" y1="6" x2="12" y2="20" strokeLinecap="round"/><circle cx="5" cy="6" r="2" fill={C.bg} stroke="none"/><circle cx="19" cy="6" r="2" fill={C.bg} stroke="none"/></svg>
           </div>
-          <h1 style={{ fontSize: 16, fontWeight: 800, margin: 0, letterSpacing: "-0.02em", background: `linear-gradient(135deg, ${C.text}, ${C.textMuted})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Tarazu</h1>
+          <h1 style={{ fontSize: 17, fontWeight: 800, margin: 0, letterSpacing: "-0.03em", fontFamily: "var(--display)", background: `linear-gradient(135deg, ${C.text}, ${C.textMuted})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Tarazu</h1>
           {!isMobile && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.06em" }}>DECISION INTELLIGENCE</span>}
         </div>
         {isMobile && (

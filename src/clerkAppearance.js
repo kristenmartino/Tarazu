@@ -30,5 +30,11 @@ export const clerkBrassAppearance = {
     formButtonPrimary: { backgroundColor: "#E2AC4D", color: "#1a1406", fontWeight: 700 },
     footerActionText: { color: "#A7A294" },
     footerActionLink: { color: "#E2AC4D" },
+    // In-app <UserButton/> popover (used at /app)
+    userButtonPopoverCard: { backgroundColor: "#15171C", borderColor: "rgba(236,234,228,0.11)" },
+    userButtonPopoverActionButton: { color: "#ECEAE4" },
+    userButtonPopoverActionButtonText: { color: "#ECEAE4" },
+    userButtonPopoverActionButtonIcon: { color: "#A7A294" },
+    userButtonPopoverFooter: { display: "none" },
   },
 };
