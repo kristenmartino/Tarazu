@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tarazu — Weigh what to build next</title>
+<meta name="description" content="Tarazu turns scattered requests, feedback, and data into ranked, defensible product decisions — then learns from what you ship, so every call gets sharper. The balance scale for your roadmap." />
+<meta name="theme-color" content="#0E0F12" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Tarazu — Weigh what to build next" />
+<meta property="og:description" content="Turn scattered signals into ranked, defensible product decisions — and close the loop by learning from what you ship." />
+<meta property="og:site_name" content="Tarazu" />
+<script>document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E0F12;
+    --bg-2:#15171C;
+    --bg-3:#1B1E25;
+    --line:rgba(236,234,228,0.11);
+    --line-2:rgba(236,234,228,0.055);
+    --text:#ECEAE4;
+    --text-soft:#A7A294;
+    --text-faint:#706B5F;
+    --brass:#E2AC4D;
+    --brass-deep:#B8842F;
+    --jade:#74D2A8;
+    --display:"Bricolage Grotesque", sans-serif;
+    --body:"Figtree", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:var(--body);font-size:17px;line-height:1.6;letter-spacing:-0.005em;
+    overflow-x:hidden;position:relative;
+    background-image:
+      radial-gradient(1100px 520px at 78% -4%, rgba(226,172,77,.13), transparent 60%),
+      radial-gradient(900px 600px at -8% 18%, rgba(116,210,168,.05), transparent 55%);
+    background-attachment:fixed;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.045;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  a{color:inherit;text-decoration:none}
+  svg{display:block}
+  ::selection{background:var(--brass);color:var(--bg)}
+  .wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:28px}
+
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:0.26em;text-transform:uppercase;color:var(--brass);display:inline-flex;align-items:center;gap:11px}
+  .eyebrow::before{content:"";width:24px;height:1px;background:var(--brass);opacity:.7}
+
+  h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.0;letter-spacing:-0.025em}
+
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--body);font-weight:600;font-size:15px;padding:14px 24px;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:transform .25s cubic-bezier(.2,.8,.2,1),background .25s,color .25s,border-color .25s,box-shadow .25s}
+  .btn .arrow{transition:transform .25s ease}
+  .btn:hover .arrow{transform:translateX(4px)}
+  .btn-solid{background:var(--brass);color:#1a1406;font-weight:700}
+  .btn-solid:hover{transform:translateY(-2px);box-shadow:0 14px 34px -12px rgba(226,172,77,.6)}
+  .btn-ghost{background:transparent;color:var(--text);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--text-soft);background:rgba(236,234,228,.04);transform:translateY(-2px)}
+
+  /* header */
+  header{position:sticky;top:0;z-index:100;background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-2)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:800;font-size:23px;letter-spacing:-0.03em}
+  .mark{width:28px;height:28px;flex:none}
+  .nav-links{display:flex;align-items:center;gap:34px}
+  .nav-links a{font-size:14.5px;font-weight:500;color:var(--text-soft);position:relative;padding:4px 0;transition:color .2s}
+  .nav-links a::after{content:"";position:absolute;left:0;bottom:-1px;width:0;height:1.5px;background:var(--brass);transition:width .28s ease}
+  .nav-links a:hover{color:var(--text)}
+  .nav-links a:hover::after{width:100%}
+  .nav-cta{display:flex;align-items:center;gap:16px}
+  .menu-btn{display:none;background:none;border:0;cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--text)}
+
+  /* hero */
+  .hero{position:relative;padding:80px 0 70px}
+  .hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:54px;align-items:center}
+  .hero-copy>*{display:block}
+  .hero .eyebrow{margin-bottom:26px}
+  .hero h1{font-size:clamp(2.9rem,6vw,5.1rem);margin-bottom:22px}
+  .hero h1 .br{color:var(--brass)}
+  .lede{font-size:clamp(1.05rem,1.4vw,1.24rem);color:var(--text-soft);max-width:33ch;margin-bottom:32px;line-height:1.55}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:13px;align-items:center}
+  .hero-foot{margin-top:28px;display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
+  .hero-foot .pip{width:7px;height:7px;border-radius:50%;background:var(--jade);box-shadow:0 0 0 4px rgba(116,210,168,.16)}
+
+  /* balance scale visual */
+  .scale-stage{position:relative;display:flex;justify-content:center;align-items:flex-end;min-height:380px}
+  .scale-glow{position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(226,172,77,.18),transparent 65%);top:6%;left:50%;transform:translateX(-50%);filter:blur(8px)}
+  .scale{position:relative;width:min(440px,100%);height:auto;overflow:visible}
+  .opt{font-family:var(--mono);font-size:11px;fill:var(--text-soft);letter-spacing:.06em}
+
+  /* definition strip */
+  .define{border-block:1px solid var(--line-2);background:var(--bg-2)}
+  .define .wrap{display:flex;align-items:center;gap:22px;padding-block:20px;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:var(--text-soft)}
+  .define b{color:var(--brass);font-weight:500}
+  .define .sep{color:var(--text-faint)}
+
+  /* sections */
+  .band{padding:96px 0}
+  .sec-head{max-width:680px;margin-bottom:56px}
+  .sec-head h2{font-size:clamp(2.1rem,4vw,3.1rem);margin-top:18px}
+  .sec-head h2 .br{color:var(--brass)}
+  .sec-head p{color:var(--text-soft);margin-top:16px;font-size:1.06rem;max-width:54ch}
+
+  /* lifecycle loop */
+  .lifecycle{background:linear-gradient(180deg,var(--bg),var(--bg-2))}
+  .loop{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;position:relative}
+  .loop::before{content:"";position:absolute;left:9%;right:9%;top:30px;height:1px;background:linear-gradient(90deg,var(--brass-deep),var(--brass),var(--brass-deep));opacity:.4}
+  .stage{position:relative;text-align:center;padding-top:0}
+  .stage .node{width:62px;height:62px;margin:0 auto 22px;border-radius:50%;border:1px solid var(--line);background:var(--bg-3);display:flex;align-items:center;justify-content:center;position:relative;transition:border-color .3s,transform .3s,box-shadow .3s}
+  .stage .node svg{width:26px;height:26px;stroke:var(--brass)}
+  .stage:hover .node{border-color:var(--brass);transform:translateY(-4px);box-shadow:0 0 0 5px rgba(226,172,77,.08)}
+  .stage .step-n{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;color:var(--text-faint);text-transform:uppercase}
+  .stage h3{font-size:1.28rem;margin:8px 0 8px}
+  .stage p{font-size:14px;color:var(--text-soft);line-height:1.5;padding-inline:6px}
+  .loop-back{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:34px;font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass)}
+  .loop-back svg{width:34px;height:14px;stroke:var(--brass)}
+
+  /* showcase: features + mock */
+  .showcase{background:var(--bg-2)}
+  .show-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:60px;align-items:center}
+  .feat-list{display:flex;flex-direction:column;gap:8px}
+  .feat{padding:22px 22px;border:1px solid var(--line-2);border-radius:12px;background:rgba(236,234,228,.012);transition:border-color .3s,background .3s,transform .3s}
+  .feat:hover{border-color:var(--line);background:rgba(236,234,228,.03);transform:translateX(4px)}
+  .feat .ftop{display:flex;align-items:center;gap:13px;margin-bottom:9px}
+  .feat .ficon{width:38px;height:38px;border-radius:9px;background:var(--bg-3);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none}
+  .feat .ficon svg{width:19px;height:19px;stroke:var(--brass)}
+  .feat h3{font-size:1.16rem}
+  .feat p{color:var(--text-soft);font-size:14.5px;line-height:1.5}
+
+  /* scorecard mock */
+  .card{background:var(--bg-3);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 40px 80px -40px rgba(0,0,0,.8)}
+  .card-bar{display:flex;align-items:center;gap:11px;padding:14px 18px;border-bottom:1px solid var(--line-2);background:rgba(236,234,228,.02)}
+  .card-bar .ttl{font-family:var(--display);font-weight:700;font-size:1.04rem}
+  .card-bar .live{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--jade);display:flex;align-items:center;gap:6px}
+  .card-bar .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--jade)}
+  .sc-head,.sc-row{display:grid;grid-template-columns:1.7fr .7fr .7fr .7fr .8fr;gap:8px;align-items:center;padding:11px 18px}
+  .sc-head{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);border-bottom:1px solid var(--line-2)}
+  .sc-row{border-bottom:1px solid var(--line-2);font-size:13.5px}
+  .sc-row:last-child{border-bottom:0}
+  .sc-row.top{background:linear-gradient(90deg,rgba(226,172,77,.10),transparent)}
+  .sc-row .name{display:flex;align-items:center;gap:9px;color:var(--text)}
+  .sc-row .rank{font-family:var(--mono);font-size:10px;width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;background:var(--bg-2);color:var(--text-faint);border:1px solid var(--line);flex:none}
+  .sc-row.top .rank{background:var(--brass);color:#1a1406;border-color:var(--brass);font-weight:700}
+  .sc-row .met{font-family:var(--mono);color:var(--text-soft)}
+  .sc-row .score{font-family:var(--mono);font-weight:500;color:var(--text);text-align:right}
+  .sc-row.top .score{color:var(--brass)}
+  .sc-foot{padding:13px 18px;font-family:var(--mono);font-size:11px;color:var(--text-faint);display:flex;align-items:center;gap:8px;border-top:1px solid var(--line-2)}
+  .sc-foot .w{color:var(--brass)}
+
+  /* cta */
+  .cta{position:relative;padding:104px 0;text-align:center;overflow:hidden}
+  .cta::before{content:"";position:absolute;inset:0;background:radial-gradient(700px 360px at 50% 0%,rgba(226,172,77,.16),transparent 65%)}
+  .cta-inner{position:relative;z-index:1;max-width:720px;margin-inline:auto}
+  .cta h2{font-size:clamp(2.3rem,4.8vw,3.7rem);line-height:1.02}
+  .cta h2 .br{color:var(--brass)}
+  .cta p{color:var(--text-soft);font-size:1.12rem;margin:20px 0 32px;max-width:48ch;margin-inline:auto}
+  .cta .hero-actions{justify-content:center}
+
+  /* footer */
+  footer{border-top:1px solid var(--line-2);padding:60px 0 30px;background:var(--bg-2)}
+  .foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;padding-bottom:38px;border-bottom:1px solid var(--line-2)}
+  .foot-brand{max-width:330px}
+  .foot-brand .brand{margin-bottom:14px}
+  .foot-brand p{color:var(--text-faint);font-size:14.5px}
+  .foot-cols{display:flex;gap:60px;flex-wrap:wrap}
+  .foot-col h5{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);margin-bottom:16px;font-weight:500}
+  .foot-col a{display:block;color:var(--text-soft);font-size:14.5px;margin-bottom:11px;transition:color .2s}
+  .foot-col a:hover{color:var(--text)}
+  .foot-bottom{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding-top:26px;font-family:var(--mono);font-size:11.5px;color:var(--text-faint)}
+  .foot-bottom a{color:var(--text-soft);text-decoration:underline;text-underline-offset:3px}
+  .foot-bottom a:hover{color:var(--brass)}
+
+  /* reveal + load motion */
+  @media (prefers-reduced-motion: no-preference){
+    html.js [data-reveal]{opacity:0;transform:translateY(22px);transition:opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1)}
+    html.js [data-reveal].in{opacity:1;transform:none}
+    html.js .hero-copy>*{opacity:0;animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards}
+    html.js .hero-copy>*:nth-child(1){animation-delay:.05s}
+    html.js .hero-copy>*:nth-child(2){animation-delay:.15s}
+    html.js .hero-copy>*:nth-child(3){animation-delay:.25s}
+    html.js .hero-copy>*:nth-child(4){animation-delay:.35s}
+    html.js .hero-copy>*:nth-child(5){animation-delay:.45s}
+    html.js .scale-stage{opacity:0;animation:rise 1s ease .35s forwards}
+    html.js .scale-beam{transform-box:fill-box;transform-origin:center;animation:settle 2s cubic-bezier(.3,.9,.3,1) .7s both}
+    @keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+    @keyframes settle{0%{transform:rotate(7deg)}45%{transform:rotate(-3.5deg)}75%{transform:rotate(1.4deg)}100%{transform:rotate(0)}}
+  }
+
+  @media (max-width:920px){
+    .hero-grid{grid-template-columns:1fr;gap:30px}
+    .scale-stage{min-height:320px;order:2}
+    .show-grid{grid-template-columns:1fr;gap:40px}
+    .loop{grid-template-columns:repeat(2,1fr);gap:30px 16px}
+    .loop::before{display:none}
+  }
+  @media (max-width:720px){
+    .nav-links{display:none}
+    .nav-cta .btn{display:none}
+    .menu-btn{display:block}
+    .nav-links.open{display:flex;position:absolute;top:74px;left:0;right:0;flex-direction:column;gap:0;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 28px 18px}
+    .nav-links.open a{padding:14px 0;border-bottom:1px solid var(--line-2);width:100%}
+    .loop{grid-template-columns:1fr;gap:26px}
+    .sc-head,.sc-row{grid-template-columns:1.5fr .8fr .9fr;gap:6px}
+    .sc-head .h-eff,.sc-row .c-eff,.sc-head .h-conf,.sc-row .c-conf{display:none}
+    body{font-size:16px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="brand" aria-label="Tarazu home">
+      <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M16 5v22M9 27h14" stroke="#E2AC4D" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 9h20" stroke="#ECEAE4" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 9l-3.5 7a4 4 0 0 0 7 0L6 9zM26 9l-3.5 7a4 4 0 0 0 7 0L26 9z" stroke="#E2AC4D" stroke-width="1.6" stroke-linejoin="round" fill="rgba(226,172,77,0.10)"/>
+        <circle cx="16" cy="9" r="1.6" fill="#E2AC4D"/>
+      </svg>
+      Tarazu
+    </a>
+    <nav class="nav-links" id="navlinks">
+      <a href="#lifecycle">Lifecycle</a>
+      <a href="#features">Features</a>
+      <a href="#why">Why Tarazu</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://prioritize.kristenmartino.ai" class="btn btn-solid">Start prioritizing <span class="arrow">→</span></a>
+      <button class="menu-btn" id="menubtn" aria-label="Toggle menu" aria-expanded="false">Menu</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<main id="top">
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">Product decision intelligence</span>
+      <h1>Weigh what to <span class="br">build next.</span></h1>
+      <p class="lede">Tarazu turns scattered requests, feedback, and data into ranked, defensible decisions — then learns from what you ship, so every call gets sharper.</p>
+      <div class="hero-actions">
+        <a href="https://prioritize.kristenmartino.ai" class="btn btn-solid">Start prioritizing <span class="arrow">→</span></a>
+        <a href="#lifecycle" class="btn btn-ghost">See the lifecycle</a>
+      </div>
+      <div class="hero-foot"><span class="pip"></span> From signal to shipped — in one loop</div>
+    </div>
+
+    <!-- balance scale -->
+    <div class="scale-stage" role="img" aria-label="A balance scale weighing two options, settling into balance">
+      <div class="scale-glow" aria-hidden="true"></div>
+      <svg class="scale" viewBox="0 0 440 360" fill="none" aria-hidden="true">
+        <!-- base + post -->
+        <path d="M220 70 V300" stroke="#ECEAE4" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+        <path d="M180 300 h80" stroke="#ECEAE4" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+        <ellipse cx="220" cy="312" rx="58" ry="9" fill="rgba(226,172,77,0.12)"/>
+        <!-- rotating beam group -->
+        <g class="scale-beam">
+          <path d="M70 92 H370" stroke="#E2AC4D" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="220" cy="92" r="6" fill="#E2AC4D"/>
+          <!-- left pan (heavier) -->
+          <path d="M70 92 L48 168 M70 92 L92 168" stroke="#9b8a63" stroke-width="1.5"/>
+          <path d="M30 168 a40 22 0 0 0 80 0 Z" fill="rgba(226,172,77,0.14)" stroke="#E2AC4D" stroke-width="1.8"/>
+          <circle cx="70" cy="158" r="13" fill="rgba(226,172,77,0.30)" stroke="#E2AC4D" stroke-width="1.5"/>
+          <text class="opt" x="70" y="200" text-anchor="middle">Option A</text>
+          <!-- right pan (lighter) -->
+          <path d="M370 92 L352 150 M370 92 L388 150" stroke="#9b8a63" stroke-width="1.5"/>
+          <path d="M335 150 a35 19 0 0 0 70 0 Z" fill="rgba(236,234,228,0.05)" stroke="#9b8a63" stroke-width="1.6"/>
+          <circle cx="370" cy="142" r="8" fill="rgba(236,234,228,0.10)" stroke="#9b8a63" stroke-width="1.4"/>
+          <text class="opt" x="370" y="182" text-anchor="middle">Option B</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ DEFINITION ============ -->
+<div class="define">
+  <div class="wrap">
+    <span><b>ta·ra·zu</b></span><span class="sep">/</span><span>noun</span><span class="sep">/</span><span>the balance scales — an instrument for weighing what matters.</span>
+  </div>
+</div>
+
+<!-- ============ LIFECYCLE ============ -->
+<section class="band lifecycle" id="lifecycle">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="eyebrow">The decision lifecycle</span>
+      <h2>Five steps. <span class="br">One loop.</span></h2>
+      <p>Tarazu runs the whole arc of a product decision — and the last step feeds the first, so the system keeps getting smarter.</p>
+    </div>
+    <div class="loop" data-reveal>
+      <div class="stage">
+        <div class="node"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9M7 12a5 5 0 0 1 5-5"/><circle cx="12" cy="12" r="1.6"/></svg></div>
+        <div class="step-n">01</div><h3>Listen</h3>
+        <p>Pull requests, feedback, data, and ideas into one place.</p>
+      </div>
+      <div class="stage">
+        <div class="node"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V10M12 21V4M19 21v-7"/></svg></div>
+        <div class="step-n">02</div><h3>Score</h3>
+        <p>Weigh each option against the criteria your team cares about.</p>
+      </div>
+      <div class="stage">
+        <div class="node"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg></div>
+        <div class="step-n">03</div><h3>Decide</h3>
+        <p>Rank with a clear, shared rationale anyone can trace.</p>
+      </div>
+      <div class="stage">
+        <div class="node"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7z"/><path d="M9.5 12l2 2 3.5-4"/></svg></div>
+        <div class="step-n">04</div><h3>Ship</h3>
+        <p>Turn the call into action and track it through to done.</p>
+      </div>
+      <div class="stage">
+        <div class="node"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v4h-4"/></svg></div>
+        <div class="step-n">05</div><h3>Learn</h3>
+        <p>Measure the outcome and feed it back to the next decision.</p>
+      </div>
+    </div>
+    <div class="loop-back" data-reveal>
+      <svg viewBox="0 0 40 14" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M38 7H6M12 2 6 7l6 5"/></svg>
+      Learn feeds back into Listen
+    </div>
+  </div>
+</section>
+
+<!-- ============ SHOWCASE (features + mock) ============ -->
+<section class="band showcase" id="features">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="eyebrow">What you get</span>
+      <h2>Decisions you can <span class="br">actually defend.</span></h2>
+    </div>
+    <div class="show-grid">
+      <div class="feat-list" data-reveal>
+        <div class="feat">
+          <div class="ftop"><span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span><h3>Every signal, one place</h3></div>
+          <p>Requests, feedback, data, and ideas together — so nothing important gets decided in the dark.</p>
+        </div>
+        <div class="feat">
+          <div class="ftop"><span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5M5 8v8l7 4 7-4V8"/></svg></span><h3>Scoring that's consistent</h3></div>
+          <p>Weigh each option against the criteria and weights that matter to you — the same way, every time.</p>
+        </div>
+        <div class="feat">
+          <div class="ftop"><span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><h3>A rationale everyone sees</h3></div>
+          <p>A transparent ranking with the "why," so "this, not that" is never a mystery to your team or your stakeholders.</p>
+        </div>
+        <div class="feat">
+          <div class="ftop"><span class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v4h-4"/></svg></span><h3>Close the loop</h3></div>
+          <p>Track what you ship, measure the outcome, and feed it back — so the next decision is sharper than the last.</p>
+        </div>
+      </div>
+
+      <!-- scorecard mock -->
+      <div class="card" data-reveal role="img" aria-label="Preview of the Tarazu priority scorecard, ranking initiatives by a weighted score">
+        <div class="card-bar">
+          <span class="ttl">Priority scorecard</span>
+          <span class="live">Q3 board</span>
+        </div>
+        <div class="sc-head">
+          <span>Initiative</span><span>Impact</span><span class="h-eff">Effort</span><span class="h-conf">Confid.</span><span style="text-align:right">Score</span>
+        </div>
+        <div class="sc-row top">
+          <span class="name"><span class="rank">1</span> Self-serve onboarding</span>
+          <span class="met">9</span><span class="met c-eff">3</span><span class="met c-conf">8</span><span class="score">8.4</span>
+        </div>
+        <div class="sc-row">
+          <span class="name"><span class="rank">2</span> Usage-based billing</span>
+          <span class="met">8</span><span class="met c-eff">6</span><span class="met c-conf">7</span><span class="score">6.1</span>
+        </div>
+        <div class="sc-row">
+          <span class="name"><span class="rank">3</span> SSO &amp; SCIM</span>
+          <span class="met">6</span><span class="met c-eff">5</span><span class="met c-conf">9</span><span class="score">5.7</span>
+        </div>
+        <div class="sc-row">
+          <span class="name"><span class="rank">4</span> Mobile companion app</span>
+          <span class="met">7</span><span class="met c-eff">9</span><span class="met c-conf">5</span><span class="score">3.9</span>
+        </div>
+        <div class="sc-foot"><span class="w">weights:</span> Impact ×3 · Effort ×2 · Confidence ×1 — edit anytime</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section class="band" id="why">
+  <div class="wrap">
+    <div class="sec-head" data-reveal style="margin-bottom:0">
+      <span class="eyebrow">Why Tarazu</span>
+      <h2>Roadmaps shouldn't run on <span class="br">whoever argues loudest.</span></h2>
+      <p>The strongest opinion in the room isn't a strategy. Tarazu replaces gut-feel debates with a shared, repeatable way to weigh options — and a record of why you chose what you chose, ready the next time someone asks.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta">
+  <div class="wrap cta-inner">
+    <h2>Bring balance to your <span class="br">roadmap.</span></h2>
+    <p>Start weighing what to build next — and stop relitigating the same decisions every quarter.</p>
+    <div class="hero-actions">
+      <a href="https://prioritize.kristenmartino.ai" class="btn btn-solid">Start prioritizing <span class="arrow">→</span></a>
+      <a href="#lifecycle" class="btn btn-ghost">How it works</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a href="#top" class="brand">
+          <svg class="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M16 5v22M9 27h14" stroke="#E2AC4D" stroke-width="2" stroke-linecap="round"/>
+            <path d="M6 9h20" stroke="#ECEAE4" stroke-width="2" stroke-linecap="round"/>
+            <path d="M6 9l-3.5 7a4 4 0 0 0 7 0L6 9zM26 9l-3.5 7a4 4 0 0 0 7 0L26 9z" stroke="#E2AC4D" stroke-width="1.6" stroke-linejoin="round" fill="rgba(226,172,77,0.10)"/>
+            <circle cx="16" cy="9" r="1.6" fill="#E2AC4D"/>
+          </svg>
+          Tarazu
+        </a>
+        <p>The balance scale for product decisions. Weigh what matters, ship what counts, and learn from every call.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h5>Product</h5>
+          <a href="#lifecycle">Lifecycle</a>
+          <a href="#features">Features</a>
+          <a href="https://prioritize.kristenmartino.ai">Start prioritizing</a>
+        </div>
+        <div class="foot-col">
+          <h5>More</h5>
+          <a href="#why">Why Tarazu</a>
+          <a href="https://prioritize.kristenmartino.ai">Open the app</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> Tarazu</span>
+      <span>Designed &amp; built by <a href="https://kristenmartino.ai">Kristen Martino</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var y=document.getElementById('year'); if(y) y.textContent=new Date().getFullYear();
+    var mb=document.getElementById('menubtn'), nl=document.getElementById('navlinks');
+    if(mb&&nl){
+      mb.addEventListener('click',function(){
+        var open=nl.classList.toggle('open');
+        mb.setAttribute('aria-expanded',open?'true':'false');
+        mb.textContent=open?'Close':'Menu';
+      });
+      nl.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){nl.classList.remove('open');mb.textContent='Menu';mb.setAttribute('aria-expanded','false');});});
+    }
+    if('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches){
+      var io=new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }});
+      },{threshold:0.15});
+      document.querySelectorAll('[data-reveal]').forEach(function(el){io.observe(el);});
+    }else{
+      document.querySelectorAll('[data-reveal]').forEach(function(el){el.classList.add('in');});
+    }
+  })();
+</script>
+</body>
+</html>
