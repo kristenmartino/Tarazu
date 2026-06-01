@@ -5,7 +5,7 @@ Phase 1 shipped the new **dark "brass" brand** on the marketing landing (`/`) an
 ([app/tokens.css](app/tokens.css)) plus the type system via `next/font`. Phase 2 brings the
 **application UI** (`/app`) and the auth components onto that same system.
 
-**Status: awaiting sign-off. Do not start until the key decision below is made.**
+**Status: ✅ IMPLEMENTED — Option A (fully dark-brass) + brass Clerk appearance, on branch `redesign/app-dark-brass`.** This doc remains as the rationale/record. The core recolor is done by re-pointing `C` (src/theme.js) at the brass tokens (the whole app is `C`-driven — no live hardcoded color pockets); type switched to Figtree/Bricolage; Clerk `appearance` swapped to brass. Remaining optional polish is listed at the end.
 
 ---
 
@@ -105,5 +105,11 @@ non-initializing widget (key present, wrong domain) or — if the key is absent 
 
 ---
 
-**Next step:** pick Option A or B (and confirm the data-viz carve-out), then I'll sequence the work
-and start with the token foundation + shared primitives.
+**Remaining polish (optional, post-implementation):**
+- Review each screen with real data (load an example backlog) — especially the **Tradeoff Map**
+  (`Matrix.jsx`) now that quadrants are Quick Wins=jade, Strategic Bets=brass, Fill-ins=neutral,
+  Avoid=coral.
+- Contrast/a11y pass on brass-on-dark interactive (hover/focus/disabled) states.
+- Consolidate JetBrains Mono onto `next/font` and drop the remaining `<link>` (clears the
+  `no-page-custom-font` lint warning) — needs the ~31 literal `'JetBrains Mono'` refs → `var(--mono)`.
+- Set the correct **Tarazu** Clerk key (see prerequisite above) so the auth widgets render.

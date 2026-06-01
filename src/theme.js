@@ -1,19 +1,25 @@
+// Tarazu "brass" palette (Phase 2 dark-brass migration), aligned to app/tokens.css.
+// NOTE: `blue` historically meant the primary/brand accent; its VALUE is now brass
+// so every existing C.blue usage recolors without a repo-wide rename. `accent`
+// (success/high-confidence) is now jade. Data-viz semantics kept: danger=coral,
+// warn=gold, purple=AI.
 export const C = {
-  bg: "#0E1116", surface: "#141922", surfaceAlt: "#1B2230",
-  border: "#273142", borderActive: "#2A3342",
-  text: "#E9EEF5", textMuted: "#8A96A8", textDim: "#5B6677",
-  accent: "#6FBE8E", accentDim: "#6FBE8E30", accentGlow: "#6FBE8E18",
+  bg: "#0E0F12", surface: "#15171C", surfaceAlt: "#1B1E25",
+  border: "#2A2D35", borderActive: "#3A3D47",
+  text: "#ECEAE4", textMuted: "#A7A294", textDim: "#706B5F",
+  accent: "#74D2A8", accentDim: "#74D2A830", accentGlow: "#74D2A818",
   danger: "#DF726A", dangerDim: "#DF726A20",
   warn: "#D4A24C", warnDim: "#D4A24C20",
-  blue: "#5E8CFF", blueDim: "#5E8CFF20",
+  blue: "#E2AC4D", blueDim: "#E2AC4D24", // primary/brand accent → brass
   purple: "#8A7DF4", purpleDim: "#8A7DF41A",
-  navBg: "#0B0E13", navBorder: "#1E2736",
+  navBg: "#0B0C0F", navBorder: "#1A1C22",
+  brass: "#E2AC4D", brassDeep: "#B8842F", jade: "#74D2A8",
 };
 
 export const QUADRANT_LABELS = [
   { label: "Quick Wins", sub: "High Impact · Low Effort", x: 0.25, y: 0.82, color: C.accent },
   { label: "Strategic Bets", sub: "High Impact · High Effort", x: 0.75, y: 0.82, color: C.blue },
-  { label: "Fill-ins", sub: "Low Impact · Low Effort", x: 0.25, y: 0.18, color: C.warn },
+  { label: "Fill-ins", sub: "Low Impact · Low Effort", x: 0.25, y: 0.18, color: C.textMuted },
   { label: "Avoid", sub: "Low Impact · High Effort", x: 0.75, y: 0.18, color: C.danger },
 ];
 

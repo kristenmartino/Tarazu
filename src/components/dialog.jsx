@@ -170,7 +170,7 @@ export function DialogHost() {
             style={{
               width: "100%", boxSizing: "border-box", padding: "10px 12px", marginBottom: 16,
               border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg, color: C.text,
-              fontSize: 13, fontFamily: "'Inter', sans-serif", outline: "none",
+              fontSize: 13, fontFamily: "var(--body)", outline: "none",
             }}
           />
         )}

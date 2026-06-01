@@ -81,7 +81,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
     requestAiScores(dims);
   }, [name, requestAiScores]);
 
-  const inputStyle = { padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg, color: C.text, outline: "none", fontFamily: "'Inter', sans-serif" };
+  const inputStyle = { padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg, color: C.text, outline: "none", fontFamily: "var(--body)" };
 
   return (
     <div style={{ padding: 20, border: `1px solid ${C.borderActive}`, borderRadius: 12, background: C.surface, animation: "slideUp 0.25s ease" }}>

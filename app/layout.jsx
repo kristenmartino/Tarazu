@@ -14,7 +14,7 @@ export const metadata = {
   description:
     "Weigh what matters. Tarazu helps product teams prioritize candidates, compare tradeoffs, and document decisions with structured frameworks and explainable AI.",
   icons: {
-    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E8CFF' stroke-width='2'%3E%3Cline x1='4' y1='6' x2='20' y2='6' stroke-linecap='round'/%3E%3Cline x1='12' y1='6' x2='12' y2='20' stroke-linecap='round'/%3E%3Ccircle cx='5' cy='6' r='2' fill='%235E8CFF' stroke='none'/%3E%3Ccircle cx='19' cy='6' r='2' fill='%235E8CFF' stroke='none'/%3E%3C/svg%3E",
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='%23E2AC4D' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M16 5v22M9 27h14'/%3E%3Cpath d='M6 9h20' stroke='%23ECEAE4'/%3E%3C/svg%3E",
   },
 };
 
@@ -30,14 +30,15 @@ export default function RootLayout({ children }) {
               "document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');",
           }}
         />
-        {/* App typography (Inter + JetBrains Mono) — the application UI still
-            references these family names directly. Consolidated in Phase 2. */}
+        {/* JetBrains Mono for the in-app monospace labels (the ~31 literal
+            `'JetBrains Mono'` refs). Inter is dropped — the app body now uses
+            Figtree via --body. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body style={{ margin: 0, background: "#0E1116" }}>
+      <body style={{ margin: 0, background: "#0E0F12" }}>
         {children}
         <Analytics />
         {process.env.NEXT_PUBLIC_GA_ID && (

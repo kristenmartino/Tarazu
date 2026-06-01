@@ -18,7 +18,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
 
   const inputStyle = {
     width: "100%", padding: "8px 10px", border: `1px solid ${C.border}`, borderRadius: 6,
-    background: C.bg, color: C.text, fontSize: 12, fontFamily: "'Inter', sans-serif",
+    background: C.bg, color: C.text, fontSize: 12, fontFamily: "var(--body)",
     resize: "vertical", outline: "none", boxSizing: "border-box",
   };
 
