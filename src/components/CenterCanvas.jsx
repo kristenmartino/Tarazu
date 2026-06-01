@@ -164,7 +164,7 @@ export const CenterCanvas = ({
               </p>
             </div>
             <div data-no-print style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => { onEditingFeature(null); onShowForm(true); }} style={{ flex: 1, padding: "10px 16px", border: `1px dashed ${C.accent}50`, borderRadius: 8, background: C.accentGlow, color: C.accent, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s" }}
+              <button onClick={() => { onEditingFeature(null); onShowForm(true); }} style={{ flex: 1, padding: "10px 16px", border: `1px dashed color-mix(in srgb, var(--success) 31%, transparent)`, borderRadius: 8, background: C.accentGlow, color: C.accent, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s" }}
                 onMouseEnter={e => e.target.style.background = C.accentDim} onMouseLeave={e => e.target.style.background = C.accentGlow}>+ Add Candidate</button>
               <button onClick={onLoadSamples} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }} title="Load example backlog">↻ Example Backlog</button>
               <button onClick={onClear} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.danger, fontSize: 11, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }} title="Clear workspace">✕ Clear Workspace</button>
@@ -172,7 +172,7 @@ export const CenterCanvas = ({
             </div>
             {scored.length > 0 && (
               <div data-no-print style={{ position: "relative" }}>
-                <input ref={searchInputRef} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} aria-label="Search candidates" placeholder="Search candidates..." style={{ width: "100%", padding: "8px 12px 8px 32px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg, color: C.text, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" }} />
+                <input ref={searchInputRef} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} aria-label="Search candidates" placeholder="Search candidates..." style={{ width: "100%", padding: "8px 12px 8px 32px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" }} />
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.textDim} strokeWidth="2" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 {searchQuery && <button onClick={() => setSearchQuery("")} style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", padding: "2px 6px", border: "none", background: "transparent", color: C.textMuted, fontSize: 12, cursor: "pointer" }}>✕</button>}
               </div>

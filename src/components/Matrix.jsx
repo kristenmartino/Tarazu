@@ -58,9 +58,9 @@ export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier
     // Quadrant labels
     ctx.font = "600 10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
     QUADRANT_LABELS.forEach(q => {
-      ctx.fillStyle = q.color + "40";
+      ctx.fillStyle = q.color + "8C";
       ctx.fillText(q.label.toUpperCase(), PAD.left + pw * q.x, PAD.top + ph * (1 - q.y) + 1);
-      ctx.font = "400 9px 'JetBrains Mono', monospace"; ctx.fillStyle = q.color + "25";
+      ctx.font = "400 9px 'JetBrains Mono', monospace"; ctx.fillStyle = q.color + "59";
       ctx.fillText(q.sub, PAD.left + pw * q.x, PAD.top + ph * (1 - q.y) + 14);
       ctx.font = "600 10px 'JetBrains Mono', monospace";
     });
