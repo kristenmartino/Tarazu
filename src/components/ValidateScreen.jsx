@@ -7,7 +7,7 @@ import {
   scoreValidation,
 } from "../validate/validationScore";
 
-const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
+const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
 const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
 const sectionLabel = { fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.1em", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase" };
 
@@ -124,14 +124,14 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
             <button onClick={() => setMode("candidate")} disabled={scored.length === 0} style={{
               padding: "6px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace",
               border: `1px solid ${mode === "candidate" ? C.accent : C.border}`,
-              background: mode === "candidate" ? C.accent + "15" : "transparent",
+              background: mode === "candidate" ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent",
               color: scored.length === 0 ? C.textDim : mode === "candidate" ? C.accent : C.textMuted,
               cursor: scored.length === 0 ? "not-allowed" : "pointer", opacity: scored.length === 0 ? 0.5 : 1,
             }}>Existing candidate</button>
             <button onClick={() => setMode("manual")} style={{
               padding: "6px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace",
               border: `1px solid ${mode === "manual" ? C.accent : C.border}`,
-              background: mode === "manual" ? C.accent + "15" : "transparent",
+              background: mode === "manual" ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent",
               color: mode === "manual" ? C.accent : C.textMuted, cursor: "pointer",
             }}>New idea</button>
           </div>
@@ -196,7 +196,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
               {signals.map((s) => {
                 const on = attached.includes(s.id);
                 return (
-                  <label key={s.id} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: 10, borderRadius: 8, cursor: "pointer", border: `1px solid ${on ? C.blue + "50" : C.border}`, background: on ? C.blueDim : "transparent" }}>
+                  <label key={s.id} style={{ display: "flex", gap: 10, alignItems: "flex-start", padding: 10, borderRadius: 8, cursor: "pointer", border: `1px solid ${on ? "color-mix(in srgb, var(--accent) 31%, transparent)" : C.border}`, background: on ? C.blueDim : "transparent" }}>
                     <input type="checkbox" checked={on} onChange={() => toggleSignal(s.id)} style={{ marginTop: 2, accentColor: C.blue }} aria-label={`Attach signal: ${s.title}`} />
                     <span style={{ flex: 1, minWidth: 0 }}>
                       <span style={{ display: "block", fontSize: 12, fontWeight: 600, color: C.text }}>{s.title}</span>
