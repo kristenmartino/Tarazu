@@ -22,9 +22,9 @@ const demoAnalysis = (scored) => {
 };
 
 const CONF_STYLES = {
-  high: { color: "#10b981", label: "HIGH" },
-  medium: { color: "#3b82f6", label: "MEDIUM" },
-  low: { color: "#f87171", label: "LOW" },
+  high: { color: C.accent, label: "HIGH" },    // jade / success
+  medium: { color: C.warn, label: "MEDIUM" },  // gold / caution
+  low: { color: C.danger, label: "LOW" },      // coral / risk
 };
 
 export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFeedback, feedbackContext, onSaveDecisionDraft, onScreenChange }) => {

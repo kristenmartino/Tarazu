@@ -86,3 +86,15 @@ html {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
+
+/* Reduced-motion: neutralize animations/transitions app-wide (a11y).
+   The landing already gates its motion behind `no-preference`; this covers the
+   app's inline animations (fadeIn/slideUp, Card reveals) and any transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
