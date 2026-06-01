@@ -23,6 +23,9 @@
   --brass: #E2AC4D;
   --brass-deep: #B8842F;
   --jade: #74D2A8;
+  --text: #ECEAE4;        /* primary text   (landing + auth shell consume these) */
+  --text-soft: #A7A294;   /* secondary text */
+  --text-faint: #706B5F;  /* tertiary text  */
 
   /* type (wired to next/font in app/layout.jsx) */
   --display: var(--font-display), "Bricolage Grotesque", sans-serif;
@@ -37,10 +40,10 @@
   --surface-overlay: #1F2128;  /* menus, popovers, modals (above raised) */
   --surface-sunken: #121316;   /* inputs, wells, code blocks */
 
-  /* text */
-  --text-primary: #ECEAE4;
-  --text-secondary: #A7A294;
-  --text-tertiary: #706B5F;
+  /* text (semantic aliases of the primitives above — single source of truth) */
+  --text-primary: var(--text);
+  --text-secondary: var(--text-soft);
+  --text-tertiary: var(--text-faint);
   --text-on-accent: #1A1406;   /* dark text on a brass fill */
   --text-accent: #E8BD6A;      /* brass as small text on dark (AA-lightened) */
 
