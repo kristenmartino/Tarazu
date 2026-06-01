@@ -1,0 +1,45 @@
+/* ============================================================
+   Tarazu brand tokens — app-level, reusable (the "brass" system)
+   ------------------------------------------------------------
+   Phase 1: consumed by the marketing landing (.tz-landing) and the
+   /sign-in + /sign-up front door.
+   Phase 2: the application UI (src/App.jsx & screens, currently using
+   the JS `C` palette in src/theme.js) migrates onto these tokens.
+
+   This file only DEFINES variables (and one harmless global:
+   smooth anchor scrolling). It sets no element styles and no resets,
+   so importing it app-wide does not change the existing app's look —
+   the app uses inline styles and does not read these vars yet.
+   ============================================================ */
+:root {
+  /* surfaces */
+  --bg: #0E0F12;
+  --bg-2: #15171C;
+  --bg-3: #1B1E25;
+
+  /* hairlines */
+  --line: rgba(236, 234, 228, 0.11);
+  --line-2: rgba(236, 234, 228, 0.055);
+
+  /* text */
+  --text: #ECEAE4;
+  --text-soft: #A7A294;
+  --text-faint: #706B5F;
+
+  /* accents */
+  --brass: #E2AC4D;       /* primary accent */
+  --brass-deep: #B8842F;  /* kept distinct from --brass */
+  --jade: #74D2A8;        /* positive / "live" — used sparingly */
+
+  /* type — wired to the next/font variables set in app/layout.jsx */
+  --display: var(--font-display), "Bricolage Grotesque", sans-serif;
+  --body: var(--font-body), "Figtree", system-ui, sans-serif;
+  --mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+
+  /* layout */
+  --maxw: 1180px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
