@@ -1,43 +1,75 @@
 /* ============================================================
-   Tarazu brand tokens — app-level, reusable (the "brass" system)
+   Tarazu design tokens — app-level (the dark "brass" system)
    ------------------------------------------------------------
-   Phase 1: consumed by the marketing landing (.tz-landing) and the
-   /sign-in + /sign-up front door.
-   Phase 2: the application UI (src/App.jsx & screens, currently using
-   the JS `C` palette in src/theme.js) migrates onto these tokens.
+   TWO LAYERS:
+   1. PRIMITIVES — raw brand values (Phase 1). Don't consume directly in
+      components; they're the palette the semantic layer maps onto.
+   2. SEMANTIC — what components consume (surfaces, text, status, focus, viz).
+      New primitives (src/components/ui/*) reference these vars directly.
+      The JS `C` (src/theme.js) mirrors these values as hex for the existing
+      inline-style components (which append alpha like `${C.x}20`, so they need
+      hex, not var() refs — see TARAZU_THEME_MIGRATION.md §2 / the 2b cleanup).
 
-   This file only DEFINES variables (and one harmless global:
-   smooth anchor scrolling). It sets no element styles and no resets,
-   so importing it app-wide does not change the existing app's look —
-   the app uses inline styles and does not read these vars yet.
+   Light theme (option B) is reservable: add a `:root[data-theme="light"]` block
+   overriding the SEMANTIC vars — components consuming them flip automatically.
    ============================================================ */
 :root {
-  /* surfaces */
+  /* ===== Primitives (Phase 1 brand palette) ===== */
   --bg: #0E0F12;
   --bg-2: #15171C;
   --bg-3: #1B1E25;
-
-  /* hairlines */
   --line: rgba(236, 234, 228, 0.11);
   --line-2: rgba(236, 234, 228, 0.055);
+  --brass: #E2AC4D;
+  --brass-deep: #B8842F;
+  --jade: #74D2A8;
 
-  /* text */
-  --text: #ECEAE4;
-  --text-soft: #A7A294;
-  --text-faint: #706B5F;
-
-  /* accents */
-  --brass: #E2AC4D;       /* primary accent */
-  --brass-deep: #B8842F;  /* kept distinct from --brass */
-  --jade: #74D2A8;        /* positive / "live" — used sparingly */
-
-  /* type — wired to the next/font variables set in app/layout.jsx */
+  /* type (wired to next/font in app/layout.jsx) */
   --display: var(--font-display), "Bricolage Grotesque", sans-serif;
   --body: var(--font-body), "Figtree", system-ui, sans-serif;
   --mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
-
-  /* layout */
   --maxw: 1180px;
+
+  /* ===== Semantic layer (Phase 2) ===== */
+  /* surfaces / elevation */
+  --surface-base: #0E0F12;     /* page background */
+  --surface-raised: #15171C;   /* cards, panels */
+  --surface-overlay: #1F2128;  /* menus, popovers, modals (above raised) */
+  --surface-sunken: #121316;   /* inputs, wells, code blocks */
+
+  /* text */
+  --text-primary: #ECEAE4;
+  --text-secondary: #A7A294;
+  --text-tertiary: #706B5F;
+  --text-on-accent: #1A1406;   /* dark text on a brass fill */
+  --text-accent: #E8BD6A;      /* brass as small text on dark (AA-lightened) */
+
+  /* borders */
+  --border: rgba(236, 234, 228, 0.11);
+  --border-strong: rgba(236, 234, 228, 0.18);
+  --border-subtle: rgba(236, 234, 228, 0.06);
+
+  /* accent (brand brass) + interaction states */
+  --accent: #E2AC4D;
+  --accent-hover: #ECBB63;
+  --accent-pressed: #C8923A;
+  --accent-subtle: rgba(226, 172, 77, 0.12);
+
+  /* status / feedback */
+  --success: #74D2A8;  --success-subtle: rgba(116, 210, 168, 0.12);
+  --warning: #E89B3C;  --warning-subtle: rgba(232, 155, 60, 0.12); /* orange ≠ brass brand */
+  --danger:  #E5675A;  --danger-subtle:  rgba(229, 103, 90, 0.12);
+  --info:    #6FB1D8;  --info-subtle:    rgba(111, 177, 216, 0.12);
+
+  /* focus ring (never rely on color alone) */
+  --ring: #E2AC4D;
+
+  /* data-viz (categorical — hold on dark) */
+  --viz-1: #E2AC4D; --viz-2: #74D2A8; --viz-3: #6FB1D8;
+  --viz-4: #B49AE0; --viz-5: #E58E6A; --viz-6: #5FBFB0;
+
+  /* radii */
+  --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;
 }
 
 html {

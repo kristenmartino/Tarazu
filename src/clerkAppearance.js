@@ -1,22 +1,22 @@
-// Shared brass Clerk appearance (dark "balance / precision-instrument" theme).
+// Shared brass Clerk appearance (dark "balance / precision-instrument" theme),
+// aligned to the §2 semantic tokens (app/tokens.css). Hand-rolled via variables +
+// elements so no new dependency (@clerk/themes) is required for a dark look.
 //
-// Phase 1: applied to the /sign-in & /sign-up front door so the first click
-//          from the new landing lands on a matching dark-brass auth surface.
-// Phase 2: apply this to the in-app ClerkWrapper too (its <UserButton/> etc.
-//          still use the older blue appearance — see TARAZU_PHASE2_THEME_MIGRATION.md).
+// Used by the /sign-in & /sign-up front door AND the in-app ClerkWrapper.
 export const clerkBrassAppearance = {
   variables: {
-    colorPrimary: "#E2AC4D",
-    colorBackground: "#15171C",
-    colorText: "#ECEAE4",
-    colorTextSecondary: "#A7A294",
-    colorInputBackground: "#0E0F12",
+    colorPrimary: "#E2AC4D",          // --accent
+    colorBackground: "#15171C",       // --surface-raised
+    colorInputBackground: "#121316",  // --surface-sunken
+    colorText: "#ECEAE4",             // --text-primary
+    colorTextSecondary: "#A7A294",    // --text-secondary
     colorInputText: "#ECEAE4",
     colorNeutral: "#ECEAE4",
-    colorDanger: "#DF726A",
-    colorSuccess: "#74D2A8",
-    borderRadius: "10px",
-    fontFamily: '"Figtree", system-ui, sans-serif',
+    colorDanger: "#E5675A",           // --danger
+    colorSuccess: "#74D2A8",          // --success
+    colorWarning: "#E89B3C",          // --warning
+    borderRadius: "8px",
+    fontFamily: "var(--body)",        // the real Figtree (next/font) via the token
   },
   elements: {
     card: { backgroundColor: "#15171C", borderColor: "rgba(236,234,228,0.11)" },
@@ -26,8 +26,14 @@ export const clerkBrassAppearance = {
     dividerLine: { backgroundColor: "rgba(236,234,228,0.11)" },
     dividerText: { color: "#706B5F" },
     formFieldLabel: { color: "#A7A294" },
-    formFieldInput: { backgroundColor: "#0E0F12", borderColor: "rgba(236,234,228,0.11)", color: "#ECEAE4" },
-    formButtonPrimary: { backgroundColor: "#E2AC4D", color: "#1a1406", fontWeight: 700 },
+    formFieldInput: { backgroundColor: "#121316", borderColor: "rgba(236,234,228,0.11)", color: "#ECEAE4" },
+    formButtonPrimary: {
+      backgroundColor: "#E2AC4D",
+      color: "#1A1406",
+      fontWeight: 700,
+      "&:hover": { backgroundColor: "#ECBB63" },   // --accent-hover
+      "&:active": { backgroundColor: "#C8923A" },   // --accent-pressed
+    },
     footerActionText: { color: "#A7A294" },
     footerActionLink: { color: "#E2AC4D" },
     // In-app <UserButton/> popover (used at /app)
