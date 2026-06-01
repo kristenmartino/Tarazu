@@ -78,3 +78,11 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* App-shell keyboard focus rings — a11y default across /app (the inline-styled
+   buttons can't express :focus-visible themselves). Scoped to .tz-app so it
+   doesn't touch the landing or auth shells. */
+.tz-app :focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
