@@ -64,7 +64,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
     <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
       <div style={{ padding: "16px 20px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 10 }}>
         <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{activeWs?.name || "Workspace"}</h2>
-        <Pill color={C.textDim} dimColor={C.border} small>HOME</Pill>
+        <Pill color={C.textMuted} dimColor={C.border} small>HOME</Pill>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
