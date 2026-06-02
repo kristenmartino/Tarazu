@@ -36,7 +36,7 @@ export const Card = ({ feature, rank, isSelected, onClick, onDelete, onEdit, max
             <ScoreBar value={feature.reach} color={C.accent} label="R" />
             <ScoreBar value={feature.impact} color={C.blue} label="I" />
             <ScoreBar value={feature.confidence} color={C.purple} label="C" />
-            <ScoreBar value={feature.effort} color={C.warn} label="E" />
+            <ScoreBar value={feature.effort} color={C.danger} label="E" />
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, flexShrink: 0 }}>

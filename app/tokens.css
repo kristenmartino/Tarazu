@@ -59,18 +59,18 @@
   --accent-subtle: rgba(226, 172, 77, 0.12);
 
   /* status / feedback */
-  --success: #74D2A8;  --success-subtle: rgba(116, 210, 168, 0.12);
+  --success: #2DD4A0;  --success-subtle: rgba(45, 212, 160, 0.12);
   --warning: #E89B3C;  --warning-subtle: rgba(232, 155, 60, 0.12); /* orange ≠ brass brand */
   --danger:  #E5675A;  --danger-subtle:  rgba(229, 103, 90, 0.12);
   --info:    #6FB1D8;  --info-subtle:    rgba(111, 177, 216, 0.12);
-  --ai:      #B49AE0;  --ai-subtle:      rgba(180, 154, 224, 0.12); /* AI / scenarios (= --viz-4); JS mirror: C.purple */
+  --ai:      #B16CF0;  --ai-subtle:      rgba(177, 108, 240, 0.12); /* AI / scenarios (= --viz-4); JS mirror: C.purple */
 
   /* focus ring (never rely on color alone) */
   --ring: #E2AC4D;
 
   /* data-viz (categorical — hold on dark) */
-  --viz-1: #E2AC4D; --viz-2: #74D2A8; --viz-3: #6FB1D8;
-  --viz-4: #B49AE0; --viz-5: #E58E6A; --viz-6: #5FBFB0;
+  --viz-1: #E2AC4D; --viz-2: #2DD4A0; --viz-3: #6FB1D8;
+  --viz-4: #B16CF0; --viz-5: #E58E6A; --viz-6: #5FBFB0;
 
   /* radii */
   --radius-sm: 6px; --radius-md: 8px; --radius-lg: 12px; --radius-xl: 16px;

@@ -15,8 +15,8 @@ export const C = {
   text: "#ECEAE4", textMuted: "#A7A294", textDim: "#706B5F",
   textOnAccent: "#1A1406", textAccent: "#E8BD6A",
   // success / high-confidence (jade)
-  accent: "#74D2A8", accentDim: "#74D2A830", accentGlow: "#74D2A818",
-  success: "#74D2A8", successDim: "#74D2A820",
+  accent: "#2DD4A0", accentDim: "#2DD4A030", accentGlow: "#2DD4A018", // jade → vivid emerald
+  success: "#2DD4A0", successDim: "#2DD4A020",
   // status
   danger: "#E5675A", dangerDim: "#E5675A20",
   warn: "#E89B3C", warnDim: "#E89B3C20",   // warning → orange (≠ brass brand)
@@ -26,7 +26,7 @@ export const C = {
   accentHover: "#ECBB63", accentPressed: "#C8923A", accentSubtle: "#E2AC4D1F", ring: "#E2AC4D",
   // AI / scenarios accent (violet) — aligned to the data-viz violet (--viz-4 / --ai).
   // Refreshed from the pre-rebrand #8A7DF4, which read blue-leaning (like the old primary).
-  purple: "#B49AE0", purpleDim: "#B49AE01A",
+  purple: "#B16CF0", purpleDim: "#B16CF01A", // vivid violet (was pastel #B49AE0)
   // chrome
   navBg: "#0B0C0F", navBorder: "#1A1C22",
   // raw brand aliases
