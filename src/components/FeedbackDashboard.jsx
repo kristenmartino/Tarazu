@@ -31,7 +31,7 @@ export const FeedbackDashboard = ({ summary }) => {
   const { scores, analyses, trend } = summary;
   const t = trendLabel(trend);
 
-  const dimColors = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.warn };
+  const dimColors = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.danger };
 
   return (
     <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface, overflow: "hidden" }}>

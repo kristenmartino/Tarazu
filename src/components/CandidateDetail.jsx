@@ -27,10 +27,10 @@ export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselec
         <ScoreBar value={feature.reach} color={C.accent} label="R" />
         <ScoreBar value={feature.impact} color={C.blue} label="I" />
         <ScoreBar value={feature.confidence} color={C.purple} label="C" />
-        <ScoreBar value={feature.effort} color={C.warn} label="E" />
+        <ScoreBar value={feature.effort} color={C.danger} label="E" />
         <div style={{ padding: "6px 0", marginTop: 2 }}>
           <span style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>
-            (<span style={{ color: C.accent }}>{feature.reach}</span> × <span style={{ color: C.blue }}>{feature.impact}</span> × <span style={{ color: C.purple }}>{feature.confidence}</span>) ÷ <span style={{ color: C.warn }}>{feature.effort}</span> = <span style={{ color: tier.color, fontWeight: 700 }}>{feature.score.toLocaleString()}</span>
+            (<span style={{ color: C.accent }}>{feature.reach}</span> × <span style={{ color: C.blue }}>{feature.impact}</span> × <span style={{ color: C.purple }}>{feature.confidence}</span>) ÷ <span style={{ color: C.danger }}>{feature.effort}</span> = <span style={{ color: tier.color, fontWeight: 700 }}>{feature.score.toLocaleString()}</span>
           </span>
         </div>
       </div>
