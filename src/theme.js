@@ -13,24 +13,24 @@ export const C = {
   border: "#2A2D35", borderActive: "#3A3D47",
   // text
   text: "#ECEAE4", textMuted: "#A7A294", textDim: "#706B5F",
-  textOnAccent: "#1A1406", textAccent: "#E8BD6A",
+  textOnAccent: "#1A1406", textAccent: "#F4C765",
   // success / high-confidence (jade)
-  accent: "#2DD4A0", accentDim: "#2DD4A030", accentGlow: "#2DD4A018", // jade → vivid emerald
-  success: "#2DD4A0", successDim: "#2DD4A020",
+  accent: "#12E0A0", accentDim: "#12E0A030", accentGlow: "#12E0A018", // pushed: vivid emerald
+  success: "#12E0A0", successDim: "#12E0A020",
   // status
-  danger: "#E5675A", dangerDim: "#E5675A20",
-  warn: "#E89B3C", warnDim: "#E89B3C20",   // warning → orange (≠ brass brand)
-  info: "#6FB1D8", infoDim: "#6FB1D820",
+  danger: "#FB5B4D", dangerDim: "#FB5B4D20",
+  warn: "#FB8B24", warnDim: "#FB8B2420",   // pushed: vivid orange
+  info: "#38BDF8", infoDim: "#38BDF820",
   // primary / brand (brass) — `blue` key kept so existing call sites recolor in place
-  blue: "#E2AC4D", blueDim: "#E2AC4D24",
-  accentHover: "#ECBB63", accentPressed: "#C8923A", accentSubtle: "#E2AC4D1F", ring: "#E2AC4D",
+  blue: "#F4B12A", blueDim: "#F4B12A24",
+  accentHover: "#FFC247", accentPressed: "#D99A1A", accentSubtle: "#F4B12A1F", ring: "#F4B12A",
   // AI / scenarios accent (violet) — aligned to the data-viz violet (--viz-4 / --ai).
   // Refreshed from the pre-rebrand #8A7DF4, which read blue-leaning (like the old primary).
-  purple: "#B16CF0", purpleDim: "#B16CF01A", // vivid violet (was pastel #B49AE0)
+  purple: "#A855F7", purpleDim: "#A855F71A", // pushed: vivid purple
   // chrome
   navBg: "#0B0C0F", navBorder: "#1A1C22",
   // raw brand aliases
-  brass: "#E2AC4D", brassDeep: "#B8842F", jade: "#74D2A8",
+  brass: "#F4B12A", brassDeep: "#C8901C", jade: "#12E0A0",
 };
 
 export const QUADRANT_LABELS = [
