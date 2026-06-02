@@ -24,8 +24,9 @@ export const C = {
   // primary / brand (brass) — `blue` key kept so existing call sites recolor in place
   blue: "#E2AC4D", blueDim: "#E2AC4D24",
   accentHover: "#ECBB63", accentPressed: "#C8923A", accentSubtle: "#E2AC4D1F", ring: "#E2AC4D",
-  // AI / scenarios (violet)
-  purple: "#8A7DF4", purpleDim: "#8A7DF41A",
+  // AI / scenarios accent (violet) — aligned to the data-viz violet (--viz-4 / --ai).
+  // Refreshed from the pre-rebrand #8A7DF4, which read blue-leaning (like the old primary).
+  purple: "#B49AE0", purpleDim: "#B49AE01A",
   // chrome
   navBg: "#0B0C0F", navBorder: "#1A1C22",
   // raw brand aliases

@@ -4,7 +4,7 @@ const toggleStyle = (active) => ({
   flex: 1, padding: "3px 6px", borderRadius: 3, border: "none", fontSize: 8, fontWeight: 600,
   cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.15s",
   background: active ? C.surface : "transparent",
-  color: active ? C.purple : C.textDim,
+  color: active ? C.purple : C.textMuted, // inactive label: --text-soft (chip rule, AA)
 });
 
 export const Slider = ({ label, value, onChange, color, icon, aiMode, aiScore, aiJustification, aiLoading, onToggleAi }) => (

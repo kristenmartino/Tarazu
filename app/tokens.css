@@ -63,6 +63,7 @@
   --warning: #E89B3C;  --warning-subtle: rgba(232, 155, 60, 0.12); /* orange ≠ brass brand */
   --danger:  #E5675A;  --danger-subtle:  rgba(229, 103, 90, 0.12);
   --info:    #6FB1D8;  --info-subtle:    rgba(111, 177, 216, 0.12);
+  --ai:      #B49AE0;  --ai-subtle:      rgba(180, 154, 224, 0.12); /* AI / scenarios (= --viz-4); JS mirror: C.purple */
 
   /* focus ring (never rely on color alone) */
   --ring: #E2AC4D;
