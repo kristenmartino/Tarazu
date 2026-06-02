@@ -24,7 +24,7 @@ const TYPE_CONFIG = {
   reverted: { color: C.purple, label: "REVERTED" },
 };
 
-const SCORE_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.warn };
+const SCORE_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.danger };
 
 const FieldDiff = ({ change }) => {
   const { field, old: oldVal, new: newVal } = change;

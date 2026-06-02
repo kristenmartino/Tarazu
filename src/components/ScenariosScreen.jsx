@@ -10,7 +10,7 @@ import { saveWsScenarios, loadWsScenarios } from "../../lib/local-storage";
 
 const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" };
 const DIMS = ["reach", "impact", "confidence", "effort"];
-const DIM_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.warn };
+const DIM_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.danger };
 
 export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSignedIn, onSelect, isMobile }) => {
   const [activeKey, setActiveKey] = useState("default");
