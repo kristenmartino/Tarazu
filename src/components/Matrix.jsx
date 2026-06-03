@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { C, QUADRANT_LABELS } from "../theme";
+import { QUADRANT_LABELS } from "../theme";
+import { useC } from "../ThemeProvider";
 import { clamp, getTier, getConfidenceColor } from "../utils";
 
 const PAD = { top: 40, right: 30, bottom: 50, left: 50 };
 
 export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier", sizeBy = "uniform", labelMode = "hover" }) => {
+  const C = useC();
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const [hovered, setHovered] = useState(null);

@@ -1,10 +1,4 @@
-import { C } from "../theme";
-
-const selectStyle = {
-  padding: "5px 8px", border: `1px solid ${C.border}`, borderRadius: 6,
-  background: C.bg, color: C.text, fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-  outline: "none", cursor: "pointer",
-};
+import { useC } from "../ThemeProvider";
 
 const PRESETS = [
   { label: "All", colorBy: "tier", sizeBy: "uniform", labelMode: "hover", owner: "all", theme: "all" },
@@ -17,7 +11,14 @@ const isPresetActive = (preset, props) =>
   preset.labelMode === props.labelMode && preset.owner === props.filterOwner &&
   preset.theme === props.filterTheme;
 
-export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSizeByChange, onLabelModeChange, filterOwner, filterTheme, owners, themes, onFilterOwnerChange, onFilterThemeChange, onApplyPreset }) => (
+export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSizeByChange, onLabelModeChange, filterOwner, filterTheme, owners, themes, onFilterOwnerChange, onFilterThemeChange, onApplyPreset }) => {
+  const C = useC();
+  const selectStyle = {
+    padding: "5px 8px", border: `1px solid ${C.border}`, borderRadius: 6,
+    background: C.bg, color: C.text, fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
+    outline: "none", cursor: "pointer",
+  };
+  return (
   <div data-no-print style={{ display: "flex", flexDirection: "column", gap: 8, padding: "8px 0" }}>
     {onApplyPreset && (
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -80,4 +81,5 @@ export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSiz
       )}
     </div>
   </div>
-);
+  );
+};

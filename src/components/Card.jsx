@@ -1,9 +1,10 @@
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { getTier, getStatusColor, relativeTime } from "../utils";
 import { Pill } from "./Pill";
 import { ScoreBar } from "./ScoreBar";
 
 export const Card = ({ feature, rank, isSelected, onClick, onDelete, onEdit, maxScore, draggable: canDrag, onDragStart, onDragOver, onDrop, isDragging, showMoveButtons, onMove, isFirst, isLast, signalCount, updatedAt }) => {
+  const C = useC();
   const { score } = feature;
   const tier = getTier(feature);
   const moveBtnStyle = (disabled) => ({ padding: "6px 10px", border: `1px solid ${C.border}`, borderRadius: 6, background: disabled ? "transparent" : C.surface, color: disabled ? C.textDim : C.warn, fontSize: 14, fontWeight: 700, cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.3 : 1, lineHeight: 1 });

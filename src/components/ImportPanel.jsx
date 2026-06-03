@@ -1,6 +1,7 @@
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 
 export const ImportPanel = ({ importData, onConfirm, onCancel }) => {
+  const C = useC();
   const { features, nameHeader, descHeader, hasRice } = importData;
   const format = nameHeader === "Summary" ? "Jira" : nameHeader === "Title" ? "Linear" : "CSV";
 

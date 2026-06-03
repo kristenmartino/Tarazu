@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import * as cloud from "../../lib/cloud-storage";
 
@@ -18,15 +18,9 @@ function formatRelativeTime(isoString) {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-const TYPE_CONFIG = {
-  created: { color: C.accent, label: "CREATED" },
-  updated: { color: C.blue, label: "UPDATED" },
-  reverted: { color: C.purple, label: "REVERTED" },
-};
-
-const SCORE_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.danger };
-
 const FieldDiff = ({ change }) => {
+  const C = useC();
+  const SCORE_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.danger };
   const { field, old: oldVal, new: newVal } = change;
   const isScore = ["reach", "impact", "confidence", "effort"].includes(field);
   const color = SCORE_COLORS[field] || C.textMuted;
@@ -58,6 +52,13 @@ const FieldDiff = ({ change }) => {
 };
 
 const RevisionRow = ({ revision, isExpanded, onToggle, onRevert, isReverting, isLatest }) => {
+  const C = useC();
+  const TYPE_CONFIG = {
+    created: { color: C.accent, label: "CREATED" },
+    updated: { color: C.blue, label: "UPDATED" },
+    reverted: { color: C.purple, label: "REVERTED" },
+  };
+  const SCORE_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.danger };
   const tc = TYPE_CONFIG[revision.change_type] || TYPE_CONFIG.updated;
   const scoreChanges = (revision.changed_fields || []).filter(
     cf => ["reach", "impact", "confidence", "effort"].includes(cf.field)
@@ -130,6 +131,7 @@ const RevisionRow = ({ revision, isExpanded, onToggle, onRevert, isReverting, is
 };
 
 export const FeatureHistory = ({ wsId, featureId, feature, onRevert }) => {
+  const C = useC();
   const [revisions, setRevisions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedRev, setExpandedRev] = useState(null);

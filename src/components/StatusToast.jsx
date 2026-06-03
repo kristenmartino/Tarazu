@@ -1,14 +1,14 @@
 import { useEffect } from "react";
-import { C } from "../theme";
-
-const COLORS = {
-  info: { bg: C.blueDim, border: C.blue, text: C.blue },
-  success: { bg: C.accentGlow, border: C.accent, text: C.accent },
-  warning: { bg: `${C.warn}15`, border: C.warn, text: C.warn },
-  error: { bg: C.dangerDim, border: C.danger, text: C.danger },
-};
+import { useC } from "../ThemeProvider";
 
 export const StatusToast = ({ message, type = "info", onDismiss, duration = 3000 }) => {
+  const C = useC();
+  const COLORS = {
+    info: { bg: C.blueDim, border: C.blue, text: C.blue },
+    success: { bg: C.accentGlow, border: C.accent, text: C.accent },
+    warning: { bg: `${C.warn}15`, border: C.warn, text: C.warn },
+    error: { bg: C.dangerDim, border: C.danger, text: C.danger },
+  };
   useEffect(() => {
     if (!message) return;
     const timer = setTimeout(onDismiss, duration);

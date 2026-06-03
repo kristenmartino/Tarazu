@@ -1,10 +1,11 @@
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { getTier, getStatusColor } from "../utils";
 import { Pill } from "./Pill";
 import { ScoreBar } from "./ScoreBar";
 import { FeatureHistory } from "./FeatureHistory";
 
 export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselect, isSignedIn, activeWsId, onRevert, signals, onScreenChange }) => {
+  const C = useC();
   const linkedSignals = (signals || []).filter(s => s.linked_candidate_id === feature.id);
   const tier = getTier(feature);
   const statusColor = feature.status ? getStatusColor(feature.status) : null;

@@ -1,10 +1,11 @@
 import { useState, useRef, useCallback } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 
 const EMPTY = { productSummary: "", targetUsers: "", strategicPriorities: "", constraints: "", assumptions: "", successMetrics: "" };
 
 export const ProductContext = ({ context = EMPTY, onChange }) => {
+  const C = useC();
   const hasContent = context.productSummary || context.targetUsers || context.strategicPriorities || context.constraints || context.assumptions || context.successMetrics;
   const [open, setOpen] = useState(!!hasContent);
   const timer = useRef(null);

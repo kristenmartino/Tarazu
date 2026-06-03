@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { AuthButton } from "./AuthButton";
 
 const NAV_ITEMS = [
@@ -33,13 +33,17 @@ const ADVISOR_ITEM = { id: "advisor", label: "Advisor", icon: (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 00-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0012 2z"/></svg>
 ), enabled: true };
 
-const Logo = () => (
+const Logo = () => {
+  const C = useC();
+  return (
   <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, ${C.brass}, ${C.brassDeep})`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 20px color-mix(in srgb, var(--accent) 19%, transparent)`, flexShrink: 0 }}>
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.bg} strokeWidth="2"><line x1="4" y1="6" x2="20" y2="6" strokeLinecap="round"/><line x1="12" y1="6" x2="12" y2="20" strokeLinecap="round"/><circle cx="5" cy="6" r="2" fill={C.bg} stroke="none"/><circle cx="19" cy="6" r="2" fill={C.bg} stroke="none"/></svg>
   </div>
-);
+  );
+};
 
 export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, onSwitchWorkspace, onAddWorkspace, onDeleteWorkspace, onRenameWorkspace, isMobile, isSignedIn, advisorInNav }) => {
+  const C = useC();
   const [wsDropdownOpen, setWsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 

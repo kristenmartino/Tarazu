@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 
 const confLevel = (c) => c >= 70 ? "high" : c >= 50 ? "medium" : "low";
@@ -21,13 +21,13 @@ const demoAnalysis = (scored) => {
   };
 };
 
-const CONF_STYLES = {
-  high: { color: C.accent, label: "HIGH" },    // jade / success
-  medium: { color: C.warn, label: "MEDIUM" },  // gold / caution
-  low: { color: C.danger, label: "LOW" },      // coral / risk
-};
-
 export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFeedback, feedbackContext, onSaveDecisionDraft, onScreenChange }) => {
+  const C = useC();
+  const CONF_STYLES = {
+    high: { color: C.accent, label: "HIGH" },    // jade / success
+    medium: { color: C.warn, label: "MEDIUM" },  // gold / caution
+    low: { color: C.danger, label: "LOW" },      // coral / risk
+  };
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

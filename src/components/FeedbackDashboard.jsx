@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 
 const MIN_EVENTS = 3;
 
-const DimBar = ({ label, rate, avgDrift, total, color }) => (
+const DimBar = ({ label, rate, avgDrift, total, color }) => {
+  const C = useC();
+  return (
   <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
     <span style={{ width: 80, fontSize: 10, fontWeight: 600, color: C.textMuted, fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase" }}>{label}</span>
     <div style={{ flex: 1, height: 6, borderRadius: 3, background: C.border, overflow: "hidden" }}>
@@ -14,16 +16,17 @@ const DimBar = ({ label, rate, avgDrift, total, color }) => (
       {avgDrift >= 0 ? "+" : ""}{avgDrift} avg
     </span>
   </div>
-);
-
-const trendLabel = (trend) => {
-  if (trend === "improving") return { text: "AI is improving", color: C.accent };
-  if (trend === "declining") return { text: "Accuracy declining", color: C.danger };
-  if (trend === "stable") return { text: "Well calibrated", color: C.blue };
-  return { text: "Collecting data...", color: C.textDim };
+  );
 };
 
 export const FeedbackDashboard = ({ summary }) => {
+  const C = useC();
+  const trendLabel = (trend) => {
+    if (trend === "improving") return { text: "AI is improving", color: C.accent };
+    if (trend === "declining") return { text: "Accuracy declining", color: C.danger };
+    if (trend === "stable") return { text: "Well calibrated", color: C.blue };
+    return { text: "Collecting data...", color: C.textDim };
+  };
   const [expanded, setExpanded] = useState(false);
 
   if (!summary || summary.scores.total < MIN_EVENTS) return null;

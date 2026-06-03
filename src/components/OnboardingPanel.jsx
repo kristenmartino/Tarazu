@@ -1,33 +1,34 @@
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 
-const steps = [
-  {
-    num: 1,
-    title: "Add your first candidate",
-    desc: "Each candidate is scored with RICE: Reach, Impact, Confidence, and Effort. The framework ranks them automatically.",
-    color: C.accent,
-    action: "add",
-    actionLabel: "+ Add Candidate",
-  },
-  {
-    num: 2,
-    title: "Or start with examples",
-    desc: "Load a sample backlog to explore how scoring, ranking, and the tradeoff map work together.",
-    color: C.blue,
-    action: "samples",
-    actionLabel: "Load Example Backlog",
-  },
-  {
-    num: 3,
-    title: "Then explore the toolkit",
-    desc: "Switch to the Map view for visual tradeoff analysis, use the AI Decision Advisor for recommendations, and record decisions for organizational memory.",
-    color: C.purple,
-    action: null,
-    actionLabel: null,
-  },
-];
-
-export const OnboardingPanel = ({ onAddCandidate, onLoadSamples }) => (
+export const OnboardingPanel = ({ onAddCandidate, onLoadSamples }) => {
+  const C = useC();
+  const steps = [
+    {
+      num: 1,
+      title: "Add your first candidate",
+      desc: "Each candidate is scored with RICE: Reach, Impact, Confidence, and Effort. The framework ranks them automatically.",
+      color: C.accent,
+      action: "add",
+      actionLabel: "+ Add Candidate",
+    },
+    {
+      num: 2,
+      title: "Or start with examples",
+      desc: "Load a sample backlog to explore how scoring, ranking, and the tradeoff map work together.",
+      color: C.blue,
+      action: "samples",
+      actionLabel: "Load Example Backlog",
+    },
+    {
+      num: 3,
+      title: "Then explore the toolkit",
+      desc: "Switch to the Map view for visual tradeoff analysis, use the AI Decision Advisor for recommendations, and record decisions for organizational memory.",
+      color: C.purple,
+      action: null,
+      actionLabel: null,
+    },
+  ];
+  return (
   <div style={{ padding: "24px 0", display: "flex", flexDirection: "column", gap: 16, animation: "fadeIn 0.3s ease" }}>
     <div style={{ textAlign: "center", marginBottom: 8 }}>
       <div style={{ width: 48, height: 48, borderRadius: 14, background: `linear-gradient(135deg, ${C.blue}, ${C.purple})`, display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 12, boxShadow: `0 0 24px ${C.blue}25` }}>
@@ -55,4 +56,5 @@ export const OnboardingPanel = ({ onAddCandidate, onLoadSamples }) => (
       <span style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>Press <strong style={{ color: C.textMuted }}>?</strong> anytime for keyboard shortcuts</span>
     </div>
   </div>
-);
+  );
+};

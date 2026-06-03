@@ -1,7 +1,8 @@
 import { SignInButton, UserButton, useUser } from "@clerk/nextjs";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 
 const ClerkAuth = () => {
+  const C = useC();
   const { isSignedIn, isLoaded } = useUser();
 
   if (!isLoaded) return null;

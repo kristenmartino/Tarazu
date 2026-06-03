@@ -1,11 +1,6 @@
 import { useState } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
-
-const sectionStyle = { padding: 20, border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface };
-const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 };
-const selectStyle = { padding: "8px 12px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", outline: "none", cursor: "pointer", width: "100%" };
-const inputStyle = { ...selectStyle, cursor: "text" };
 
 export const SettingsScreen = ({
   activeWs, onRenameWorkspace, onClear, onDeleteWorkspace,
@@ -14,6 +9,11 @@ export const SettingsScreen = ({
   onMapColorByChange, onMapSizeByChange, onMapLabelModeChange,
   isSignedIn, features,
 }) => {
+  const C = useC();
+  const sectionStyle = { padding: 20, border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface };
+  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 };
+  const selectStyle = { padding: "8px 12px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", outline: "none", cursor: "pointer", width: "100%" };
+  const inputStyle = { ...selectStyle, cursor: "text" };
   const [wsName, setWsName] = useState(activeWs?.name || "");
   const [confirmClear, setConfirmClear] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);

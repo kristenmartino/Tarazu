@@ -1,25 +1,25 @@
 import { useState, useRef } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { parseCSV } from "../utils";
 
-const SIGNAL_TYPES = {
-  note: { label: "Research", color: C.blue },
-  feedback: { label: "Feedback", color: C.accent },
-  support: { label: "Support", color: C.warn },
-  import: { label: "Import", color: C.textMuted },
-  research: { label: "Research", color: C.purple },
-};
-const TYPE_KEYS = Object.keys(SIGNAL_TYPES);
 const CONFIDENCE_OPTIONS = ["", "increases", "decreases", "neutral"];
-
-const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
-const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
-const selectStyle = { ...inputStyle, cursor: "pointer" };
 
 const EMPTY_FORM = { type: "note", title: "", body: "", source: "", tags: "", linked_candidate_id: null, linked_candidate_name: "", theme: "", confidence_impact: "" };
 
 export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onImport }) => {
+  const C = useC();
+  const SIGNAL_TYPES = {
+    note: { label: "Research", color: C.blue },
+    feedback: { label: "Feedback", color: C.accent },
+    support: { label: "Support", color: C.warn },
+    import: { label: "Import", color: C.textMuted },
+    research: { label: "Research", color: C.purple },
+  };
+  const TYPE_KEYS = Object.keys(SIGNAL_TYPES);
+  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
+  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
+  const selectStyle = { ...inputStyle, cursor: "pointer" };
   const [showForm, setShowForm] = useState(false);
   const [editingSignal, setEditingSignal] = useState(null);
   const [filterType, setFilterType] = useState("all");

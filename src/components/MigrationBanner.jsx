@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 
 export const MigrationBanner = ({ onConfirm, onDismiss }) => {
+  const C = useC();
   const [migrating, setMigrating] = useState(false);
 
   const handleConfirm = async () => {
