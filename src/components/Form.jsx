@@ -117,10 +117,10 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
         </button>
         {aiError && <p style={{ fontSize: 10, color: C.danger, margin: 0, fontFamily: "'JetBrains Mono', monospace" }}>{aiError}</p>}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-          <Slider label="Reach" value={r} onChange={setR} color={C.accent} icon="📡"
+          <Slider label="Reach" value={r} onChange={setR} color={C.reach} icon="📡"
             aiMode={aiModes.reach} aiScore={aiResults.reach?.score} aiJustification={aiResults.reach?.justification}
             aiLoading={aiLoading && aiModes.reach && !aiResults.reach} onToggleAi={() => toggleDimension("reach")} />
-          <Slider label="Impact" value={i} onChange={setI} color={C.blue} icon="💥"
+          <Slider label="Impact" value={i} onChange={setI} color={C.impact} icon="💥"
             aiMode={aiModes.impact} aiScore={aiResults.impact?.score} aiJustification={aiResults.impact?.justification}
             aiLoading={aiLoading && aiModes.impact && !aiResults.impact} onToggleAi={() => toggleDimension("impact")} />
           <Slider label="Confidence" value={c} onChange={setC} color={C.purple} icon="🎯"

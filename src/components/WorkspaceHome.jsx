@@ -53,7 +53,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
     [...decisions].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 3),
   [decisions]);
 
-  const topTier = topCandidate ? getTier(topCandidate) : null;
+  const topTier = topCandidate ? getTier(topCandidate, C) : null;
 
   const statusColor = (s) => {
     switch (s) {

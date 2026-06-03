@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useC } from "../ThemeProvider";
+import { useC, useTheme } from "../ThemeProvider";
 import { Pill } from "./Pill";
 
 export const SettingsScreen = ({
@@ -10,6 +10,7 @@ export const SettingsScreen = ({
   isSignedIn, features,
 }) => {
   const C = useC();
+  const { themeName, setThemeName, themes } = useTheme();
   const sectionStyle = { padding: 20, border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface };
   const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 };
   const selectStyle = { padding: "8px 12px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", outline: "none", cursor: "pointer", width: "100%" };
@@ -31,6 +32,40 @@ export const SettingsScreen = ({
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {/* Appearance */}
+        <div style={sectionStyle}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: C.text, display: "block", marginBottom: 16 }}>Appearance</span>
+          <div>
+            <div style={labelStyle}>THEME</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {themes.map(({ id, label }) => {
+                const active = themeName === id;
+                return (
+                  <button
+                    key={id}
+                    onClick={() => setThemeName(id)}
+                    aria-pressed={active}
+                    style={{
+                      padding: "8px 14px",
+                      border: `1px solid ${active ? C.accent : C.border}`,
+                      borderRadius: 8,
+                      background: active ? C.accentSubtle : "transparent",
+                      color: active ? C.accent : C.textMuted,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontFamily: "'JetBrains Mono', monospace",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
         {/* Workspace */}
         <div style={sectionStyle}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>

@@ -20,7 +20,7 @@ function formatRelativeTime(isoString) {
 
 const FieldDiff = ({ change }) => {
   const C = useC();
-  const SCORE_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.danger };
+  const SCORE_COLORS = { reach: C.reach, impact: C.impact, confidence: C.purple, effort: C.danger };
   const { field, old: oldVal, new: newVal } = change;
   const isScore = ["reach", "impact", "confidence", "effort"].includes(field);
   const color = SCORE_COLORS[field] || C.textMuted;
@@ -58,7 +58,7 @@ const RevisionRow = ({ revision, isExpanded, onToggle, onRevert, isReverting, is
     updated: { color: C.blue, label: "UPDATED" },
     reverted: { color: C.purple, label: "REVERTED" },
   };
-  const SCORE_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.danger };
+  const SCORE_COLORS = { reach: C.reach, impact: C.impact, confidence: C.purple, effort: C.danger };
   const tc = TYPE_CONFIG[revision.change_type] || TYPE_CONFIG.updated;
   const scoreChanges = (revision.changed_fields || []).filter(
     cf => ["reach", "impact", "confidence", "effort"].includes(cf.field)

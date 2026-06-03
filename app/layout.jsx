@@ -38,7 +38,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body style={{ margin: 0, background: "#0E0F12" }}>
+      <body style={{ margin: 0, background: "var(--bg)" }}>
         {children}
         <Analytics />
         {process.env.NEXT_PUBLIC_GA_ID && (

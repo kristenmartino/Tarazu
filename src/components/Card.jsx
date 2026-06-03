@@ -6,7 +6,7 @@ import { ScoreBar } from "./ScoreBar";
 export const Card = ({ feature, rank, isSelected, onClick, onDelete, onEdit, maxScore, draggable: canDrag, onDragStart, onDragOver, onDrop, isDragging, showMoveButtons, onMove, isFirst, isLast, signalCount, updatedAt }) => {
   const C = useC();
   const { score } = feature;
-  const tier = getTier(feature);
+  const tier = getTier(feature, C);
   const moveBtnStyle = (disabled) => ({ padding: "6px 10px", border: `1px solid ${C.border}`, borderRadius: 6, background: disabled ? "transparent" : C.surface, color: disabled ? C.textDim : C.warn, fontSize: 14, fontWeight: 700, cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.3 : 1, lineHeight: 1 });
 
   return (
@@ -28,14 +28,14 @@ export const Card = ({ feature, rank, isSelected, onClick, onDelete, onEdit, max
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8, alignItems: "center" }}>
               {feature.owner && <span style={{ fontSize: 9, color: C.textMuted, fontFamily: "'JetBrains Mono', monospace", padding: "1px 6px", background: C.border, borderRadius: 4 }}>{feature.owner}</span>}
               {feature.theme && <span style={{ fontSize: 9, color: C.purple, fontFamily: "'JetBrains Mono', monospace", padding: "1px 6px", background: C.purpleDim, borderRadius: 4 }}>{feature.theme}</span>}
-              {feature.status && feature.status !== "backlog" && <Pill color={getStatusColor(feature.status)} dimColor={getStatusColor(feature.status) + "20"} small>{feature.status.toUpperCase()}</Pill>}
+              {feature.status && feature.status !== "backlog" && <Pill color={getStatusColor(feature.status, C)} dimColor={getStatusColor(feature.status, C) + "20"} small>{feature.status.toUpperCase()}</Pill>}
               {signalCount > 0 && <span style={{ fontSize: 9, color: C.blue, fontFamily: "'JetBrains Mono', monospace", padding: "1px 6px", background: C.blueDim, borderRadius: 4 }}>{signalCount} signal{signalCount !== 1 ? "s" : ""}</span>}
               {updatedAt && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", marginLeft: "auto" }}>{relativeTime(updatedAt)}</span>}
             </div>
           )}
           <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            <ScoreBar value={feature.reach} color={C.accent} label="R" />
-            <ScoreBar value={feature.impact} color={C.blue} label="I" />
+            <ScoreBar value={feature.reach} color={C.reach} label="R" />
+            <ScoreBar value={feature.impact} color={C.impact} label="I" />
             <ScoreBar value={feature.confidence} color={C.purple} label="C" />
             <ScoreBar value={feature.effort} color={C.danger} label="E" />
           </div>

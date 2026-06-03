@@ -3,27 +3,27 @@ import { C } from "./theme";
 export const rice = (f) => Math.round((f.reach * f.impact * f.confidence) / Math.max(f.effort, 1));
 export const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
 
-export const getTier = (f) => {
-  if (f.effort <= 50 && f.impact > 50) return { color: C.accent, label: "QUICK WIN" };
-  if (f.effort > 50 && f.impact > 50) return { color: C.blue, label: "STRATEGIC" };
-  if (f.effort <= 50 && f.impact <= 50) return { color: C.warn, label: "FILL-IN" };
-  return { color: C.danger, label: "AVOID" };
+export const getTier = (f, theme = C) => {
+  if (f.effort <= 50 && f.impact > 50) return { color: theme.accent, label: "QUICK WIN" };
+  if (f.effort > 50 && f.impact > 50) return { color: theme.blue, label: "STRATEGIC" };
+  if (f.effort <= 50 && f.impact <= 50) return { color: theme.warn, label: "FILL-IN" };
+  return { color: theme.danger, label: "AVOID" };
 };
 
-export const getConfidenceColor = (confidence) => {
-  if (confidence >= 75) return C.accent;
-  if (confidence >= 50) return C.blue;
-  if (confidence >= 25) return C.warn;
-  return C.danger;
+export const getConfidenceColor = (confidence, theme = C) => {
+  if (confidence >= 75) return theme.accent;
+  if (confidence >= 50) return theme.blue;
+  if (confidence >= 25) return theme.warn;
+  return theme.danger;
 };
 
-export const getStatusColor = (status) => {
+export const getStatusColor = (status, theme = C) => {
   switch (status) {
-    case "active": return C.accent;
-    case "review": return C.blue;
-    case "blocked": return C.danger;
-    case "done": return C.textDim;
-    default: return C.textMuted;
+    case "active": return theme.accent;
+    case "review": return theme.blue;
+    case "blocked": return theme.danger;
+    case "done": return theme.textDim;
+    default: return theme.textMuted;
   }
 };
 

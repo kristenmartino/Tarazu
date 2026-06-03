@@ -13,7 +13,7 @@ const DIMS = ["reach", "impact", "confidence", "effort"];
 export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSignedIn, onSelect, isMobile }) => {
   const C = useC();
   const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" };
-  const DIM_COLORS = { reach: C.accent, impact: C.blue, confidence: C.purple, effort: C.danger };
+  const DIM_COLORS = { reach: C.reach, impact: C.impact, confidence: C.purple, effort: C.danger };
   const [activeKey, setActiveKey] = useState("default");
   const [weights, setWeights] = useState({ reach: 1.0, impact: 1.0, confidence: 1.0, effort: 1.0 });
   const [customScenarios, setCustomScenarios] = useState([]);
