@@ -736,7 +736,7 @@ export default function App() {
           <div style={{ width: 28, height: 28, borderRadius: 8, background: `linear-gradient(135deg, ${C.brass}, ${C.brassDeep})`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 16px ${C.brass}25` }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.bg} strokeWidth="2"><line x1="4" y1="6" x2="20" y2="6" strokeLinecap="round"/><line x1="12" y1="6" x2="12" y2="20" strokeLinecap="round"/><circle cx="5" cy="6" r="2" fill={C.bg} stroke="none"/><circle cx="19" cy="6" r="2" fill={C.bg} stroke="none"/></svg>
           </div>
-          <h1 style={{ fontSize: 17, fontWeight: 800, margin: 0, letterSpacing: "-0.03em", fontFamily: "var(--display)", background: `linear-gradient(135deg, ${C.text}, ${C.textMuted})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Tarazu</h1>
+          <h1 style={{ fontSize: 17, fontWeight: 800, margin: 0, letterSpacing: "-0.03em", fontFamily: "var(--display)", color: C.text }}>Tarazu</h1>
           {!isMobile && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.06em" }}>DECISION INTELLIGENCE</span>}
         </div>
         {isMobile && (
