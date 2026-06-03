@@ -16,6 +16,7 @@ import { ShortcutsOverlay } from "./components/ShortcutsOverlay";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { StatusToast } from "./components/StatusToast";
 import { OfflineBanner } from "./components/OfflineBanner";
+import { ThemeMenu } from "./components/ThemeMenu";
 import { dialog, DialogHost } from "./components/dialog";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import * as feedbackLocal from "../lib/feedback-storage";
@@ -739,7 +740,9 @@ export default function App() {
           <h1 style={{ fontSize: 17, fontWeight: 800, margin: 0, letterSpacing: "-0.03em", fontFamily: "var(--display)", color: C.text }}>Tarazu</h1>
           {!isMobile && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.06em" }}>DECISION INTELLIGENCE</span>}
         </div>
-        {isMobile && (
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <ThemeMenu compact={isMobile} />
+          {isMobile && (
           <div ref={mobileWsRef} style={{ position: "relative" }}>
             <button onClick={() => setMobileWsOpen(!mobileWsOpen)} style={{
               padding: "4px 10px", border: `1px solid ${C.border}`, borderRadius: 6,
@@ -779,6 +782,7 @@ export default function App() {
             )}
           </div>
         )}
+        </div>
       </header>
 
       {isSignedIn && <OfflineBanner isOnline={isOnline} isSyncing={pendingSync && isOnline} />}
