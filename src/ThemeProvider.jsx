@@ -65,6 +65,9 @@ export function useTheme() {
 }
 
 // Just the active palette — the drop-in replacement for `import { C }`.
+// Falls back to the default theme's palette if no provider is mounted, so
+// components never hard-crash in isolation (unit tests, storybook, etc.).
 export function useC() {
-  return useTheme().C;
+  const ctx = useContext(ThemeContext);
+  return ctx ? ctx.C : THEMES[DEFAULT_THEME].palette;
 }
