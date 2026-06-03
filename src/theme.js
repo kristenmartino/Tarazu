@@ -15,10 +15,11 @@
 //   purple           Confidence bar + AI / scenarios (violet-magenta)
 //   reach / impact   RICE Reach (blue) + Impact (teal) — coordinated, and
 //                    decoupled from accent/blue so brass stays brand-only.
-// RICE dimensions map: Reach=reach · Impact=impact · Confidence=purple · Effort=danger.
+// RICE dimensions map: Reach=reach · Impact=impact · Confidence=confidence · Effort=danger.
+// (`confidence` is its own key so the CVD theme can make it green while AI stays purple.)
 
-// ── Balanced (dark · default) ──────────────────────────────────────────
-const balanced = {
+// ── Onyx (dark · default) ──────────────────────────────────────────────
+const onyx = {
   bg: "#0E0F12", surface: "#15171C", surfaceAlt: "#1B1E25",
   surfaceSunken: "#121316", overlay: "#1F2128",
   border: "#2A2D35", borderActive: "#3A3D47",
@@ -34,7 +35,7 @@ const balanced = {
   purple: "#B274D6", purpleDim: "#B274D61A",       // Confidence + AI (magenta-violet)
   navBg: "#0B0C0F", navBorder: "#1A1C22",
   brass: "#E2AC4D", brassDeep: "#B8842F", jade: "#74D2A8",
-  reach: "#5AA0D6", impact: "#34C28C",             // RICE Reach (blue) + Impact (teal)
+  reach: "#5AA0D6", impact: "#34C28C", confidence: "#B274D6", // RICE Reach/Impact/Confidence
 };
 
 // ── Warm Light (light · on-brand parchment) ────────────────────────────
@@ -54,7 +55,7 @@ const warmLight = {
   purple: "#7E55B0", purpleDim: "#7E55B016",       // Confidence + AI (deep violet)
   navBg: "#EDE3D0", navBorder: "#DCD0B8",
   brass: "#B07E18", brassDeep: "#8A6410", jade: "#0E8A5C",
-  reach: "#3A78B0", impact: "#1F9E72",             // RICE (deep for light contrast)
+  reach: "#3A78B0", impact: "#1F9E72", confidence: "#7E55B0", // RICE (deep for light)
 };
 
 // ── Colorblind-safe (dark · Okabe-Ito) ─────────────────────────────────
@@ -66,7 +67,7 @@ const colorblind = {
   textOnAccent: "#1A1406", textAccent: "#E8BD6A",
   accent: "#1FBF93", accentDim: "#1FBF9330", accentGlow: "#1FBF9318",   // Okabe bluish-green
   success: "#1FBF93", successDim: "#1FBF9320",
-  danger: "#D55E00", dangerDim: "#D55E0026",       // Effort = vermillion
+  danger: "#DD5A2E", dangerDim: "#DD5A2E26",       // Effort = red-orange (Goldenrod)
   warn: "#E69F00", warnDim: "#E69F0026",           // orange
   info: "#56B4E9", infoDim: "#56B4E920",           // sky
   blue: "#E2AC4D", blueDim: "#E2AC4D24",           // BRAND brass
@@ -74,11 +75,11 @@ const colorblind = {
   purple: "#CC79A7", purpleDim: "#CC79A71F",       // Confidence + AI = reddish-purple
   navBg: "#0B0C0F", navBorder: "#1A1C22",
   brass: "#E2AC4D", brassDeep: "#B8842F", jade: "#1FBF93",
-  reach: "#56B4E9", impact: "#1FBF93",             // RICE sky-blue + bluish-green
+  reach: "#E8C23A", impact: "#4F9DE0", confidence: "#2FB389", // RICE Goldenrod: yellow/blue/green
 };
 
 // CSS-var blocks pushed onto :root per theme (landing / auth / tzui primitives).
-const balancedVars = {
+const onyxVars = {
   "--bg": "#0E0F12", "--bg-2": "#15171C", "--bg-3": "#1B1E25",
   "--line": "rgba(236, 234, 228, 0.11)", "--line-2": "rgba(236, 234, 228, 0.055)",
   "--brass": "#E2AC4D", "--brass-deep": "#B8842F", "--jade": "#74D2A8",
@@ -134,22 +135,22 @@ const colorblindVars = {
   "--accent-subtle": "rgba(226, 172, 77, 0.12)",
   "--success": "#1FBF93", "--success-subtle": "rgba(31, 191, 147, 0.12)",
   "--warning": "#E69F00", "--warning-subtle": "rgba(230, 159, 0, 0.12)",
-  "--danger": "#D55E00", "--danger-subtle": "rgba(213, 94, 0, 0.12)",
+  "--danger": "#DD5A2E", "--danger-subtle": "rgba(221, 90, 46, 0.12)",
   "--info": "#56B4E9", "--info-subtle": "rgba(86, 180, 233, 0.12)",
   "--ai": "#CC79A7", "--ai-subtle": "rgba(204, 121, 167, 0.12)",
   "--ring": "#E2AC4D",
-  "--viz-1": "#56B4E9", "--viz-2": "#1FBF93", "--viz-3": "#CC79A7",
-  "--viz-4": "#D55E00", "--viz-5": "#E2AC4D", "--viz-6": "#E69F00",
+  "--viz-1": "#E8C23A", "--viz-2": "#4F9DE0", "--viz-3": "#2FB389",
+  "--viz-4": "#DD5A2E", "--viz-5": "#E2AC4D", "--viz-6": "#CC79A7",
 };
 
 // Theme registry. Add a theme = add an entry; the picker + useC() pick it up.
 export const THEMES = {
-  balanced: { label: "Balanced", palette: balanced, vars: balancedVars },
+  onyx: { label: "Onyx", palette: onyx, vars: onyxVars },
   "warm-light": { label: "Warm Light", palette: warmLight, vars: warmLightVars },
   colorblind: { label: "Colorblind-safe", palette: colorblind, vars: colorblindVars },
 };
 
-export const DEFAULT_THEME = "balanced";
+export const DEFAULT_THEME = "onyx";
 
 // Back-compat: modules still doing `import { C }` get the default palette.
 // Migrated components use `const C = useC()` to track the live theme.

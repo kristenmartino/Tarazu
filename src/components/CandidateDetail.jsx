@@ -27,11 +27,11 @@ export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselec
         <span style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>RICE SCORES</span>
         <ScoreBar value={feature.reach} color={C.reach} label="R" />
         <ScoreBar value={feature.impact} color={C.impact} label="I" />
-        <ScoreBar value={feature.confidence} color={C.purple} label="C" />
+        <ScoreBar value={feature.confidence} color={C.confidence} label="C" />
         <ScoreBar value={feature.effort} color={C.danger} label="E" />
         <div style={{ padding: "6px 0", marginTop: 2 }}>
           <span style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>
-            (<span style={{ color: C.reach }}>{feature.reach}</span> × <span style={{ color: C.impact }}>{feature.impact}</span> × <span style={{ color: C.purple }}>{feature.confidence}</span>) ÷ <span style={{ color: C.danger }}>{feature.effort}</span> = <span style={{ color: tier.color, fontWeight: 700 }}>{feature.score.toLocaleString()}</span>
+            (<span style={{ color: C.reach }}>{feature.reach}</span> × <span style={{ color: C.impact }}>{feature.impact}</span> × <span style={{ color: C.confidence }}>{feature.confidence}</span>) ÷ <span style={{ color: C.danger }}>{feature.effort}</span> = <span style={{ color: tier.color, fontWeight: 700 }}>{feature.score.toLocaleString()}</span>
           </span>
         </div>
       </div>

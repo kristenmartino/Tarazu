@@ -123,7 +123,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           <Slider label="Impact" value={i} onChange={setI} color={C.impact} icon="💥"
             aiMode={aiModes.impact} aiScore={aiResults.impact?.score} aiJustification={aiResults.impact?.justification}
             aiLoading={aiLoading && aiModes.impact && !aiResults.impact} onToggleAi={() => toggleDimension("impact")} />
-          <Slider label="Confidence" value={c} onChange={setC} color={C.purple} icon="🎯"
+          <Slider label="Confidence" value={c} onChange={setC} color={C.confidence} icon="🎯"
             aiMode={aiModes.confidence} aiScore={aiResults.confidence?.score} aiJustification={aiResults.confidence?.justification}
             aiLoading={aiLoading && aiModes.confidence && !aiResults.confidence} onToggleAi={() => toggleDimension("confidence")} />
           <Slider label="Effort" value={e} onChange={setE} color={C.danger} icon="⏱️"
