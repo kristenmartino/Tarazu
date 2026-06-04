@@ -1,29 +1,29 @@
-import { C } from "./theme";
-
+// Color helpers take the live palette (`theme`) from the caller's useC() — no
+// static default, so a screen can never silently render the Onyx palette.
 export const rice = (f) => Math.round((f.reach * f.impact * f.confidence) / Math.max(f.effort, 1));
 export const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
 
-export const getTier = (f) => {
-  if (f.effort <= 50 && f.impact > 50) return { color: C.accent, label: "QUICK WIN" };
-  if (f.effort > 50 && f.impact > 50) return { color: C.blue, label: "STRATEGIC" };
-  if (f.effort <= 50 && f.impact <= 50) return { color: C.warn, label: "FILL-IN" };
-  return { color: C.danger, label: "AVOID" };
+export const getTier = (f, theme) => {
+  if (f.effort <= 50 && f.impact > 50) return { color: theme.accent, label: "QUICK WIN" };
+  if (f.effort > 50 && f.impact > 50) return { color: theme.blue, label: "STRATEGIC" };
+  if (f.effort <= 50 && f.impact <= 50) return { color: theme.warn, label: "FILL-IN" };
+  return { color: theme.danger, label: "AVOID" };
 };
 
-export const getConfidenceColor = (confidence) => {
-  if (confidence >= 75) return C.accent;
-  if (confidence >= 50) return C.blue;
-  if (confidence >= 25) return C.warn;
-  return C.danger;
+export const getConfidenceColor = (confidence, theme) => {
+  if (confidence >= 75) return theme.accent;
+  if (confidence >= 50) return theme.blue;
+  if (confidence >= 25) return theme.warn;
+  return theme.danger;
 };
 
-export const getStatusColor = (status) => {
+export const getStatusColor = (status, theme) => {
   switch (status) {
-    case "active": return C.accent;
-    case "review": return C.blue;
-    case "blocked": return C.danger;
-    case "done": return C.textDim;
-    default: return C.textMuted;
+    case "active": return theme.accent;
+    case "review": return theme.blue;
+    case "blocked": return theme.danger;
+    case "done": return theme.textDim;
+    default: return theme.textMuted;
   }
 };
 
@@ -45,13 +45,32 @@ export const relativeTime = (dateStr) => {
 
 const csvSafe = (str) => { const s = (str || "").replace(/"/g, '""'); return /^[=+\-@\t\r]/.test(s) ? `"'${s}"` : `"${s}"`; };
 
-export const exportCSV = (ordered, wsName) => {
+export const exportCSV = (ordered, wsName, theme) => {
   const header = "Rank,Name,Description,Reach,Impact,Confidence,Effort,RICE Score,Tier\n";
-  const rows = ordered.map((f, i) => `${i + 1},${csvSafe(f.name)},${csvSafe(f.description)},${f.reach},${f.impact},${f.confidence},${f.effort},${f.score},${csvSafe(getTier(f).label)}`).join("\n");
+  const rows = ordered.map((f, i) => `${i + 1},${csvSafe(f.name)},${csvSafe(f.description)},${f.reach},${f.impact},${f.confidence},${f.effort},${f.score},${csvSafe(getTier(f, theme).label)}`).join("\n");
   const blob = new Blob([header + rows], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url; a.download = `${(wsName || "backlog").replace(/\s+/g, "-").toLowerCase()}.csv`; a.click();
+  URL.revokeObjectURL(url);
+};
+
+// Sample CSV matching the columns SignalsScreen's importer recognizes (title/body/source/type/theme/tags).
+// The `type` column routes each row to a category: note, feedback, support, or research.
+// Anything blank or unrecognized falls back to "note".
+export const downloadSignalsTemplate = () => {
+  const header = "title,body,source,type,theme,tags\n";
+  const examples = [
+    ["Users want bulk edit", "Several interviews mentioned editing many at once", "User interview", "research", "Editing", "ux,bulk"],
+    ["Confusing onboarding flow", "New users get stuck on the second step", "Support ticket", "support", "Onboarding", "onboarding,ux"],
+    ["Loved the redesign", "Customer called the new dashboard a big improvement", "Sales call", "feedback", "Dashboard", "positive"],
+    ["Follow up on API latency", "Reminder to investigate p95 spikes next sprint", "Internal", "note", "Performance", "api,perf"],
+  ];
+  const rows = examples.map(cols => cols.map(csvSafe).join(",")).join("\n");
+  const blob = new Blob([header + rows], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "signals-template.csv"; a.click();
   URL.revokeObjectURL(url);
 };
 

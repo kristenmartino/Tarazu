@@ -1,9 +1,10 @@
 import { useState, useMemo, useCallback } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { rice } from "../utils";
 import { Slider } from "./Slider";
 
 export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEvent, onResolveScores, feedbackContext }) => {
+  const C = useC();
   const [name, setName] = useState(editFeature?.name || ""); const [desc, setDesc] = useState(editFeature?.description || "");
   const [owner, setOwner] = useState(editFeature?.owner || ""); const [theme, setTheme] = useState(editFeature?.theme || ""); const [status, setStatus] = useState(editFeature?.status || "");
   const [r, setR] = useState(editFeature?.reach ?? 50); const [i, setI] = useState(editFeature?.impact ?? 50); const [c, setC] = useState(editFeature?.confidence ?? 50); const [e, setE] = useState(editFeature?.effort ?? 50);
@@ -116,16 +117,16 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
         </button>
         {aiError && <p style={{ fontSize: 10, color: C.danger, margin: 0, fontFamily: "'JetBrains Mono', monospace" }}>{aiError}</p>}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-          <Slider label="Reach" value={r} onChange={setR} color={C.accent} icon="📡"
+          <Slider label="Reach" value={r} onChange={setR} color={C.reach} icon="📡"
             aiMode={aiModes.reach} aiScore={aiResults.reach?.score} aiJustification={aiResults.reach?.justification}
             aiLoading={aiLoading && aiModes.reach && !aiResults.reach} onToggleAi={() => toggleDimension("reach")} />
-          <Slider label="Impact" value={i} onChange={setI} color={C.blue} icon="💥"
+          <Slider label="Impact" value={i} onChange={setI} color={C.impact} icon="💥"
             aiMode={aiModes.impact} aiScore={aiResults.impact?.score} aiJustification={aiResults.impact?.justification}
             aiLoading={aiLoading && aiModes.impact && !aiResults.impact} onToggleAi={() => toggleDimension("impact")} />
-          <Slider label="Confidence" value={c} onChange={setC} color={C.purple} icon="🎯"
+          <Slider label="Confidence" value={c} onChange={setC} color={C.confidence} icon="🎯"
             aiMode={aiModes.confidence} aiScore={aiResults.confidence?.score} aiJustification={aiResults.confidence?.justification}
             aiLoading={aiLoading && aiModes.confidence && !aiResults.confidence} onToggleAi={() => toggleDimension("confidence")} />
-          <Slider label="Effort" value={e} onChange={setE} color={C.warn} icon="⏱️"
+          <Slider label="Effort" value={e} onChange={setE} color={C.danger} icon="⏱️"
             aiMode={aiModes.effort} aiScore={aiResults.effort?.score} aiJustification={aiResults.effort?.justification}
             aiLoading={aiLoading && aiModes.effort && !aiResults.effort} onToggleAi={() => toggleDimension("effort")} />
         </div>

@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 
-const STATUS_COLORS = { draft: C.warn, approved: C.accent, archived: C.textDim };
 const STATUS_OPTIONS = ["draft", "approved", "archived"];
 const EMPTY_FORM = { title: "", chosen_candidate_id: null, chosen_candidate_name: "", summary_rationale: "", final_rationale: "", framework_used: "RICE", tradeoffs_considered: "", risks_accepted: "", expected_outcome: "", owner: "", status: "draft", decision_date: new Date().toISOString().split("T")[0], review_date: "" };
 
-const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
-const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
-const selectStyle = { ...inputStyle, cursor: "pointer" };
-
 export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }) => {
+  const C = useC();
+  const STATUS_COLORS = { draft: C.warn, approved: C.accent, archived: C.textDim };
+  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
+  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
+  const selectStyle = { ...inputStyle, cursor: "pointer" };
   const [showForm, setShowForm] = useState(false);
   const [editingDecision, setEditingDecision] = useState(null);
   const [expandedId, setExpandedId] = useState(null);

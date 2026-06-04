@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { CandidateDetail } from "./CandidateDetail";
 import { AdvisorPanel } from "./AdvisorPanel";
 
@@ -15,6 +15,7 @@ export const RightRail = ({
   signals, onScreenChange,
   onAddDecision,
 }) => {
+  const C = useC();
   const isOverlay = isMobile || isTablet;
   const panelRef = useRef(null);
   const previousFocus = useRef(null);

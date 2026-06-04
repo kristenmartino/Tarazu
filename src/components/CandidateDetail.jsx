@@ -1,13 +1,14 @@
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { getTier, getStatusColor } from "../utils";
 import { Pill } from "./Pill";
 import { ScoreBar } from "./ScoreBar";
 import { FeatureHistory } from "./FeatureHistory";
 
 export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselect, isSignedIn, activeWsId, onRevert, signals, onScreenChange }) => {
+  const C = useC();
   const linkedSignals = (signals || []).filter(s => s.linked_candidate_id === feature.id);
-  const tier = getTier(feature);
-  const statusColor = feature.status ? getStatusColor(feature.status) : null;
+  const tier = getTier(feature, C);
+  const statusColor = feature.status ? getStatusColor(feature.status, C) : null;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -24,13 +25,13 @@ export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselec
 
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <span style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>RICE SCORES</span>
-        <ScoreBar value={feature.reach} color={C.accent} label="R" />
-        <ScoreBar value={feature.impact} color={C.blue} label="I" />
-        <ScoreBar value={feature.confidence} color={C.purple} label="C" />
-        <ScoreBar value={feature.effort} color={C.warn} label="E" />
+        <ScoreBar value={feature.reach} color={C.reach} label="R" />
+        <ScoreBar value={feature.impact} color={C.impact} label="I" />
+        <ScoreBar value={feature.confidence} color={C.confidence} label="C" />
+        <ScoreBar value={feature.effort} color={C.danger} label="E" />
         <div style={{ padding: "6px 0", marginTop: 2 }}>
           <span style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>
-            (<span style={{ color: C.accent }}>{feature.reach}</span> × <span style={{ color: C.blue }}>{feature.impact}</span> × <span style={{ color: C.purple }}>{feature.confidence}</span>) ÷ <span style={{ color: C.warn }}>{feature.effort}</span> = <span style={{ color: tier.color, fontWeight: 700 }}>{feature.score.toLocaleString()}</span>
+            (<span style={{ color: C.reach }}>{feature.reach}</span> × <span style={{ color: C.impact }}>{feature.impact}</span> × <span style={{ color: C.confidence }}>{feature.confidence}</span>) ÷ <span style={{ color: C.danger }}>{feature.effort}</span> = <span style={{ color: tier.color, fontWeight: 700 }}>{feature.score.toLocaleString()}</span>
           </span>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 
 const shortcuts = [
   { key: "?", desc: "Toggle this help overlay" },
@@ -14,6 +14,7 @@ const shortcuts = [
 ];
 
 export const ShortcutsOverlay = ({ onClose }) => {
+  const C = useC();
   const panelRef = useRef(null);
   const previousFocus = useRef(null);
 

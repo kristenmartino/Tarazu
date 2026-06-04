@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { C, QUADRANT_LABELS } from "../theme";
+import { quadrantLabels } from "../theme";
+import { useC } from "../ThemeProvider";
 import { clamp, getTier, getConfidenceColor } from "../utils";
 
 const PAD = { top: 40, right: 30, bottom: 50, left: 50 };
 
 export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier", sizeBy = "uniform", labelMode = "hover" }) => {
+  const C = useC();
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const [hovered, setHovered] = useState(null);
   const [dims, setDims] = useState({ w: 600, h: 420 });
+  const quadrants = useMemo(() => quadrantLabels(C), [C]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -57,7 +60,7 @@ export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier
 
     // Quadrant labels
     ctx.font = "600 10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
-    QUADRANT_LABELS.forEach(q => {
+    quadrants.forEach(q => {
       ctx.fillStyle = q.color + "8C";
       ctx.fillText(q.label.toUpperCase(), PAD.left + pw * q.x, PAD.top + ph * (1 - q.y) + 1);
       ctx.font = "400 9px 'JetBrains Mono', monospace"; ctx.fillStyle = q.color + "59";
@@ -82,7 +85,7 @@ export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier
         : sizeBy === "score" ? 4 + (maxScore > 0 ? (f.score / maxScore) * 8 : 4)
         : 7;
       const r = isSel ? baseR + 3 : isHov ? baseR + 2 : baseR;
-      const col = colorBy === "confidence" ? getConfidenceColor(f.confidence) : getTier(f).color;
+      const col = colorBy === "confidence" ? getConfidenceColor(f.confidence, C) : getTier(f, C).color;
       if (isSel || isHov) { ctx.beginPath(); ctx.arc(x, y, r + 8, 0, Math.PI * 2); ctx.fillStyle = col + "20"; ctx.fill(); }
       ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = C.surface; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = isSel ? 2.5 : 1.5; ctx.stroke();
       ctx.beginPath(); ctx.arc(x, y, r * 0.45, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill();
@@ -96,7 +99,7 @@ export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier
         ctx.fillStyle = col; ctx.textAlign = "left"; ctx.fillText(lbl, lx + 6, ly + 1);
       }
     });
-  }, [scored, maxScore, positions, selectedId, hovered, dims, colorBy, sizeBy, labelMode]);
+  }, [scored, maxScore, positions, selectedId, hovered, dims, colorBy, sizeBy, labelMode, quadrants, C]);
 
   const handleEvent = useCallback((e, click) => {
     const canvas = canvasRef.current; if (!canvas) return;

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import {
   ASSUMPTION_CATEGORIES,
@@ -7,20 +7,21 @@ import {
   scoreValidation,
 } from "../validate/validationScore";
 
-const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
-const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
-const sectionLabel = { fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.1em", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase" };
-
-const REC = {
-  "Build": { color: C.accent, blurb: "Strong evidence and opportunity — worth building now." },
-  "Validate Further": { color: C.blue, blurb: "Promising, but key assumptions still need evidence." },
-  "Pivot": { color: C.warn, blurb: "Reframe the problem, audience, or approach before committing." },
-  "Park": { color: C.danger, blurb: "Not worth pursuing now — revisit if conditions change." },
-};
-
 const defaultScores = () => Object.fromEntries(VALIDATE_DIMENSIONS.map((d) => [d.key, 3]));
 
 export const ValidateScreen = ({ scored = [], signals = [], productContext, onAddDecision, onScreenChange }) => {
+  const C = useC();
+  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
+  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
+  const sectionLabel = { fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.1em", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase" };
+
+  const REC = {
+    "Build": { color: C.accent, blurb: "Strong evidence and opportunity — worth building now." },
+    "Validate Further": { color: C.blue, blurb: "Promising, but key assumptions still need evidence." },
+    "Pivot": { color: C.warn, blurb: "Reframe the problem, audience, or approach before committing." },
+    "Park": { color: C.danger, blurb: "Not worth pursuing now — revisit if conditions change." },
+  };
+
   const [mode, setMode] = useState(scored.length > 0 ? "candidate" : "manual");
   const [candidateId, setCandidateId] = useState(scored[0]?.id || "");
   const [manualName, setManualName] = useState("");

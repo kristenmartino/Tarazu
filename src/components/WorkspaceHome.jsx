@@ -1,14 +1,17 @@
 import { useMemo } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { getTier } from "../utils";
 import { Pill } from "./Pill";
 
-const StatCard = ({ label, value, color }) => (
+const StatCard = ({ label, value, color }) => {
+  const C = useC();
+  return (
   <div style={{ flex: 1, minWidth: 100, padding: "12px 14px", border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface }}>
     <span style={{ fontSize: 9, fontWeight: 700, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
     <p style={{ fontSize: 22, fontWeight: 800, color: color || C.text, margin: "4px 0 0", fontFamily: "'JetBrains Mono', monospace" }}>{value}</p>
   </div>
-);
+  );
+};
 
 const ShortcutButton = ({ label, icon, color, onClick }) => (
   <button onClick={onClick} style={{
@@ -25,6 +28,7 @@ const ShortcutButton = ({ label, icon, color, onClick }) => (
 );
 
 export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange }) => {
+  const C = useC();
   const avgScore = useMemo(() => {
     if (scored.length === 0) return 0;
     return Math.round(scored.reduce((s, f) => s + f.score, 0) / scored.length);
@@ -49,7 +53,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
     [...decisions].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 3),
   [decisions]);
 
-  const topTier = topCandidate ? getTier(topCandidate) : null;
+  const topTier = topCandidate ? getTier(topCandidate, C) : null;
 
   const statusColor = (s) => {
     switch (s) {

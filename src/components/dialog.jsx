@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 
 // Accessible, promise-based replacement for window.prompt / window.confirm.
 //
@@ -63,6 +63,7 @@ const FOCUSABLE =
   'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])';
 
 export function DialogHost() {
+  const C = useC();
   const [state, setState] = useState(currentState);
   const [value, setValue] = useState("");
   const boxRef = useRef(null);

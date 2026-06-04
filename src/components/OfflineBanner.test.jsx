@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 
-vi.mock("../theme", () => ({
-  C: {
+vi.mock("../ThemeProvider", () => ({
+  useC: () => ({
     accentGlow: "#a6e3a110", accent: "#a6e3a1",
     warn: "#f9e2af",
-  },
+  }),
 }));
 
 import { OfflineBanner } from "./OfflineBanner";

@@ -1,25 +1,26 @@
 import { useState, useRef } from "react";
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
-import { parseCSV } from "../utils";
+import { parseCSV, downloadSignalsTemplate } from "../utils";
 
-const SIGNAL_TYPES = {
-  note: { label: "Research", color: C.blue },
-  feedback: { label: "Feedback", color: C.accent },
-  support: { label: "Support", color: C.warn },
-  import: { label: "Import", color: C.textMuted },
-  research: { label: "Research", color: C.purple },
-};
-const TYPE_KEYS = Object.keys(SIGNAL_TYPES);
 const CONFIDENCE_OPTIONS = ["", "increases", "decreases", "neutral"];
-
-const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
-const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
-const selectStyle = { ...inputStyle, cursor: "pointer" };
 
 const EMPTY_FORM = { type: "note", title: "", body: "", source: "", tags: "", linked_candidate_id: null, linked_candidate_name: "", theme: "", confidence_impact: "" };
 
 export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onImport }) => {
+  const C = useC();
+  const SIGNAL_TYPES = {
+    note: { label: "Note", color: C.blue },
+    feedback: { label: "Feedback", color: C.accent },
+    support: { label: "Support", color: C.warn },
+    research: { label: "Research", color: C.purple },
+  };
+  const TYPE_KEYS = Object.keys(SIGNAL_TYPES);
+  // Fold any unrecognized type (blank, or legacy "import" signals) into "note" for display & filtering.
+  const normalizeType = (t) => (t && SIGNAL_TYPES[t] ? t : "note");
+  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
+  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
+  const selectStyle = { ...inputStyle, cursor: "pointer" };
   const [showForm, setShowForm] = useState(false);
   const [editingSignal, setEditingSignal] = useState(null);
   const [filterType, setFilterType] = useState("all");
@@ -27,15 +28,15 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
   const [importData, setImportData] = useState(null);
   const fileInputRef = useRef(null);
 
-  const filtered = filterType === "all" ? signals : signals.filter(s => s.type === filterType);
+  const filtered = filterType === "all" ? signals : signals.filter(s => normalizeType(s.type) === filterType);
 
   const typeCounts = {};
-  for (const s of signals) { typeCounts[s.type] = (typeCounts[s.type] || 0) + 1; }
+  for (const s of signals) { const t = normalizeType(s.type); typeCounts[t] = (typeCounts[t] || 0) + 1; }
 
   const openForm = (signal = null) => {
     if (signal) {
       setForm({
-        type: signal.type || "note", title: signal.title || "", body: signal.body || "",
+        type: normalizeType(signal.type), title: signal.title || "", body: signal.body || "",
         source: signal.source || "", tags: Array.isArray(signal.tags) ? signal.tags.join(", ") : "",
         linked_candidate_id: signal.linked_candidate_id || null,
         linked_candidate_name: signal.linked_candidate_name || "",
@@ -79,24 +80,27 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
     const reader = new FileReader();
     reader.onload = (ev) => {
       const parsed = parseCSV(ev.target.result);
-      if (parsed && parsed.length > 1) {
-        const headers = parsed[0].map(h => h.toLowerCase().trim());
-        const titleIdx = headers.findIndex(h => h === "title" || h === "name" || h === "subject");
-        const bodyIdx = headers.findIndex(h => h === "body" || h === "description" || h === "notes" || h === "content");
-        const sourceIdx = headers.findIndex(h => h === "source" || h === "origin");
-        const typeIdx = headers.findIndex(h => h === "type" || h === "category");
-        const themeIdx = headers.findIndex(h => h === "theme" || h === "tag");
+      if (!parsed || parsed.rows.length === 0) return;
+      const headers = parsed.headers.map(h => h.toLowerCase().trim());
+      const titleIdx = headers.findIndex(h => h === "title" || h === "name" || h === "subject");
+      const bodyIdx = headers.findIndex(h => h === "body" || h === "description" || h === "notes" || h === "content");
+      const sourceIdx = headers.findIndex(h => h === "source" || h === "origin");
+      const typeIdx = headers.findIndex(h => h === "type" || h === "category");
+      const themeIdx = headers.findIndex(h => h === "theme" || h === "tag");
+      const tagsIdx = headers.findIndex(h => h === "tags" || h === "labels");
 
-        if (titleIdx === -1) return;
-        const mapped = parsed.slice(1).filter(row => row[titleIdx]?.trim()).map(row => ({
-          title: row[titleIdx]?.trim() || "",
-          body: bodyIdx >= 0 ? row[bodyIdx]?.trim() || "" : "",
-          source: sourceIdx >= 0 ? row[sourceIdx]?.trim() || "" : "CSV Import",
-          type: typeIdx >= 0 && TYPE_KEYS.includes(row[typeIdx]?.trim().toLowerCase()) ? row[typeIdx].trim().toLowerCase() : "import",
-          theme: themeIdx >= 0 ? row[themeIdx]?.trim() || "" : "",
-        }));
-        if (mapped.length > 0) setImportData(mapped);
-      }
+      if (titleIdx === -1) return;
+      const mapped = parsed.rows.filter(row => row[titleIdx]?.trim()).map(row => ({
+        title: row[titleIdx]?.trim() || "",
+        body: bodyIdx >= 0 ? row[bodyIdx]?.trim() || "" : "",
+        source: sourceIdx >= 0 ? row[sourceIdx]?.trim() || "" : "CSV Import",
+        // Route each row to the category named in its `type` column; unknown/blank → "note".
+        type: normalizeType(typeIdx >= 0 ? row[typeIdx]?.trim().toLowerCase() : ""),
+        theme: themeIdx >= 0 ? row[themeIdx]?.trim() || "" : "",
+        // Comma-separated cell (e.g. "ux,bulk") → string[], matching the manual form + import API.
+        tags: tagsIdx >= 0 ? (row[tagsIdx] || "").split(",").map(t => t.trim()).filter(Boolean) : [],
+      }));
+      if (mapped.length > 0) setImportData(mapped);
     };
     reader.readAsText(file);
     e.target.value = "";
@@ -132,6 +136,8 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
               fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase",
             }}>{SIGNAL_TYPES[t].label}{typeCounts[t] ? ` (${typeCounts[t]})` : ""}</button>
           ))}
+          <div aria-hidden style={{ width: 1, height: 20, background: C.border, margin: "0 4px" }} />
+          <button onClick={downloadSignalsTemplate} style={{ padding: "6px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Download template</button>
           <button onClick={() => fileInputRef.current?.click()} style={{ padding: "6px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Import CSV</button>
           <button onClick={() => openForm()} style={{ padding: "6px 14px", border: `1px solid color-mix(in srgb, var(--success) 19%, transparent)`, borderRadius: 8, background: "color-mix(in srgb, var(--success) 6%, transparent)", color: C.accent, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>+ Add Signal</button>
         </div>
@@ -144,7 +150,7 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
           <div style={{ maxHeight: 200, overflowY: "auto", marginBottom: 12 }}>
             {importData.slice(0, 10).map((s, i) => (
               <div key={i} style={{ padding: "6px 0", borderBottom: `1px solid ${C.border}`, fontSize: 12, color: C.textMuted }}>
-                <span style={{ color: SIGNAL_TYPES[s.type]?.color || C.textMuted, fontWeight: 600, marginRight: 8 }}>{s.type}</span>
+                <span style={{ color: SIGNAL_TYPES[normalizeType(s.type)].color, fontWeight: 600, marginRight: 8 }}>{SIGNAL_TYPES[normalizeType(s.type)].label}</span>
                 {s.title}
               </div>
             ))}
@@ -168,7 +174,7 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
             <div>
               <div style={labelStyle}>TYPE</div>
               <div style={{ display: "flex", gap: 6 }}>
-                {TYPE_KEYS.filter(t => t !== "import").map(t => (
+                {TYPE_KEYS.map(t => (
                   <button key={t} onClick={() => setForm(f => ({ ...f, type: t }))} style={{
                     padding: "5px 12px", borderRadius: 6,
                     border: `1px solid ${form.type === t ? SIGNAL_TYPES[t].color : C.border}`,
@@ -241,7 +247,7 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
       {/* Signal cards */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {filtered.map(s => {
-          const typeInfo = SIGNAL_TYPES[s.type] || SIGNAL_TYPES.note;
+          const typeInfo = SIGNAL_TYPES[normalizeType(s.type)];
           const ciIcon = s.confidence_impact === "increases" ? "\u2191" : s.confidence_impact === "decreases" ? "\u2193" : null;
           const ciColor = s.confidence_impact === "increases" ? C.accent : s.confidence_impact === "decreases" ? C.danger : C.textDim;
           return (

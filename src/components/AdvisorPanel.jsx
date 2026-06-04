@@ -1,4 +1,4 @@
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 import { ProductContext } from "./ProductContext";
 import { AIPanel } from "./AIPanel";
 import { FeedbackDashboard } from "./FeedbackDashboard";
@@ -17,7 +17,9 @@ export const AdvisorPanel = ({
   feedbackSummary,
   onAddDecision,
   onScreenChange,
-}) => (
+}) => {
+  const C = useC();
+  return (
   <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
     <ProductContext context={productContext} onChange={onProductContextChange} />
     <div>
@@ -40,4 +42,5 @@ export const AdvisorPanel = ({
     </div>
     <FeedbackDashboard summary={feedbackSummary} />
   </div>
-);
+  );
+};

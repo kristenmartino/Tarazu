@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef } from "react";
-import { C, SAMPLES } from "../theme";
+import { SAMPLES } from "../theme";
+import { useC } from "../ThemeProvider";
 import { exportCSV } from "../utils";
 import { Pill } from "./Pill";
 import { Form } from "./Form";
@@ -45,6 +46,7 @@ export const CenterCanvas = ({
   onScreenChange,
   searchRef: externalSearchRef,
 }) => {
+  const C = useC();
   // Signal counts per candidate
   const signalCounts = useMemo(() => {
     const counts = {};

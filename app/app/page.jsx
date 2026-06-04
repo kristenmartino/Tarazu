@@ -1,6 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { GuestAuthProvider } from "../../src/components/AuthProvider";
+import { ThemeProvider } from "../../src/ThemeProvider";
 import App from "../../src/App";
 
 const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -11,10 +12,17 @@ const ClerkPage = clerkKey
   : null;
 
 export default function AppPage() {
-  if (ClerkPage) return <ClerkPage />;
+  // ThemeProvider wraps both auth paths so App + descendants can read the live
+  // theme via useC(), and the :root CSS-var sync runs for the whole /app SPA.
   return (
-    <GuestAuthProvider>
-      <App />
-    </GuestAuthProvider>
+    <ThemeProvider>
+      {ClerkPage ? (
+        <ClerkPage />
+      ) : (
+        <GuestAuthProvider>
+          <App />
+        </GuestAuthProvider>
+      )}
+    </ThemeProvider>
   );
 }

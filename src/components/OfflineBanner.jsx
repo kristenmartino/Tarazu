@@ -1,6 +1,7 @@
-import { C } from "../theme";
+import { useC } from "../ThemeProvider";
 
 export const OfflineBanner = ({ isOnline, isSyncing }) => {
+  const C = useC();
   if (isOnline && !isSyncing) return null;
 
   return (
