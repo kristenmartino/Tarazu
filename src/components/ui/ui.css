@@ -103,13 +103,13 @@
 /* ---- Alert / Toast ---- */
 .tzui-alert { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.45; color: var(--text-primary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 11px 14px; background: var(--surface-raised); }
 .tzui-alert__dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex: none; }
-.tzui-alert--success { border-color: rgba(116,210,168,.3); background: var(--success-subtle); }
+.tzui-alert--success { border-color: color-mix(in srgb, var(--success) 30%, transparent); background: var(--success-subtle); }
 .tzui-alert--success .tzui-alert__dot { background: var(--success); }
-.tzui-alert--warning { border-color: rgba(232,155,60,.3); background: var(--warning-subtle); }
+.tzui-alert--warning { border-color: color-mix(in srgb, var(--warning) 30%, transparent); background: var(--warning-subtle); }
 .tzui-alert--warning .tzui-alert__dot { background: var(--warning); }
-.tzui-alert--danger { border-color: rgba(229,103,90,.3); background: var(--danger-subtle); }
+.tzui-alert--danger { border-color: color-mix(in srgb, var(--danger) 30%, transparent); background: var(--danger-subtle); }
 .tzui-alert--danger .tzui-alert__dot { background: var(--danger); }
-.tzui-alert--info { border-color: rgba(111,177,216,.3); background: var(--info-subtle); }
+.tzui-alert--info { border-color: color-mix(in srgb, var(--info) 30%, transparent); background: var(--info-subtle); }
 .tzui-alert--info .tzui-alert__dot { background: var(--info); }
 
 /* ---- Skeleton / Spinner (motion-gated) ---- */
