@@ -87,6 +87,7 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
       const sourceIdx = headers.findIndex(h => h === "source" || h === "origin");
       const typeIdx = headers.findIndex(h => h === "type" || h === "category");
       const themeIdx = headers.findIndex(h => h === "theme" || h === "tag");
+      const tagsIdx = headers.findIndex(h => h === "tags" || h === "labels");
 
       if (titleIdx === -1) return;
       const mapped = parsed.rows.filter(row => row[titleIdx]?.trim()).map(row => ({
@@ -96,6 +97,8 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
         // Route each row to the category named in its `type` column; unknown/blank → "note".
         type: normalizeType(typeIdx >= 0 ? row[typeIdx]?.trim().toLowerCase() : ""),
         theme: themeIdx >= 0 ? row[themeIdx]?.trim() || "" : "",
+        // Comma-separated cell (e.g. "ux,bulk") → string[], matching the manual form + import API.
+        tags: tagsIdx >= 0 ? (row[tagsIdx] || "").split(",").map(t => t.trim()).filter(Boolean) : [],
       }));
       if (mapped.length > 0) setImportData(mapped);
     };
