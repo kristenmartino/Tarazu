@@ -16,7 +16,7 @@
 //   reach / impact   RICE Reach (blue) + Impact (teal) — coordinated, and
 //                    decoupled from accent/blue so brass stays brand-only.
 // RICE dimensions map: Reach=reach · Impact=impact · Confidence=confidence · Effort=danger.
-// (`confidence` is its own key so the CVD theme can make it green while AI stays purple.)
+// (`confidence` is its own key so the CVD theme gives it a distinct violet while AI stays reddish-purple.)
 
 // ── Onyx (dark · default) ──────────────────────────────────────────────
 const onyx = {
@@ -75,7 +75,7 @@ const colorblind = {
   purple: "#CC79A7", purpleDim: "#CC79A71F",       // Confidence + AI = reddish-purple
   navBg: "#0B0C0F", navBorder: "#1A1C22",
   brass: "#E2AC4D", brassDeep: "#B8842F", jade: "#1FBF93",
-  reach: "#E8C23A", impact: "#4F9DE0", confidence: "#2FB389", // RICE Goldenrod: yellow/blue/green
+  reach: "#E8C23A", impact: "#4F9DE0", confidence: "#A56EFF", // RICE: gold / blue / violet (confidence off green to clear accent-green under CVD)
 };
 
 // CSS-var blocks pushed onto :root per theme (landing / auth / tzui primitives).
@@ -139,7 +139,7 @@ const colorblindVars = {
   "--info": "#56B4E9", "--info-subtle": "rgba(86, 180, 233, 0.12)",
   "--ai": "#CC79A7", "--ai-subtle": "rgba(204, 121, 167, 0.12)",
   "--ring": "#E2AC4D",
-  "--viz-1": "#E8C23A", "--viz-2": "#4F9DE0", "--viz-3": "#2FB389",
+  "--viz-1": "#E8C23A", "--viz-2": "#4F9DE0", "--viz-3": "#A56EFF",
   "--viz-4": "#DD5A2E", "--viz-5": "#E2AC4D", "--viz-6": "#CC79A7",
 };
 
@@ -158,7 +158,7 @@ export const C = THEMES[DEFAULT_THEME].palette;
 
 // Tradeoff-map quadrant labels — a factory so colors track the live theme.
 // Quick Wins = success(green) · Strategic = brass · Fill-ins = muted · Avoid = danger.
-export const quadrantLabels = (theme = C) => [
+export const quadrantLabels = (theme) => [
   { label: "Quick Wins", sub: "High Impact · Low Effort", x: 0.25, y: 0.82, color: theme.accent },
   { label: "Strategic Bets", sub: "High Impact · High Effort", x: 0.75, y: 0.82, color: theme.blue },
   { label: "Fill-ins", sub: "Low Impact · Low Effort", x: 0.25, y: 0.18, color: theme.textMuted },

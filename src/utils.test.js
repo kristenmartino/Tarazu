@@ -45,84 +45,84 @@ describe("clamp", () => {
 
 describe("getTier", () => {
   it("returns QUICK WIN for low effort, high impact", () => {
-    const tier = getTier({ effort: 30, impact: 70 });
+    const tier = getTier({ effort: 30, impact: 70 }, C);
     expect(tier.label).toBe("QUICK WIN");
     expect(tier.color).toBe(C.accent);
   });
 
   it("returns STRATEGIC for high effort, high impact", () => {
-    const tier = getTier({ effort: 70, impact: 70 });
+    const tier = getTier({ effort: 70, impact: 70 }, C);
     expect(tier.label).toBe("STRATEGIC");
     expect(tier.color).toBe(C.blue);
   });
 
   it("returns FILL-IN for low effort, low impact", () => {
-    const tier = getTier({ effort: 30, impact: 30 });
+    const tier = getTier({ effort: 30, impact: 30 }, C);
     expect(tier.label).toBe("FILL-IN");
     expect(tier.color).toBe(C.warn);
   });
 
   it("returns AVOID for high effort, low impact", () => {
-    const tier = getTier({ effort: 70, impact: 30 });
+    const tier = getTier({ effort: 70, impact: 30 }, C);
     expect(tier.label).toBe("AVOID");
     expect(tier.color).toBe(C.danger);
   });
 
   it("boundary: effort=50 impact=51 is QUICK WIN", () => {
-    expect(getTier({ effort: 50, impact: 51 }).label).toBe("QUICK WIN");
+    expect(getTier({ effort: 50, impact: 51 }, C).label).toBe("QUICK WIN");
   });
 
   it("boundary: effort=51 impact=50 is AVOID", () => {
-    expect(getTier({ effort: 51, impact: 50 }).label).toBe("AVOID");
+    expect(getTier({ effort: 51, impact: 50 }, C).label).toBe("AVOID");
   });
 
   it("boundary: effort=50 impact=50 is FILL-IN", () => {
-    expect(getTier({ effort: 50, impact: 50 }).label).toBe("FILL-IN");
+    expect(getTier({ effort: 50, impact: 50 }, C).label).toBe("FILL-IN");
   });
 });
 
 describe("getConfidenceColor", () => {
   it("returns accent for confidence >= 75", () => {
-    expect(getConfidenceColor(75)).toBe(C.accent);
-    expect(getConfidenceColor(100)).toBe(C.accent);
+    expect(getConfidenceColor(75, C)).toBe(C.accent);
+    expect(getConfidenceColor(100, C)).toBe(C.accent);
   });
 
   it("returns blue for confidence >= 50", () => {
-    expect(getConfidenceColor(50)).toBe(C.blue);
-    expect(getConfidenceColor(74)).toBe(C.blue);
+    expect(getConfidenceColor(50, C)).toBe(C.blue);
+    expect(getConfidenceColor(74, C)).toBe(C.blue);
   });
 
   it("returns warn for confidence >= 25", () => {
-    expect(getConfidenceColor(25)).toBe(C.warn);
-    expect(getConfidenceColor(49)).toBe(C.warn);
+    expect(getConfidenceColor(25, C)).toBe(C.warn);
+    expect(getConfidenceColor(49, C)).toBe(C.warn);
   });
 
   it("returns danger for confidence < 25", () => {
-    expect(getConfidenceColor(24)).toBe(C.danger);
-    expect(getConfidenceColor(0)).toBe(C.danger);
+    expect(getConfidenceColor(24, C)).toBe(C.danger);
+    expect(getConfidenceColor(0, C)).toBe(C.danger);
   });
 });
 
 describe("getStatusColor", () => {
   it("returns accent for active", () => {
-    expect(getStatusColor("active")).toBe(C.accent);
+    expect(getStatusColor("active", C)).toBe(C.accent);
   });
 
   it("returns blue for review", () => {
-    expect(getStatusColor("review")).toBe(C.blue);
+    expect(getStatusColor("review", C)).toBe(C.blue);
   });
 
   it("returns danger for blocked", () => {
-    expect(getStatusColor("blocked")).toBe(C.danger);
+    expect(getStatusColor("blocked", C)).toBe(C.danger);
   });
 
   it("returns textDim for done", () => {
-    expect(getStatusColor("done")).toBe(C.textDim);
+    expect(getStatusColor("done", C)).toBe(C.textDim);
   });
 
   it("returns textMuted for unknown status", () => {
-    expect(getStatusColor("unknown")).toBe(C.textMuted);
-    expect(getStatusColor("")).toBe(C.textMuted);
+    expect(getStatusColor("unknown", C)).toBe(C.textMuted);
+    expect(getStatusColor("", C)).toBe(C.textMuted);
   });
 });
 

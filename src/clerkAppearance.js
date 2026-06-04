@@ -1,46 +1,49 @@
-// Shared brass Clerk appearance (dark "balance / precision-instrument" theme),
-// aligned to the §2 semantic tokens (app/tokens.css). Hand-rolled via variables +
-// elements so no new dependency (@clerk/themes) is required for a dark look.
-//
-// Used by the /sign-in & /sign-up front door AND the in-app ClerkWrapper.
-export const clerkBrassAppearance = {
+// Clerk appearance, derived from the LIVE palette (concrete hexes, so Clerk's
+// internal color math keeps working — unlike var() refs). Callers pass the
+// active palette from useC():
+//   const C = useC(); <ClerkProvider appearance={clerkAppearance(C)} />
+// In-app (under <ThemeProvider>) this tracks the active theme; on the auth pages
+// (no provider) useC() returns the default palette, so the front door stays on
+// the default brand. Used by the in-app ClerkWrapper AND the /sign-in & /sign-up
+// ClerkAuthProvider. (NB palette↔token naming: C.blue is the brand brass.)
+export const clerkAppearance = (C) => ({
   variables: {
-    colorPrimary: "#E2AC4D",          // --accent
-    colorBackground: "#15171C",       // --surface-raised
-    colorInputBackground: "#121316",  // --surface-sunken
-    colorText: "#ECEAE4",             // --text-primary
-    colorTextSecondary: "#A7A294",    // --text-secondary
-    colorInputText: "#ECEAE4",
-    colorNeutral: "#ECEAE4",
-    colorDanger: "#E5675A",           // --danger
-    colorSuccess: "#74D2A8",          // --success
-    colorWarning: "#E89B3C",          // --warning
+    colorPrimary: C.blue,             // brand brass
+    colorBackground: C.surface,
+    colorInputBackground: C.surfaceSunken,
+    colorText: C.text,
+    colorTextSecondary: C.textMuted,
+    colorInputText: C.text,
+    colorNeutral: C.text,
+    colorDanger: C.danger,
+    colorSuccess: C.success,
+    colorWarning: C.warn,
     borderRadius: "8px",
     fontFamily: "var(--body)",        // the real Figtree (next/font) via the token
   },
   elements: {
-    card: { backgroundColor: "#15171C", borderColor: "rgba(236,234,228,0.11)" },
-    headerTitle: { color: "#ECEAE4" },
-    headerSubtitle: { color: "#A7A294" },
-    socialButtonsBlockButton: { borderColor: "rgba(236,234,228,0.11)", color: "#ECEAE4" },
-    dividerLine: { backgroundColor: "rgba(236,234,228,0.11)" },
-    dividerText: { color: "#706B5F" },
-    formFieldLabel: { color: "#A7A294" },
-    formFieldInput: { backgroundColor: "#121316", borderColor: "rgba(236,234,228,0.11)", color: "#ECEAE4" },
+    card: { backgroundColor: C.surface, borderColor: C.border },
+    headerTitle: { color: C.text },
+    headerSubtitle: { color: C.textMuted },
+    socialButtonsBlockButton: { borderColor: C.border, color: C.text },
+    dividerLine: { backgroundColor: C.border },
+    dividerText: { color: C.textDim },
+    formFieldLabel: { color: C.textMuted },
+    formFieldInput: { backgroundColor: C.surfaceSunken, borderColor: C.border, color: C.text },
     formButtonPrimary: {
-      backgroundColor: "#E2AC4D",
-      color: "#1A1406",
+      backgroundColor: C.blue,
+      color: C.textOnAccent,
       fontWeight: 700,
-      "&:hover": { backgroundColor: "#ECBB63" },   // --accent-hover
-      "&:active": { backgroundColor: "#C8923A" },   // --accent-pressed
+      "&:hover": { backgroundColor: C.accentHover },
+      "&:active": { backgroundColor: C.accentPressed },
     },
-    footerActionText: { color: "#A7A294" },
-    footerActionLink: { color: "#E2AC4D" },
+    footerActionText: { color: C.textMuted },
+    footerActionLink: { color: C.blue },
     // In-app <UserButton/> popover (used at /app)
-    userButtonPopoverCard: { backgroundColor: "#15171C", borderColor: "rgba(236,234,228,0.11)" },
-    userButtonPopoverActionButton: { color: "#ECEAE4" },
-    userButtonPopoverActionButtonText: { color: "#ECEAE4" },
-    userButtonPopoverActionButtonIcon: { color: "#A7A294" },
+    userButtonPopoverCard: { backgroundColor: C.surface, borderColor: C.border },
+    userButtonPopoverActionButton: { color: C.text },
+    userButtonPopoverActionButtonText: { color: C.text },
+    userButtonPopoverActionButtonIcon: { color: C.textMuted },
     userButtonPopoverFooter: { display: "none" },
   },
-};
+});
