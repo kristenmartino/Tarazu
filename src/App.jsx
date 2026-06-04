@@ -834,7 +834,7 @@ export default function App() {
           undoSnapshot={undoSnapshot} onUndo={handleUndo} onLoadSamples={handleLoadSamples} onClear={handleClear}
           importData={importData} onConfirmImport={confirmImport} onCancelImport={() => setImportData(null)}
           onImportFile={() => fileInputRef.current?.click()}
-          onExportCSV={() => exportCSV(displayOrder, activeWs?.name)}
+          onExportCSV={() => exportCSV(displayOrder, activeWs?.name, C)}
           productContext={productContext} onScoreEvent={handleScoreEvent}
           onResolveScores={handleResolveScores} feedbackContext={feedbackContext}
           isMobile={isMobile}
