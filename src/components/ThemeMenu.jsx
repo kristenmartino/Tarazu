@@ -41,19 +41,20 @@ export const ThemeMenu = ({ compact = false }) => {
       <button
         ref={btnRef} type="button" onClick={() => setOpen((o) => !o)}
         aria-haspopup="menu" aria-expanded={open}
-        aria-label={`Theme: ${current?.label || "select"}`} title="Appearance">
-        <span style={{
+        aria-label={`Theme: ${current?.label || "select"}`} title="Appearance"
+        style={{
+          // reset the browser's default button chrome (was rendering a white box)
+          appearance: "none", WebkitAppearance: "none", margin: 0,
           display: "flex", alignItems: "center", gap: 6, padding: "5px 10px",
           border: `1px solid ${open ? C.borderActive : C.border}`, borderRadius: 6,
           background: open ? C.surfaceAlt : "transparent", color: C.textMuted,
-          fontSize: 11, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1,
+          fontSize: 11, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1, cursor: "pointer",
         }}>
-          {ICON}
-          {!compact && (<>
-            <span>Theme: <span style={{ color: C.text }}>{current?.label}</span></span>
-            <span style={{ fontSize: 8, color: C.textDim }}>{open ? "▲" : "▼"}</span>
-          </>)}
-        </span>
+        {ICON}
+        {!compact && (<>
+          <span>Theme: <span style={{ color: C.text, fontWeight: 600 }}>{current?.label}</span></span>
+          <span style={{ fontSize: 8, color: C.textDim }}>{open ? "▲" : "▼"}</span>
+        </>)}
       </button>
 
       {open && (
