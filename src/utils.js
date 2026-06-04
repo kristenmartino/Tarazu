@@ -55,6 +55,25 @@ export const exportCSV = (ordered, wsName, theme) => {
   URL.revokeObjectURL(url);
 };
 
+// Sample CSV matching the columns SignalsScreen's importer recognizes (title/body/source/type/theme/tags).
+// The `type` column routes each row to a category: note, feedback, support, or research.
+// Anything blank or unrecognized falls back to "note".
+export const downloadSignalsTemplate = () => {
+  const header = "title,body,source,type,theme,tags\n";
+  const examples = [
+    ["Users want bulk edit", "Several interviews mentioned editing many at once", "User interview", "research", "Editing", "ux,bulk"],
+    ["Confusing onboarding flow", "New users get stuck on the second step", "Support ticket", "support", "Onboarding", "onboarding,ux"],
+    ["Loved the redesign", "Customer called the new dashboard a big improvement", "Sales call", "feedback", "Dashboard", "positive"],
+    ["Follow up on API latency", "Reminder to investigate p95 spikes next sprint", "Internal", "note", "Performance", "api,perf"],
+  ];
+  const rows = examples.map(cols => cols.map(csvSafe).join(",")).join("\n");
+  const blob = new Blob([header + rows], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "signals-template.csv"; a.click();
+  URL.revokeObjectURL(url);
+};
+
 // ─── CSV Import ─────────────────────────────────────────────────────
 export const parseCSV = (text) => {
   const rows = [];
