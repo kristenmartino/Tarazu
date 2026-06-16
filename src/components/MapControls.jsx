@@ -1,17 +1,16 @@
 import { useC } from "../ThemeProvider";
 
 const PRESETS = [
-  { label: "All", colorBy: "tier", sizeBy: "uniform", labelMode: "hover", owner: "all", theme: "all" },
-  { label: "High Confidence", colorBy: "confidence", sizeBy: "score", labelMode: "always", owner: "all", theme: "all" },
-  { label: "By Reach", colorBy: "tier", sizeBy: "reach", labelMode: "always", owner: "all", theme: "all" },
+  { label: "All", colorBy: "tier", sizeBy: "uniform", labelMode: "hover" },
+  { label: "High Confidence", colorBy: "confidence", sizeBy: "score", labelMode: "always" },
+  { label: "By Reach", colorBy: "tier", sizeBy: "reach", labelMode: "always" },
 ];
 
 const isPresetActive = (preset, props) =>
   preset.colorBy === props.colorBy && preset.sizeBy === props.sizeBy &&
-  preset.labelMode === props.labelMode && preset.owner === props.filterOwner &&
-  preset.theme === props.filterTheme;
+  preset.labelMode === props.labelMode;
 
-export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSizeByChange, onLabelModeChange, filterOwner, filterTheme, owners, themes, onFilterOwnerChange, onFilterThemeChange, onApplyPreset }) => {
+export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSizeByChange, onLabelModeChange, onApplyPreset }) => {
   const C = useC();
   const selectStyle = {
     padding: "5px 8px", border: `1px solid ${C.border}`, borderRadius: 6,
@@ -21,10 +20,10 @@ export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSiz
   return (
   <div data-no-print style={{ display: "flex", flexDirection: "column", gap: 8, padding: "8px 0" }}>
     {onApplyPreset && (
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
         <span style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>PRESETS</span>
         {PRESETS.map(p => {
-          const active = isPresetActive(p, { colorBy, sizeBy, labelMode, filterOwner, filterTheme });
+          const active = isPresetActive(p, { colorBy, sizeBy, labelMode });
           return (
             <button key={p.label} onClick={() => onApplyPreset(p)} style={{
               padding: "3px 10px", border: `1px solid ${active ? C.accent : C.border}`, borderRadius: 12,
@@ -61,24 +60,6 @@ export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSiz
           <option value="off">Off</option>
         </select>
       </div>
-      {owners && owners.length > 0 && (
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>OWNER</label>
-          <select value={filterOwner} onChange={e => onFilterOwnerChange(e.target.value)} style={selectStyle}>
-            <option value="all">All</option>
-            {owners.map(o => <option key={o} value={o}>{o}</option>)}
-          </select>
-        </div>
-      )}
-      {themes && themes.length > 0 && (
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>THEME</label>
-          <select value={filterTheme} onChange={e => onFilterThemeChange(e.target.value)} style={selectStyle}>
-            <option value="all">All</option>
-            {themes.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-        </div>
-      )}
     </div>
   </div>
   );

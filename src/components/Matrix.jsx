@@ -5,7 +5,7 @@ import { clamp, getTier, getConfidenceColor } from "../utils";
 
 const PAD = { top: 40, right: 30, bottom: 50, left: 50 };
 
-export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier", sizeBy = "uniform", labelMode = "hover" }) => {
+export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier", sizeBy = "uniform", labelMode = "hover", maxH = 420 }) => {
   const C = useC();
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -18,11 +18,11 @@ export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier
     if (!el) return;
     const ro = new ResizeObserver(entries => {
       const { width } = entries[0].contentRect;
-      setDims({ w: width, h: Math.min(420, width * 0.65) });
+      setDims({ w: width, h: Math.min(maxH, width * 0.65) });
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [maxH]);
 
   const positions = useMemo(() => {
     const pw = dims.w - PAD.left - PAD.right;

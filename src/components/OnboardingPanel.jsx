@@ -22,7 +22,7 @@ export const OnboardingPanel = ({ onAddCandidate, onLoadSamples }) => {
     {
       num: 3,
       title: "Then explore the toolkit",
-      desc: "Switch to the Map view for visual tradeoff analysis, use the AI Decision Advisor for recommendations, and record decisions for organizational memory.",
+      desc: "The tradeoff map sits right beside your list for visual analysis, use the AI Decision Advisor for recommendations, and record decisions for organizational memory.",
       color: C.purple,
       action: null,
       actionLabel: null,

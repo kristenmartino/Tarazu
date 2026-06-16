@@ -704,7 +704,7 @@ export default function App() {
         case "?": e.preventDefault(); setShowShortcuts(v => !v); break;
         case "Escape": setShowShortcuts(false); setSelectedId(null); setShowForm(false); setEditingFeature(null); break;
         case "n": if (activeScreen === "priorities") { e.preventDefault(); setEditingFeature(null); setShowForm(true); } break;
-        case "/": if (activeScreen === "priorities" && viewMode === "list") { e.preventDefault(); searchRef.current?.focus(); } break;
+        case "/": if (activeScreen === "priorities") { e.preventDefault(); searchRef.current?.focus(); } break;
         case "1": case "2": case "3": case "4": case "5": {
           const screen = SCREENS[parseInt(e.key) - 1];
           if (screen) handleScreenChange(screen);
@@ -715,7 +715,7 @@ export default function App() {
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [activeScreen, viewMode, handleScreenChange]);
+  }, [activeScreen, handleScreenChange]);
 
   return (
     <div className="tz-app" style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
@@ -821,7 +821,7 @@ export default function App() {
           </div>
         ) : (
         <CenterCanvas
-          activeScreen={activeScreen} viewMode={viewMode} onViewModeChange={setViewMode}
+          activeScreen={activeScreen}
           features={features} scored={scored} sorted={sorted} displayOrder={displayOrder}
           maxScore={maxScore} selectedId={selectedId} onSelect={setSelectedId}
           showForm={showForm} onShowForm={setShowForm}
