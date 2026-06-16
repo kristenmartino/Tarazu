@@ -4,7 +4,7 @@ import { Pill } from "./Pill";
 
 export const SettingsScreen = ({
   activeWs, onRenameWorkspace, onClear, onDeleteWorkspace,
-  viewMode, onViewModeChange, sortMode, onSortModeChange,
+  sortMode, onSortModeChange,
   mapColorBy, mapSizeBy, mapLabelMode,
   onMapColorByChange, onMapSizeByChange, onMapLabelModeChange,
   isSignedIn, features,
@@ -80,21 +80,12 @@ export const SettingsScreen = ({
                 <button onClick={handleRename} style={{ padding: "8px 14px", border: `1px solid color-mix(in srgb, var(--accent) 19%, transparent)`, borderRadius: 8, background: C.blueDim, color: C.blue, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap" }}>Rename</button>
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <div>
-                <div style={labelStyle}>DEFAULT SORT</div>
-                <select value={sortMode} onChange={e => onSortModeChange(e.target.value)} style={selectStyle}>
-                  <option value="rice">Framework Rank (RICE)</option>
-                  <option value="manual">Judgment Override</option>
-                </select>
-              </div>
-              <div>
-                <div style={labelStyle}>DEFAULT VIEW</div>
-                <select value={viewMode} onChange={e => onViewModeChange(e.target.value)} style={selectStyle}>
-                  <option value="list">List</option>
-                  <option value="map">Map</option>
-                </select>
-              </div>
+            <div>
+              <div style={labelStyle}>DEFAULT SORT</div>
+              <select value={sortMode} onChange={e => onSortModeChange(e.target.value)} style={selectStyle}>
+                <option value="rice">Framework Rank (RICE)</option>
+                <option value="manual">Judgment Override</option>
+              </select>
             </div>
           </div>
         </div>
