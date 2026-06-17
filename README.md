@@ -14,13 +14,21 @@ Tarazu helps product teams prioritize ideas, compare tradeoffs, capture context,
 
 ## What It Does
 
+Tarazu follows the full decision lifecycle — from raw signal to durable decision, in one loop.
+
 | Feature | Description |
 |---------|-------------|
+| **Signals** | Capture the evidence behind a backlog — notes, user feedback, support tickets, and research — with source, tags, theme, and links to candidates; bulk CSV import |
 | **Normalized RICE Scoring** | Slider-based input for each dimension on a 1–100 scale with real-time score calculation |
-| **Priority Matrix** | Canvas-rendered Effort vs. Impact scatter plot with labeled quadrants |
-| **AI Strategy Advisor** | One-click backlog analysis via Claude Opus — returns top priority, quick win, risk flag, sprint plan, and strategic insight |
 | **AI Score Suggestions** | Per-candidate scoring via Claude Sonnet, grounded in product context and prior feedback |
-| **Persistent Storage** | Features save across sessions via localStorage and cloud sync |
+| **Priority Matrix** | Canvas-rendered Effort vs. Impact scatter plot with labeled quadrants (Quick Win / Strategic / Fill-in / Avoid) |
+| **Scenarios (Weighted RICE)** | What-if reweighting via per-dimension exponents that actually *reorder* the backlog — with presets like Growth Mode, Fast Wins, Low-Risk Next Sprint, and Strategic Bets |
+| **AI Strategy Advisor** | One-click backlog analysis via Claude Opus — returns top priority, quick win, risk flag, sprint plan, and strategic insight |
+| **Validate** | Opportunity scorecard — seven dimensions scored 1–5 produce a Build / Validate Further / Pivot / Park recommendation, backed by attached Signals |
+| **Decisions** | Durable decision records — chosen candidate, rationale, tradeoffs, risks, and review date; save an AI recommendation as a decision draft in one click |
+| **AI Calibration Loop** | Tracks whether AI score suggestions are accepted or adjusted (and 👍/👎 on analyses) and feeds that calibration back into future prompts |
+| **Version History** | Per-candidate revision snapshots with field-level change tracking and one-click revert |
+| **Persistent Storage** | Work saves across sessions via localStorage in guest mode, with cloud sync to Supabase when signed in |
 | **Responsive Shell** | Three-panel desktop layout (left rail / center canvas / right rail) collapses to a two-column tablet overlay and a bottom-tab mobile layout via `matchMedia` |
 
 ## A Closer Look
