@@ -248,12 +248,15 @@ export const CenterCanvas = ({
         </div>
   );
 
-  // Sticky map column beside the list (desktop / wide).
+  // Sticky map column beside the list (desktop / wide). The column scales with
+  // the available width — pinned to 380px it looked cramped on wide windows
+  // while the flexing list grew — capped so the list always keeps the majority.
+  const mapColW = Math.max(380, Math.min(680, Math.round(contentW * 0.44)));
   const sideMap = (
-    <div style={{ width: 380, flexShrink: 0, position: "sticky", top: 0, alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: 12 }}>
+    <div style={{ width: mapColW, flexShrink: 0, position: "sticky", top: 0, alignSelf: "flex-start", display: "flex", flexDirection: "column", gap: 12 }}>
       {mapControlsEl}
       <div style={{ border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, padding: "16px 12px 8px", overflow: "hidden" }}>
-        {matrixOrEmpty(420)}
+        {matrixOrEmpty(480)}
       </div>
       {legendBlock}
     </div>
