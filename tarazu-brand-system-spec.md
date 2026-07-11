@@ -24,7 +24,7 @@ This means the product is already more than a simple scoring utility. The rebran
 **Tarazu**
 
 ## Meaning
-A name associated with scales, weighing, balance, and judgment. That makes it stronger and more expandable than a generic descriptive name like **Prioritize**.
+From the Hindi/Urdu word *tarāzū* (ترازو), borrowed from Persian, meaning a balance scale — a name about weighing, balance, and judgment. That makes it stronger and more expandable than a generic descriptive name like **Prioritize**.
 
 ## Brand thesis
 **Tarazu gives product teams a system for weighing decisions, not just ranking features.**
