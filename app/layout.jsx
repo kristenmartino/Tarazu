@@ -1,6 +1,7 @@
 import { Bricolage_Grotesque, Figtree, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
+import { SITE_URL } from "../lib/site";
 import "./tokens.css";
 
 // New brand type — self-hosted via next/font, exposed as CSS variables and
@@ -10,6 +11,9 @@ const body = Figtree({ subsets: ["latin"], variable: "--font-body", display: "sw
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono", display: "swap" });
 
 export const metadata = {
+  // Resolves relative OG/canonical URLs (including the generated opengraph-image)
+  // to absolute ones. Inherited by every route, so child metadata can stay relative.
+  metadataBase: new URL(SITE_URL),
   title: "Tarazu — Decision Intelligence for Product Teams",
   description:
     "Weigh what matters. Tarazu helps product teams prioritize candidates, compare tradeoffs, and document decisions with structured frameworks and explainable AI.",
