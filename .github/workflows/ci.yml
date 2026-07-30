@@ -29,3 +29,13 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_placeholder' }}
+
+      # Next inlines every NEXT_PUBLIC_* var into .next/static, so prefixing a
+      # secret publishes it to every visitor with nothing visibly breaking.
+      # The self-test runs first so a regex that stops matching fails loudly
+      # rather than turning the scan into a no-op that always passes.
+      - name: Verify secret scanner still detects
+        run: npm run check:secrets:self-test
+
+      - name: Scan client bundle for secrets
+        run: npm run check:secrets
