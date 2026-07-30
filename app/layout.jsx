@@ -19,8 +19,14 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // suppressHydrationWarning: the inline script below intentionally swaps
+  // no-js→js on <html> before hydration, so the className is expected to differ.
   return (
-    <html lang="en" className={`no-js ${display.variable} ${body.variable} ${mono.variable}`}>
+    <html
+      lang="en"
+      className={`no-js ${display.variable} ${body.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Swap no-js→js before paint so the landing's reveal CSS (gated on html.js)
             never causes a flash; without JS, all content stays visible. */}
