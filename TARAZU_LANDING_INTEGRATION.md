@@ -6,11 +6,14 @@
 > `app/tokens.css`, fonts load via `next/font`, and the CTAs point to a public `/sign-in` +
 > `/sign-up` front door (superseding the old `prioritize.*` URL referenced below). Kept for
 > historical context.
+>
+> **Domain note:** production is now the `tarazu.app` apex. Both `kristenmartino.ai`
+> subdomains named below are retired and 301 to it.
 
 **Design source of truth:** `tarazu-landing-page.html` (a complete, self-contained marketing landing page — HTML + inline CSS + vanilla JS, dark theme).
 **Goal:** Wire this into the real Tarazu app as a proper Next.js route, preserving the design exactly while matching the project's existing conventions. Do **not** introduce a new styling paradigm or new dependencies.
 
-> Stack note: Tarazu is Next.js + Supabase + **Clerk** (auth). Current prod is `prioritize.kristenmartino.ai`, migrating to `tarazu.kristenmartino.ai`.
+> Stack note: Tarazu is Next.js + Supabase + **Clerk** (auth). Current prod is `prioritize.kristenmartino.ai`, migrating to `tarazu.kristenmartino.ai`. *(As written at the time — prod is now `tarazu.app`.)*
 
 ---
 

@@ -1,4 +1,4 @@
-# Tarazu — Phase 2 Theme Migration (PROPOSAL — not yet executed)
+# Tarazu — Phase 2 Theme Migration (historical — implemented in PR #55)
 
 Phase 1 shipped the new **dark "brass" brand** on the marketing landing (`/`) and the
 `/sign-in` + `/sign-up` front door, and established reusable design tokens at the app level
@@ -82,7 +82,12 @@ most screens then shift with little per-file work.
 - Consider switching the in-app `<SignInButton mode="modal">` to **redirect to `/sign-in`** so
   there's one consistent auth surface instead of a modal + a page.
 
-## ⚠️ Deployment prerequisite (discovered during Phase 1 verification)
+## ⚠️ Deployment prerequisite (discovered during Phase 1 verification) — RESOLVED
+
+> **✅ Fixed. Nothing below is a live issue.** Tarazu now has its own Clerk application: a
+> development instance for local work, and a production instance bound to the `tarazu.app`
+> apex (`clerk.tarazu.app`). The GridPulse key described below is no longer used anywhere.
+> Kept as the record of why `/sign-in` appeared broken throughout Phases 1–2.
 
 The local `.env.local` `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is a **production key locked to
 `gridpulse.kristenmartino.ai`** (a different project). Clerk refuses to initialize on any other
