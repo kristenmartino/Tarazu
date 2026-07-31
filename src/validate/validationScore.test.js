@@ -44,11 +44,74 @@ describe("scoreValidation", () => {
   });
 });
 
-describe("metadata", () => {
+// Written out literally rather than derived from the module. Deriving them
+// (`VALIDATE_DIMENSIONS.map(d => d.key)`) makes the assertion circular: if a key
+// is emptied, both sides change together and the test still passes. That
+// circularity is why the previous length-and-uniqueness check let 35 mutants
+// through — blanking one key leaves the array 7 long with 7 distinct values.
+//
+// Only keys are pinned. Display labels are covered by the non-empty check in
+// "metadata shape" below, which catches a blanked or deleted label without
+// breaking every time the copy is reworded. Pinning the exact label strings was
+// measured against the mutation score and killed nothing extra.
+const EXPECTED_DIMENSION_KEYS = [
+  "problemSeverity",
+  "evidenceStrength",
+  "marketPull",
+  "differentiation",
+  "monetizationClarity",
+  "buildFeasibility",
+  "strategicFit",
+];
+
+describe("VALIDATE_DIMENSIONS — every key is wired into scoring", () => {
+  // The consequence test, not a snapshot. averageScore reads scores[d.key], so
+  // a renamed or blanked key means that dimension is silently read as 0 — every
+  // score drifts down and nothing throws. Setting one dimension to 7 must yield
+  // exactly 7/7 = 1; if the key no longer matches, this returns 0.
+  it.each(EXPECTED_DIMENSION_KEYS)(
+    "%s contributes to the average",
+    (key) => {
+      expect(averageScore({ [key]: 7 })).toBe(1);
+    }
+  );
+
+  it("has exactly these keys, in this order", () => {
+    expect(VALIDATE_DIMENSIONS.map((d) => d.key)).toEqual(EXPECTED_DIMENSION_KEYS);
+  });
+
+  it("scores each dimension independently of the others", () => {
+    // Guards the reduce: were it to read a fixed key, or double-count, these
+    // would not stay distinct.
+    const only = (key) => averageScore({ [key]: 7 });
+    const results = EXPECTED_DIMENSION_KEYS.map(only);
+    expect(results).toEqual([1, 1, 1, 1, 1, 1, 1]);
+    expect(averageScore({ problemSeverity: 7, strategicFit: 7 })).toBe(2);
+  });
+});
+
+describe("ASSUMPTION_CATEGORIES", () => {
+  it("keeps 'differentiation' distinct from the dimension of the same name", () => {
+    // Both lists carry a `differentiation` key. They are separate concepts —
+    // one is an assumption to validate, one is a scored dimension — and the
+    // collision is easy to "fix" by renaming one, which would break the other.
+    expect(ASSUMPTION_CATEGORIES.map((c) => c.key)).toContain("differentiation");
+    expect(VALIDATE_DIMENSIONS.map((d) => d.key)).toContain("differentiation");
+  });
+});
+
+describe("metadata shape", () => {
   it("exposes 7 dimensions and 6 assumption categories with unique keys", () => {
     expect(VALIDATE_DIMENSIONS).toHaveLength(7);
     expect(ASSUMPTION_CATEGORIES).toHaveLength(6);
     expect(new Set(VALIDATE_DIMENSIONS.map((d) => d.key)).size).toBe(7);
     expect(new Set(ASSUMPTION_CATEGORIES.map((c) => c.key)).size).toBe(6);
+  });
+
+  it("gives every entry a non-empty key and label", () => {
+    for (const entry of [...VALIDATE_DIMENSIONS, ...ASSUMPTION_CATEGORIES]) {
+      expect(entry.key).toBeTruthy();
+      expect(entry.label).toBeTruthy();
+    }
   });
 });
