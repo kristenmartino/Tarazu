@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Mutation testing: injects bugs into source, then checks whether the test suite notices. Coverage says a line RAN; this says the line is actually ASSERTED. Scoped to pure-logic modules that already have real coverage — mutating untested files just reports 0% and tells you nothing you didn't know from the coverage report.",
+  "packageManager": "npm",
+  "testRunner": "vitest",
+  "reporters": ["html", "clear-text", "progress"],
+  "htmlReporter": { "fileName": "reports/mutation/index.html" },
+  "coverageAnalysis": "perTest",
+  "mutate": [
+    "lib/local-storage.js",
+    "lib/ai.js",
+    "lib/feedback-context.js",
+    "src/utils.js",
+    "src/validate/validationScore.js",
+    "src/hooks/useWeightedScored.js"
+  ],
+  "thresholds": {
+    "high": 80,
+    "low": 60,
+    "break": null
+  },
+  "tempDirName": ".stryker-tmp",
+  "cleanTempDir": true
+}

@@ -14,7 +14,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "check:secrets": "node scripts/check-bundle-secrets.mjs",
-    "check:secrets:self-test": "node scripts/check-bundle-secrets.mjs --self-test"
+    "check:secrets:self-test": "node scripts/check-bundle-secrets.mjs --self-test",
+    "test:coverage": "vitest run --coverage",
+    "mutation": "stryker run"
   },
   "engines": {
     "node": ">=20"
@@ -30,7 +32,10 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
+    "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/vitest-runner": "^9.6.1",
     "@types/node": "^20.19.41",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.35",
     "jsdom": "^29.0.2",

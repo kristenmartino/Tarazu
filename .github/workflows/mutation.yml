@@ -1,0 +1,50 @@
+name: Mutation
+
+# Coverage tells you a line RAN. Mutation testing tells you the line is
+# actually ASSERTED: Stryker injects bugs into the source one at a time and
+# checks whether the test suite notices. A surviving mutant is a real bug your
+# tests would ship. This is the deterministic answer to "are these
+# LLM-generated tests any good?" — you read a score, not the test code.
+#
+# Deliberately NOT part of CI on every push: it takes minutes rather than
+# seconds and grows with the codebase. Weekly plus on-demand keeps the signal
+# without taxing the PR loop. Non-blocking for now (thresholds.break is null in
+# stryker.config.json) — set a break threshold once the score stops moving.
+
+on:
+  schedule:
+    - cron: "0 9 * * 1" # Mondays 09:00 UTC
+  workflow_dispatch: {}
+  pull_request:
+    branches: [main]
+    # Only when the mutated modules or their tests actually change.
+    paths:
+      - "lib/**"
+      - "src/utils.js"
+      - "src/validate/**"
+      - "src/hooks/**"
+      - "stryker.config.json"
+
+jobs:
+  stryker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run mutation testing
+        run: npm run mutation
+
+      - name: Upload mutation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-report
+          path: reports/mutation/
+          retention-days: 30
