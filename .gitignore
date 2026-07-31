@@ -1,15 +1,27 @@
+# Dependencies
 node_modules
+
+# Build output
 dist
 .next
+.vercel
+
+# Secrets
 .env
 .env.local
-.vercel
-*.log
+
+# Test + quality artifacts
 playwright-report
 test-results
-
-# macOS
-.DS_Store
 coverage/
 reports/
 .stryker-tmp/
+*.log
+
+# Agent scratch — launch.json and settings.local.json are per-machine, and
+# worktrees/ holds full checkouts of this repo (see the .claude/** exclusion in
+# vitest.config.js, without which every test is collected twice).
+.claude/
+
+# macOS
+.DS_Store
