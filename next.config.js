@@ -4,6 +4,13 @@ const nextConfig = {
     // Lint these dirs during `next lint` and `next build`.
     dirs: ["app", "src", "lib"],
   },
+  async redirects() {
+    return [
+      // The canonical path is the hub-and-spoke one, so /frameworks can grow
+      // siblings later. This keeps the short URL working for anyone who links it.
+      { source: "/rice", destination: "/frameworks/rice", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

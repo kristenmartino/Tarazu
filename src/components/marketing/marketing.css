@@ -209,6 +209,9 @@
 
 /* tables — must scroll inside their own container, never the page */
 .tz-page .table-scroll { overflow-x: auto; margin-top: 1.6em; border: 1px solid var(--line); border-radius: 10px; }
+/* A table and a prose column are siblings inside a Section, so neither one's
+   internal spacing separates them — without this they render flush. */
+.tz-page .table-scroll + .prose { margin-top: 1.6em; }
 .tz-page table { width: 100%; border-collapse: collapse; font-size: 15px; }
 .tz-page caption { text-align: left; padding: 14px 18px; color: var(--text-faint); font-size: 13.5px; border-bottom: 1px solid var(--line-2); }
 .tz-page thead th {
