@@ -1,6 +1,4 @@
 import { Landing } from "../src/components/landing/Landing";
-import { JsonLd } from "../src/components/JsonLd";
-import { graph, webApplication } from "../lib/schema";
 import { pageMetadata } from "../lib/metadata";
 import { findRoute } from "../lib/routes";
 
@@ -15,15 +13,9 @@ export const viewport = {
   themeColor: "#0E0F12",
 };
 
+// No page-level JSON-LD here: the landing IS the WebSite node, and Organization,
+// WebSite, Person, and WebApplication are all declared site-wide in app/layout.jsx.
+// Adding a WebPage node for "/" would duplicate the WebSite entity, not enrich it.
 export default function LandingPage() {
-  return (
-    <>
-      {/* Sibling of <Landing/>, not a child: Landing is "use client" and script
-          elements inside a client tree are hydration-fragile. Organization,
-          WebSite, and Person come from the root layout's graph; this one only
-          adds the product node and references them by @id. */}
-      <JsonLd id="ld-landing" data={graph(webApplication())} />
-      <Landing />
-    </>
-  );
+  return <Landing />;
 }
