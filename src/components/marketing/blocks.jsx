@@ -81,6 +81,40 @@ export function ComparisonTable({ caption, columns, rows }) {
   );
 }
 
+/**
+ * Visible FAQ. Rendered from the same array that produces the FAQPage JSON-LD,
+ * because structured data without a matching visible answer is a violation.
+ *
+ * Plain headings and paragraphs rather than <details>: collapsed answers are
+ * worse for extraction, and there is nothing here worth hiding behind a click.
+ */
+export function FaqList({ faqs }) {
+  return (
+    <div className="faq-list">
+      {faqs.map((faq) => (
+        <div className="faq-item" key={faq.question}>
+          <h3>{faq.question}</h3>
+          <p>{faq.answer}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** A short titled card, for problem/benefit triplets. */
+export function CardGrid({ items }) {
+  return (
+    <div className="card-grid">
+      {items.map((item) => (
+        <div className="grid-card" key={item.title}>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** Closing call to action. */
 export function CtaBand({ title, body, primaryLabel = "Start prioritizing", primaryHref = "/sign-up" }) {
   return (

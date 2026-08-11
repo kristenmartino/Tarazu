@@ -230,6 +230,32 @@
 .tz-page tbody th,
 .tz-page tbody td { padding: 14px 18px; border-top: 1px solid var(--line-2); vertical-align: top; color: var(--text-soft); }
 
+/* faq */
+.tz-page .faq-list { max-width: 74ch; }
+.tz-page .faq-item + .faq-item { margin-top: 34px; padding-top: 34px; border-top: 1px solid var(--line-2); }
+.tz-page .faq-item h3 { font-size: 1.2rem; color: var(--text); margin-bottom: 10px; line-height: 1.3; }
+.tz-page .faq-item p { color: var(--text-soft); font-size: 17px; line-height: 1.65; }
+
+/* card grid */
+.tz-page .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 1.6em; }
+.tz-page .grid-card { border: 1px solid var(--line); border-radius: 12px; background: var(--bg-2); padding: 24px; }
+.tz-page .grid-card h3 { font-size: 1.08rem; color: var(--text); margin-bottom: 10px; }
+.tz-page .grid-card p { color: var(--text-soft); font-size: 15.5px; line-height: 1.6; }
+
+/* pricing */
+.tz-page .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 1.6em; }
+.tz-page .tier { border: 1px solid var(--line); border-radius: 12px; background: var(--bg-2); padding: 26px; display: flex; flex-direction: column; }
+.tz-page .tier-available { border-color: var(--brass); box-shadow: 0 0 0 1px rgba(226, 172, 77, 0.25); }
+.tz-page .tier-name { font-family: var(--display); font-weight: 700; font-size: 1.3rem; color: var(--text); }
+.tz-page .tier-status { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; margin-top: 8px; }
+.tz-page .tier-available .tier-status { color: var(--brass); }
+.tz-page .tier-planned .tier-status { color: var(--text-faint); }
+.tz-page .tier-for { color: var(--text-faint); font-size: 14px; margin-top: 14px; }
+.tz-page .tier ul { list-style: none; margin-top: 18px; padding: 0; }
+.tz-page .tier li { color: var(--text-soft); font-size: 14.5px; padding-left: 20px; position: relative; margin-top: 9px; }
+.tz-page .tier li::before { content: ""; position: absolute; left: 2px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--brass); opacity: 0.75; }
+.tz-page .tier-planned li::before { background: var(--text-faint); }
+
 /* cta */
 .tz-page .cta { border-top: 1px solid var(--line-2); }
 .tz-page .cta-inner { text-align: center; }
