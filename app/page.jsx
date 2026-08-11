@@ -1,25 +1,11 @@
 import { Landing } from "../src/components/landing/Landing";
+import { JsonLd } from "../src/components/JsonLd";
+import { graph, webApplication } from "../lib/schema";
+import { pageMetadata } from "../lib/metadata";
+import { findRoute } from "../lib/routes";
 
 export const metadata = {
-  title: "Tarazu — Weigh what to build next",
-  description:
-    "Tarazu turns scattered requests, feedback, and data into ranked, defensible product decisions — then learns from what you ship, so every call gets sharper. The balance scale for your roadmap.",
-  alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    url: "/",
-    siteName: "Tarazu",
-    title: "Tarazu — Weigh what to build next",
-    description:
-      "Turn scattered signals into ranked, defensible product decisions — and close the loop by learning from what you ship.",
-  },
-  // og:image / twitter:image are supplied by app/opengraph-image.jsx.
-  twitter: {
-    card: "summary_large_image",
-    title: "Tarazu — Weigh what to build next",
-    description:
-      "Turn scattered signals into ranked, defensible product decisions — and close the loop by learning from what you ship.",
-  },
+  ...pageMetadata(findRoute("/")),
   icons: {
     icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='%23E2AC4D' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M16 5v22M9 27h14'/%3E%3Cpath d='M6 9h20' stroke='%23ECEAE4'/%3E%3C/svg%3E",
   },
@@ -30,5 +16,14 @@ export const viewport = {
 };
 
 export default function LandingPage() {
-  return <Landing />;
+  return (
+    <>
+      {/* Sibling of <Landing/>, not a child: Landing is "use client" and script
+          elements inside a client tree are hydration-fragile. Organization,
+          WebSite, and Person come from the root layout's graph; this one only
+          adds the product node and references them by @id. */}
+      <JsonLd id="ld-landing" data={graph(webApplication())} />
+      <Landing />
+    </>
+  );
 }
