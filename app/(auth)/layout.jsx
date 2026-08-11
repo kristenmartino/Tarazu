@@ -2,6 +2,14 @@ import ClerkAuthProvider from "./ClerkAuthProvider";
 
 const hasClerk = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
+// Auth flows are not indexable content. The sign-in/sign-up pages export their own
+// `metadata` with just a title; App Router merges metadata per-field, so `robots`
+// set here is inherited by both. See app/app/layout.jsx for why this is noindex
+// rather than a robots.txt Disallow.
+export const metadata = {
+  robots: { index: false, follow: true },
+};
+
 const shellStyle = {
   minHeight: "100vh",
   display: "flex",

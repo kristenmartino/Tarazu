@@ -11,9 +11,9 @@ const defaultScores = () => Object.fromEntries(VALIDATE_DIMENSIONS.map((d) => [d
 
 export const ValidateScreen = ({ scored = [], signals = [], productContext, onAddDecision, onScreenChange }) => {
   const C = useC();
-  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
-  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
-  const sectionLabel = { fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.1em", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase" };
+  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "var(--mono)", outline: "none", boxSizing: "border-box" };
+  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4 };
+  const sectionLabel = { fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.1em", fontFamily: "var(--mono)", textTransform: "uppercase" };
 
   const REC = {
     "Build": { color: C.accent, blurb: "Strong evidence and opportunity — worth building now." },
@@ -123,14 +123,14 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
           <div style={sectionLabel}>Idea</div>
           <div style={{ display: "flex", gap: 8, margin: "10px 0 12px" }}>
             <button onClick={() => setMode("candidate")} disabled={scored.length === 0} style={{
-              padding: "6px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace",
+              padding: "6px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600, fontFamily: "var(--mono)",
               border: `1px solid ${mode === "candidate" ? C.accent : C.border}`,
               background: mode === "candidate" ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent",
               color: scored.length === 0 ? C.textDim : mode === "candidate" ? C.accent : C.textMuted,
               cursor: scored.length === 0 ? "not-allowed" : "pointer", opacity: scored.length === 0 ? 0.5 : 1,
             }}>Existing candidate</button>
             <button onClick={() => setMode("manual")} style={{
-              padding: "6px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace",
+              padding: "6px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600, fontFamily: "var(--mono)",
               border: `1px solid ${mode === "manual" ? C.accent : C.border}`,
               background: mode === "manual" ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent",
               color: mode === "manual" ? C.accent : C.textMuted, cursor: "pointer",
@@ -162,7 +162,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
             </div>
           )}
           {productContext?.productSummary && (
-            <p style={{ fontSize: 10, color: C.textDim, margin: "12px 0 0", lineHeight: 1.5, fontFamily: "'JetBrains Mono', monospace" }}>
+            <p style={{ fontSize: 10, color: C.textDim, margin: "12px 0 0", lineHeight: 1.5, fontFamily: "var(--mono)" }}>
               Validating against product context: {productContext.productSummary.slice(0, 120)}{productContext.productSummary.length > 120 ? "…" : ""}
             </p>
           )}
@@ -202,10 +202,10 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
                     <span style={{ flex: 1, minWidth: 0 }}>
                       <span style={{ display: "block", fontSize: 12, fontWeight: 600, color: C.text }}>{s.title}</span>
                       <span style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 3 }}>
-                        {s.source && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>{s.source}</span>}
-                        {s.theme && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>{s.theme}</span>}
-                        {s.confidence_impact && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>{s.confidence_impact}</span>}
-                        {s.linked_candidate_name && <span style={{ fontSize: 9, color: C.blue, fontFamily: "'JetBrains Mono', monospace" }}>↳ {s.linked_candidate_name}</span>}
+                        {s.source && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)" }}>{s.source}</span>}
+                        {s.theme && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)" }}>{s.theme}</span>}
+                        {s.confidence_impact && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)" }}>{s.confidence_impact}</span>}
+                        {s.linked_candidate_name && <span style={{ fontSize: 9, color: C.blue, fontFamily: "var(--mono)" }}>↳ {s.linked_candidate_name}</span>}
                       </span>
                     </span>
                   </label>
@@ -228,7 +228,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
                     const active = scores[d.key] === n;
                     return (
                       <button key={n} onClick={() => setScore(d.key, n)} aria-label={`${d.label}: ${n} of 5`} aria-pressed={active} style={{
-                        width: 28, height: 28, borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace",
+                        width: 28, height: 28, borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "var(--mono)",
                         border: `1px solid ${active ? C.accent : C.border}`,
                         background: active ? C.accent : "transparent",
                         color: active ? C.bg : C.textMuted,
@@ -268,7 +268,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
             <div style={sectionLabel}>Validation brief</div>
             <Pill color={C.textMuted} dimColor={C.border} small>preview</Pill>
           </div>
-          <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: 11, lineHeight: 1.6, color: C.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>
+          <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: 11, lineHeight: 1.6, color: C.textMuted, fontFamily: "var(--mono)" }}>
             {briefText}
           </pre>
         </section>
@@ -276,7 +276,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
         {/* Save */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
           <button onClick={handleSave} disabled={!canSave || saving} style={{
-            padding: "10px 18px", borderRadius: 8, border: "none", fontSize: 12, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
+            padding: "10px 18px", borderRadius: 8, border: "none", fontSize: 12, fontWeight: 700, fontFamily: "var(--mono)",
             background: canSave && !saving ? C.accent : C.border,
             color: canSave && !saving ? C.bg : C.textDim,
             cursor: canSave && !saving ? "pointer" : "not-allowed",
@@ -286,7 +286,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
           </button>
         </div>
         {!canSave && (
-          <p style={{ fontSize: 10, color: C.textDim, margin: "-6px 0 0", textAlign: "right", fontFamily: "'JetBrains Mono', monospace" }}>
+          <p style={{ fontSize: 10, color: C.textDim, margin: "-6px 0 0", textAlign: "right", fontFamily: "var(--mono)" }}>
             Choose a candidate or name an idea to save.
           </p>
         )}

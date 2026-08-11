@@ -48,7 +48,7 @@ export const ThemeMenu = ({ compact = false }) => {
           display: "flex", alignItems: "center", gap: 6, padding: "5px 10px",
           border: `1px solid ${open ? C.borderActive : C.border}`, borderRadius: 6,
           background: open ? C.surfaceAlt : "transparent", color: C.textMuted,
-          fontSize: 11, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1, cursor: "pointer",
+          fontSize: 11, fontFamily: "var(--mono)", lineHeight: 1, cursor: "pointer",
         }}>
         {ICON}
         {!compact && (<>
@@ -63,7 +63,7 @@ export const ThemeMenu = ({ compact = false }) => {
           background: C.overlay, border: `1px solid ${C.borderActive}`, borderRadius: 10,
           padding: 5, boxShadow: "0 10px 30px color-mix(in srgb, var(--surface-base) 55%, transparent)", zIndex: 200,
         }}>
-          <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.14em", color: C.textDim, fontFamily: "'JetBrains Mono', monospace", padding: "4px 9px 7px" }}>APPEARANCE</div>
+          <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.14em", color: C.textDim, fontFamily: "var(--mono)", padding: "4px 9px 7px" }}>APPEARANCE</div>
           {themes.map((t) => {
             const active = t.id === themeName;
             return (

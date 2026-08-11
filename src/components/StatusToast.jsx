@@ -25,7 +25,7 @@ export const StatusToast = ({ message, type = "info", onDismiss, duration = 3000
       padding: "10px 18px", borderRadius: 10,
       background: colors.bg, border: `1px solid ${colors.border}30`,
       color: colors.text, fontSize: 12, fontWeight: 600,
-      fontFamily: "'JetBrains Mono', monospace",
+      fontFamily: "var(--mono)",
       boxShadow: `0 4px 16px ${C.bg}60`,
       animation: "slideUp 0.2s ease",
       maxWidth: 320,

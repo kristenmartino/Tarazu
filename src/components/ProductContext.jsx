@@ -29,7 +29,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
         width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "12px 14px",
         border: "none", background: "transparent", cursor: "pointer", textAlign: "left",
       }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", flex: 1 }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.08em", fontFamily: "var(--mono)", flex: 1 }}>
           STRATEGY BRIEF
         </span>
         {hasContent && <Pill color={C.purple} dimColor={C.purpleDim} small>SET</Pill>}
@@ -38,7 +38,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
       {open && (
         <div style={{ padding: "0 14px 14px", display: "flex", flexDirection: "column", gap: 10 }}>
           <div>
-            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4, display: "block" }}>PRODUCT SUMMARY</label>
+            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4, display: "block" }}>PRODUCT SUMMARY</label>
             <textarea
               value={context.productSummary} onChange={e => update("productSummary", e.target.value)}
               placeholder="What does your product do? Who is it for?"
@@ -47,7 +47,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
             />
           </div>
           <div>
-            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4, display: "block" }}>TARGET USERS</label>
+            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4, display: "block" }}>TARGET USERS</label>
             <textarea
               value={context.targetUsers} onChange={e => update("targetUsers", e.target.value)}
               placeholder="Describe your primary user segments"
@@ -56,7 +56,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
             />
           </div>
           <div>
-            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4, display: "block" }}>STRATEGIC PRIORITIES</label>
+            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4, display: "block" }}>STRATEGIC PRIORITIES</label>
             <textarea
               value={context.strategicPriorities} onChange={e => update("strategicPriorities", e.target.value)}
               placeholder="Current quarterly goals, themes, or bets"
@@ -65,7 +65,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
             />
           </div>
           <div>
-            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4, display: "block" }}>CONSTRAINTS</label>
+            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4, display: "block" }}>CONSTRAINTS</label>
             <textarea
               value={context.constraints || ""} onChange={e => update("constraints", e.target.value)}
               placeholder="Budget limits, timeline, technical debt, team size..."
@@ -74,7 +74,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
             />
           </div>
           <div>
-            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4, display: "block" }}>ASSUMPTIONS</label>
+            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4, display: "block" }}>ASSUMPTIONS</label>
             <textarea
               value={context.assumptions || ""} onChange={e => update("assumptions", e.target.value)}
               placeholder="Key assumptions behind your current priorities"
@@ -83,7 +83,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
             />
           </div>
           <div>
-            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4, display: "block" }}>SUCCESS METRICS</label>
+            <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4, display: "block" }}>SUCCESS METRICS</label>
             <textarea
               value={context.successMetrics || ""} onChange={e => update("successMetrics", e.target.value)}
               placeholder="How will you measure if the right things were prioritized?"

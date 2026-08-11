@@ -12,7 +12,7 @@ const DIMS = ["reach", "impact", "confidence", "effort"];
 
 export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSignedIn, onSelect, isMobile }) => {
   const C = useC();
-  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" };
+  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" };
   const DIM_COLORS = { reach: C.reach, impact: C.impact, confidence: C.confidence, effort: C.danger };
   const [activeKey, setActiveKey] = useState("default");
   const [weights, setWeights] = useState({ reach: 1.0, impact: 1.0, confidence: 1.0, effort: 1.0 });
@@ -163,15 +163,15 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
               {DIMS.map(d => (
                 <div key={d} style={{ marginBottom: 10 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: DIM_COLORS[d], fontFamily: "'JetBrains Mono', monospace" }}>{d.toUpperCase()}</span>
-                    <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{weights[d].toFixed(1)}x</span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: DIM_COLORS[d], fontFamily: "var(--mono)" }}>{d.toUpperCase()}</span>
+                    <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "var(--mono)" }}>{weights[d].toFixed(1)}x</span>
                   </div>
                   <input type="range" min="0.1" max="5.0" step="0.1" value={weights[d]}
                     onChange={e => setWeights(w => ({ ...w, [d]: parseFloat(e.target.value) }))}
                     style={{ width: "100%", accentColor: DIM_COLORS[d] }} />
                 </div>
               ))}
-              <button onClick={saveCustomScenario} style={{ width: "100%", padding: "8px 12px", border: `1px solid ${C.purple}30`, borderRadius: 6, background: C.purple + "10", color: C.purple, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Save Scenario</button>
+              <button onClick={saveCustomScenario} style={{ width: "100%", padding: "8px 12px", border: `1px solid ${C.purple}30`, borderRadius: 6, background: C.purple + "10", color: C.purple, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Save Scenario</button>
             </div>
           )}
         </div>
@@ -189,15 +189,15 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
             </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 40px 1fr", gap: 0 }}>
-              <div style={{ fontSize: 9, fontWeight: 600, color: C.textDim, padding: "0 0 8px", fontFamily: "'JetBrains Mono', monospace" }}>DEFAULT RICE</div>
+              <div style={{ fontSize: 9, fontWeight: 600, color: C.textDim, padding: "0 0 8px", fontFamily: "var(--mono)" }}>DEFAULT RICE</div>
               <div />
-              <div style={{ fontSize: 9, fontWeight: 600, color: C.textDim, padding: "0 0 8px", fontFamily: "'JetBrains Mono', monospace" }}>SCENARIO</div>
+              <div style={{ fontSize: 9, fontWeight: 600, color: C.textDim, padding: "0 0 8px", fontFamily: "var(--mono)" }}>SCENARIO</div>
               {movements.map((m, i) => {
                 const defaultFeature = defaultRanked[i];
                 const moveColor = m.movement > 0 ? C.accent : m.movement < 0 ? C.danger : C.textDim;
                 return [
                   <div key={`d-${i}`} style={{ padding: "6px 8px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", width: 20, textAlign: "right" }}>#{i + 1}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: C.textDim, fontFamily: "var(--mono)", width: 20, textAlign: "right" }}>#{i + 1}</span>
                     <span style={{ fontSize: 11, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{defaultFeature?.name}</span>
                   </div>,
                   <div key={`m-${i}`} style={{ padding: "6px 0", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -212,9 +212,9 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
                     padding: "6px 8px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 6, cursor: "pointer",
                     background: Math.abs(m.movement) >= 2 ? moveColor + "08" : "transparent",
                   }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: moveColor, fontFamily: "'JetBrains Mono', monospace", width: 20, textAlign: "right" }}>#{m.scenarioRank}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: moveColor, fontFamily: "var(--mono)", width: 20, textAlign: "right" }}>#{m.scenarioRank}</span>
                     <span style={{ fontSize: 11, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.name}</span>
-                    <span title="Normalized 0–100 index relative to the top-ranked candidate" style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", marginLeft: "auto" }}>{m.scenarioIndex}</span>
+                    <span title="Normalized 0–100 index relative to the top-ranked candidate" style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", marginLeft: "auto" }}>{m.scenarioIndex}</span>
                   </div>,
                 ];
               })}
@@ -228,11 +228,11 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
           <div style={{ padding: 12, border: `1px solid ${C.border}`, borderRadius: 8, background: C.surface, marginTop: 8, marginBottom: 16 }}>
             {DIMS.map(d => (
               <div key={d} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <span style={{ fontSize: 10, fontWeight: 600, color: DIM_COLORS[d], fontFamily: "'JetBrains Mono', monospace", width: 20 }}>{d.charAt(0).toUpperCase()}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: DIM_COLORS[d], fontFamily: "var(--mono)", width: 20 }}>{d.charAt(0).toUpperCase()}</span>
                 <div style={{ flex: 1, height: 8, borderRadius: 4, background: C.border }}>
                   <div style={{ height: 8, borderRadius: 4, background: DIM_COLORS[d], width: `${Math.min(weights[d] / 5 * 100, 100)}%`, transition: "width 0.2s" }} />
                 </div>
-                <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "'JetBrains Mono', monospace", width: 30, textAlign: "right" }}>{weights[d].toFixed(1)}x</span>
+                <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "var(--mono)", width: 30, textAlign: "right" }}>{weights[d].toFixed(1)}x</span>
               </div>
             ))}
           </div>

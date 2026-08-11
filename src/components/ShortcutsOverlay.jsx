@@ -58,7 +58,7 @@ export const ShortcutsOverlay = ({ onClose }) => {
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
           <span id="shortcuts-title" style={{ fontSize: 14, fontWeight: 700, color: C.text }}>Keyboard Shortcuts</span>
-          <button onClick={onClose} style={{ padding: "2px 8px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 10, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Esc</button>
+          <button onClick={onClose} style={{ padding: "2px 8px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 10, cursor: "pointer", fontFamily: "var(--mono)" }}>Esc</button>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {shortcuts.map(s => (
@@ -66,13 +66,13 @@ export const ShortcutsOverlay = ({ onClose }) => {
               <span style={{
                 minWidth: 32, padding: "3px 8px", border: `1px solid ${C.border}`, borderRadius: 5,
                 background: C.bg, color: C.text, fontSize: 11, fontWeight: 600, textAlign: "center",
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: "var(--mono)",
               }}>{s.key}</span>
               <span style={{ fontSize: 12, color: C.textMuted }}>{s.desc}</span>
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px solid ${C.border}`, fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>
+        <div style={{ marginTop: 16, paddingTop: 12, borderTop: `1px solid ${C.border}`, fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>
           Shortcuts are disabled when typing in inputs.
         </div>
       </div>

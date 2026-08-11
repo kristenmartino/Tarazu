@@ -11,7 +11,7 @@ export const OfflineBanner = ({ isOnline, isSyncing }) => {
       borderBottom: `1px solid ${isOnline ? C.accent + "30" : C.warn + "30"}`,
       display: "flex", alignItems: "center", gap: 8,
       fontSize: 11, fontWeight: 600,
-      fontFamily: "'JetBrains Mono', monospace",
+      fontFamily: "var(--mono)",
       color: isOnline ? C.accent : C.warn,
     }}>
       <span style={{ fontSize: 14 }}>{isOnline ? "↻" : "⚠"}</span>

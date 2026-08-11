@@ -91,15 +91,15 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
         <textarea value={desc} onChange={ev => setDesc(ev.target.value)} placeholder="Brief description (optional)" aria-label="Candidate description" rows={2} style={{ ...inputStyle, fontSize: 13, resize: "vertical" }} onFocus={ev => ev.target.style.borderColor = C.accent} onBlur={ev => ev.target.style.borderColor = C.border} />
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
           <div>
-            <label htmlFor="form-owner" style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4, display: "block" }}>OWNER</label>
+            <label htmlFor="form-owner" style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4, display: "block" }}>OWNER</label>
             <input id="form-owner" value={owner} onChange={ev => setOwner(ev.target.value)} placeholder="Owner" style={{ ...inputStyle, fontSize: 11, width: "100%", boxSizing: "border-box" }} />
           </div>
           <div>
-            <label htmlFor="form-theme" style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4, display: "block" }}>THEME</label>
+            <label htmlFor="form-theme" style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4, display: "block" }}>THEME</label>
             <input id="form-theme" value={theme} onChange={ev => setTheme(ev.target.value)} placeholder="Theme" style={{ ...inputStyle, fontSize: 11, width: "100%", boxSizing: "border-box" }} />
           </div>
           <div>
-            <label htmlFor="form-status" style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4, display: "block" }}>STATUS</label>
+            <label htmlFor="form-status" style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4, display: "block" }}>STATUS</label>
             <select id="form-status" value={status} onChange={ev => setStatus(ev.target.value)} style={{ ...inputStyle, fontSize: 11, width: "100%", boxSizing: "border-box" }}>
               <option value="">Backlog</option>
               <option value="active">Active</option>
@@ -110,12 +110,12 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           </div>
         </div>
         <button onClick={suggestAll} disabled={!name.trim() || aiLoading}
-          style={{ padding: "7px 14px", border: `1px solid ${C.purple}30`, borderRadius: 6, background: C.purpleDim, color: C.purple, fontSize: 11, fontWeight: 600, cursor: !name.trim() || aiLoading ? "not-allowed" : "pointer", fontFamily: "'JetBrains Mono', monospace", opacity: !name.trim() || aiLoading ? 0.4 : 1, transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+          style={{ padding: "7px 14px", border: `1px solid ${C.purple}30`, borderRadius: 6, background: C.purpleDim, color: C.purple, fontSize: 11, fontWeight: 600, cursor: !name.trim() || aiLoading ? "not-allowed" : "pointer", fontFamily: "var(--mono)", opacity: !name.trim() || aiLoading ? 0.4 : 1, transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
           onMouseEnter={ev => { if (name.trim() && !aiLoading) ev.target.style.background = `${C.purple}20`; }}
           onMouseLeave={ev => ev.target.style.background = C.purpleDim}>
           {aiLoading ? "Suggesting..." : "✦ AI Suggest Scores"}
         </button>
-        {aiError && <p style={{ fontSize: 10, color: C.danger, margin: 0, fontFamily: "'JetBrains Mono', monospace" }}>{aiError}</p>}
+        {aiError && <p style={{ fontSize: 10, color: C.danger, margin: 0, fontFamily: "var(--mono)" }}>{aiError}</p>}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           <Slider label="Reach" value={r} onChange={setR} color={C.reach} icon="📡"
             aiMode={aiModes.reach} aiScore={aiResults.reach?.score} aiJustification={aiResults.reach?.justification}
@@ -131,12 +131,12 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
             aiLoading={aiLoading && aiModes.effort && !aiResults.effort} onToggleAi={() => toggleDimension("effort")} />
         </div>
         <div style={{ padding: 12, borderRadius: 8, background: C.accentGlow, border: `1px solid ${C.accent}20`, textAlign: "center" }}>
-          <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>RICE SCORE</span>
-          <p style={{ fontSize: 28, fontWeight: 800, color: C.accent, margin: "4px 0 0", fontFamily: "'JetBrains Mono', monospace" }}>{preview.toLocaleString()}</p>
+          <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "var(--mono)" }}>RICE SCORE</span>
+          <p style={{ fontSize: 28, fontWeight: 800, color: C.accent, margin: "4px 0 0", fontFamily: "var(--mono)" }}>{preview.toLocaleString()}</p>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={submit} disabled={!name.trim()} style={{ flex: 1, padding: "10px 16px", border: "none", borderRadius: 8, background: name.trim() ? C.accent : C.border, color: name.trim() ? C.bg : C.textDim, fontSize: 13, fontWeight: 700, cursor: name.trim() ? "pointer" : "not-allowed", fontFamily: "'JetBrains Mono', monospace" }}>{editFeature ? "Save Changes" : "Add Candidate"}</button>
-          <button onClick={onCancel} style={{ padding: "10px 16px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 13, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Cancel</button>
+          <button onClick={submit} disabled={!name.trim()} style={{ flex: 1, padding: "10px 16px", border: "none", borderRadius: 8, background: name.trim() ? C.accent : C.border, color: name.trim() ? C.bg : C.textDim, fontSize: 13, fontWeight: 700, cursor: name.trim() ? "pointer" : "not-allowed", fontFamily: "var(--mono)" }}>{editFeature ? "Save Changes" : "Add Candidate"}</button>
+          <button onClick={onCancel} style={{ padding: "10px 16px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 13, cursor: "pointer", fontFamily: "var(--mono)" }}>Cancel</button>
         </div>
       </div>
     </div>

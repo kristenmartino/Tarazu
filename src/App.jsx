@@ -738,7 +738,7 @@ export default function App() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.bg} strokeWidth="2"><line x1="4" y1="6" x2="20" y2="6" strokeLinecap="round"/><line x1="12" y1="6" x2="12" y2="20" strokeLinecap="round"/><circle cx="5" cy="6" r="2" fill={C.bg} stroke="none"/><circle cx="19" cy="6" r="2" fill={C.bg} stroke="none"/></svg>
           </div>
           <h1 style={{ fontSize: 17, fontWeight: 800, margin: 0, letterSpacing: "-0.03em", fontFamily: "var(--display)", color: C.text }}>Tarazu</h1>
-          {!isMobile && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.06em" }}>DECISION INTELLIGENCE</span>}
+          {!isMobile && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", letterSpacing: "0.06em" }}>DECISION INTELLIGENCE</span>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <ThemeMenu compact={isMobile} />
@@ -747,7 +747,7 @@ export default function App() {
             <button onClick={() => setMobileWsOpen(!mobileWsOpen)} style={{
               padding: "4px 10px", border: `1px solid ${C.border}`, borderRadius: 6,
               background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer",
-              fontFamily: "'JetBrains Mono', monospace", display: "flex", alignItems: "center", gap: 4,
+              fontFamily: "var(--mono)", display: "flex", alignItems: "center", gap: 4,
             }}>
               <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{activeWs?.name || "Workspace"}</span>
               <span style={{ fontSize: 8, color: C.textDim }}>{mobileWsOpen ? "▲" : "▼"}</span>
@@ -774,7 +774,7 @@ export default function App() {
                   style={{
                     width: "100%", padding: "10px 14px", border: "none", textAlign: "left",
                     background: "transparent", color: C.accent, fontSize: 11, fontWeight: 600,
-                    cursor: "pointer", fontFamily: "'JetBrains Mono', monospace",
+                    cursor: "pointer", fontFamily: "var(--mono)",
                   }}>
                   + New Workspace
                 </button>

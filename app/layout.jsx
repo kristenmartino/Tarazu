@@ -40,13 +40,6 @@ export default function RootLayout({ children }) {
               "document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');",
           }}
         />
-        {/* JetBrains Mono for the in-app monospace labels (the ~31 literal
-            `'JetBrains Mono'` refs). Inter is dropped — the app body now uses
-            Figtree via --body. */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body style={{ margin: 0, background: "var(--bg)" }}>
         {children}

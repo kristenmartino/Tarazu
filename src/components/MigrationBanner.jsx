@@ -23,14 +23,14 @@ export const MigrationBanner = ({ onConfirm, onDismiss }) => {
       <button
         onClick={handleConfirm}
         disabled={migrating}
-        style={{ padding: "5px 14px", border: "none", borderRadius: 6, background: C.blue, color: C.bg, fontSize: 11, fontWeight: 700, cursor: migrating ? "wait" : "pointer", fontFamily: "'JetBrains Mono', monospace", opacity: migrating ? 0.6 : 1 }}
+        style={{ padding: "5px 14px", border: "none", borderRadius: 6, background: C.blue, color: C.bg, fontSize: 11, fontWeight: 700, cursor: migrating ? "wait" : "pointer", fontFamily: "var(--mono)", opacity: migrating ? 0.6 : 1 }}
       >
         {migrating ? "Importing..." : "Import"}
       </button>
       <button
         onClick={onDismiss}
         disabled={migrating}
-        style={{ padding: "5px 10px", border: "none", borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}
+        style={{ padding: "5px 10px", border: "none", borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }}
       >
         Dismiss
       </button>

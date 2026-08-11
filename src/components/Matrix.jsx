@@ -34,6 +34,13 @@ export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
+    // canvas `ctx.font` goes through the CSS font *shorthand* parser, which does
+    // not substitute custom properties — "10px var(--mono)" is invalid and gets
+    // silently dropped, leaving the previous font in place. So resolve --mono to
+    // its computed token sequence (next/font's generated family name first) and
+    // interpolate that instead.
+    const mono = getComputedStyle(document.documentElement)
+      .getPropertyValue("--mono").trim() || "ui-monospace, monospace";
     const dpr = window.devicePixelRatio || 1;
     canvas.width = dims.w * dpr;
     canvas.height = dims.h * dpr;
@@ -59,20 +66,20 @@ export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier
     ctx.setLineDash([]);
 
     // Quadrant labels
-    ctx.font = "600 10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
+    ctx.font = `600 10px ${mono}`; ctx.textAlign = "center";
     quadrants.forEach(q => {
       ctx.fillStyle = q.color + "8C";
       ctx.fillText(q.label.toUpperCase(), PAD.left + pw * q.x, PAD.top + ph * (1 - q.y) + 1);
-      ctx.font = "400 9px 'JetBrains Mono', monospace"; ctx.fillStyle = q.color + "59";
+      ctx.font = `400 9px ${mono}`; ctx.fillStyle = q.color + "59";
       ctx.fillText(q.sub, PAD.left + pw * q.x, PAD.top + ph * (1 - q.y) + 14);
-      ctx.font = "600 10px 'JetBrains Mono', monospace";
+      ctx.font = `600 10px ${mono}`;
     });
 
     // Axes
-    ctx.font = "600 10px 'JetBrains Mono', monospace"; ctx.fillStyle = C.textMuted; ctx.textAlign = "center";
+    ctx.font = `600 10px ${mono}`; ctx.fillStyle = C.textMuted; ctx.textAlign = "center";
     ctx.fillText("EFFORT →", dims.w / 2, dims.h - 8);
     ctx.save(); ctx.translate(14, dims.h / 2); ctx.rotate(-Math.PI / 2); ctx.fillText("IMPACT →", 0, 0); ctx.restore();
-    ctx.font = "400 9px 'JetBrains Mono', monospace"; ctx.fillStyle = C.textDim; ctx.textAlign = "center";
+    ctx.font = `400 9px ${mono}`; ctx.fillStyle = C.textDim; ctx.textAlign = "center";
     for (let i = 0; i <= 4; i++) ctx.fillText(i * 25, PAD.left + (pw / 4) * i, dims.h - PAD.bottom + 16);
     ctx.textAlign = "right";
     for (let i = 0; i <= 4; i++) ctx.fillText(i * 25, PAD.left - 8, dims.h - PAD.bottom - (ph / 4) * i + 3);
@@ -92,7 +99,7 @@ export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier
       const showLabel = labelMode === "always" || (labelMode === "hover" && (isSel || isHov));
       if (showLabel) {
         const lbl = f.name.length > 20 ? f.name.slice(0, 18) + "…" : f.name;
-        ctx.font = "600 10px 'JetBrains Mono', monospace"; const tw = ctx.measureText(lbl).width;
+        ctx.font = `600 10px ${mono}`; const tw = ctx.measureText(lbl).width;
         const lx = clamp(x - tw / 2 - 6, 2, dims.w - tw - 14), ly = y - r - 14;
         ctx.fillStyle = C.surface + "F0"; ctx.strokeStyle = col + "50"; ctx.lineWidth = 1;
         ctx.beginPath(); ctx.roundRect(lx, ly - 12, tw + 12, 18, 4); ctx.fill(); ctx.stroke();

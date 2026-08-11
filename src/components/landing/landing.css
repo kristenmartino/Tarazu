@@ -204,7 +204,7 @@
 .tz-landing .foot-brand .brand { margin-bottom: 14px; }
 .tz-landing .foot-brand p { color: var(--text-faint); font-size: 14.5px; }
 .tz-landing .foot-cols { display: flex; gap: 60px; flex-wrap: wrap; }
-.tz-landing .foot-col h5 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass); margin-bottom: 16px; font-weight: 500; }
+.tz-landing .foot-col h4 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--brass); margin-bottom: 16px; font-weight: 500; }
 .tz-landing .foot-col a { display: block; color: var(--text-soft); font-size: 14.5px; margin-bottom: 11px; transition: color 0.2s; }
 .tz-landing .foot-col a:hover { color: var(--text); }
 .tz-landing .foot-bottom { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-top: 26px; font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); }

@@ -14,14 +14,14 @@ export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSiz
   const C = useC();
   const selectStyle = {
     padding: "5px 8px", border: `1px solid ${C.border}`, borderRadius: 6,
-    background: C.bg, color: C.text, fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
+    background: C.bg, color: C.text, fontSize: 10, fontFamily: "var(--mono)",
     outline: "none", cursor: "pointer",
   };
   return (
   <div data-no-print style={{ display: "flex", flexDirection: "column", gap: 8, padding: "8px 0" }}>
     {onApplyPreset && (
       <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>PRESETS</span>
+        <span style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>PRESETS</span>
         {PRESETS.map(p => {
           const active = isPresetActive(p, { colorBy, sizeBy, labelMode });
           return (
@@ -30,7 +30,7 @@ export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSiz
               background: active ? C.accentGlow : "transparent",
               color: active ? C.accent : C.textMuted,
               fontSize: 9, fontWeight: 600, cursor: "pointer",
-              fontFamily: "'JetBrains Mono', monospace", transition: "all 0.15s",
+              fontFamily: "var(--mono)", transition: "all 0.15s",
             }}>{p.label}</button>
           );
         })}
@@ -38,14 +38,14 @@ export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSiz
     )}
     <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>COLOR</label>
+        <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>COLOR</label>
         <select value={colorBy} onChange={e => onColorByChange(e.target.value)} style={selectStyle}>
           <option value="tier">Tier</option>
           <option value="confidence">Confidence</option>
         </select>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>SIZE</label>
+        <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>SIZE</label>
         <select value={sizeBy} onChange={e => onSizeByChange(e.target.value)} style={selectStyle}>
           <option value="uniform">Uniform</option>
           <option value="reach">Reach</option>
@@ -53,7 +53,7 @@ export const MapControls = ({ colorBy, sizeBy, labelMode, onColorByChange, onSiz
         </select>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>LABELS</label>
+        <label style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>LABELS</label>
         <select value={labelMode} onChange={e => onLabelModeChange(e.target.value)} style={selectStyle}>
           <option value="hover">Hover</option>
           <option value="always">Always</option>

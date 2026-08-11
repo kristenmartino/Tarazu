@@ -39,21 +39,21 @@ export const OnboardingPanel = ({ onAddCandidate, onLoadSamples }) => {
     </div>
     {steps.map(s => (
       <div key={s.num} style={{ display: "flex", gap: 14, padding: 16, border: `1px solid ${s.color}20`, borderRadius: 10, background: `${s.color}06` }}>
-        <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${s.color}15`, color: s.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{s.num}</div>
+        <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${s.color}15`, color: s.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, fontFamily: "var(--mono)", flexShrink: 0 }}>{s.num}</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: C.text, marginBottom: 4 }}>{s.title}</div>
           <p style={{ fontSize: 11, color: C.textMuted, margin: 0, lineHeight: 1.6 }}>{s.desc}</p>
           {s.action === "add" && (
-            <button onClick={onAddCandidate} style={{ marginTop: 10, padding: "8px 16px", border: `1px dashed ${C.accent}50`, borderRadius: 8, background: C.accentGlow, color: C.accent, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>{s.actionLabel}</button>
+            <button onClick={onAddCandidate} style={{ marginTop: 10, padding: "8px 16px", border: `1px dashed ${C.accent}50`, borderRadius: 8, background: C.accentGlow, color: C.accent, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "var(--mono)" }}>{s.actionLabel}</button>
           )}
           {s.action === "samples" && (
-            <button onClick={onLoadSamples} style={{ marginTop: 10, padding: "8px 16px", border: `1px solid ${C.blue}30`, borderRadius: 8, background: C.blueDim, color: C.blue, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>{s.actionLabel}</button>
+            <button onClick={onLoadSamples} style={{ marginTop: 10, padding: "8px 16px", border: `1px solid ${C.blue}30`, borderRadius: 8, background: C.blueDim, color: C.blue, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>{s.actionLabel}</button>
           )}
         </div>
       </div>
     ))}
     <div style={{ textAlign: "center", padding: "8px 0" }}>
-      <span style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>Press <strong style={{ color: C.textMuted }}>?</strong> anytime for keyboard shortcuts</span>
+      <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>Press <strong style={{ color: C.textMuted }}>?</strong> anytime for keyboard shortcuts</span>
     </div>
   </div>
   );

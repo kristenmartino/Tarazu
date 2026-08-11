@@ -7,8 +7,8 @@ const StatCard = ({ label, value, color }) => {
   const C = useC();
   return (
   <div style={{ flex: 1, minWidth: 100, padding: "12px 14px", border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface }}>
-    <span style={{ fontSize: 9, fontWeight: 700, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>{label}</span>
-    <p style={{ fontSize: 22, fontWeight: 800, color: color || C.text, margin: "4px 0 0", fontFamily: "'JetBrains Mono', monospace" }}>{value}</p>
+    <span style={{ fontSize: 9, fontWeight: 700, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>{label}</span>
+    <p style={{ fontSize: 22, fontWeight: 800, color: color || C.text, margin: "4px 0 0", fontFamily: "var(--mono)" }}>{value}</p>
   </div>
   );
 };
@@ -17,7 +17,7 @@ const ShortcutButton = ({ label, icon, color, onClick }) => (
   <button onClick={onClick} style={{
     flex: 1, minWidth: 120, padding: "14px 16px", border: `1px solid ${color}30`, borderRadius: 10,
     background: `${color}08`, color, fontSize: 12, fontWeight: 600, cursor: "pointer",
-    fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s",
+    fontFamily: "var(--mono)", transition: "all 0.2s",
     display: "flex", alignItems: "center", gap: 8,
   }}
     onMouseEnter={e => e.currentTarget.style.background = `${color}18`}
@@ -85,13 +85,13 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
         {topCandidate && (
           <div style={{ padding: 16, border: `1px solid ${topTier.color}20`, borderRadius: 10, background: `${topTier.color}08` }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>TOP CANDIDATE</span>
+              <span style={{ fontSize: 9, fontWeight: 700, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>TOP CANDIDATE</span>
               <Pill color={topTier.color} dimColor={topTier.color + "20"} small>{topTier.label}</Pill>
             </div>
             <p style={{ fontSize: 15, fontWeight: 700, color: C.text, margin: "0 0 4px" }}>{topCandidate.name}</p>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 20, fontWeight: 800, color: topTier.color, fontFamily: "'JetBrains Mono', monospace" }}>{topCandidate.score.toLocaleString()}</span>
-              <span style={{ fontSize: 11, color: C.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>R:{topCandidate.reach} I:{topCandidate.impact} C:{topCandidate.confidence} E:{topCandidate.effort}</span>
+              <span style={{ fontSize: 20, fontWeight: 800, color: topTier.color, fontFamily: "var(--mono)" }}>{topCandidate.score.toLocaleString()}</span>
+              <span style={{ fontSize: 11, color: C.textMuted, fontFamily: "var(--mono)" }}>R:{topCandidate.reach} I:{topCandidate.impact} C:{topCandidate.confidence} E:{topCandidate.effort}</span>
             </div>
           </div>
         )}
@@ -99,18 +99,18 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
         {/* Needs validation */}
         {needsValidation.length > 0 && (
           <div style={{ padding: 16, border: `1px solid color-mix(in srgb, var(--warning) 13%, transparent)`, borderRadius: 10, background: "color-mix(in srgb, var(--warning) 3%, transparent)" }}>
-            <span style={{ fontSize: 9, fontWeight: 700, color: C.warn, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>NEEDS VALIDATION</span>
+            <span style={{ fontSize: 9, fontWeight: 700, color: C.warn, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>NEEDS VALIDATION</span>
             <p style={{ fontSize: 10, color: C.textMuted, margin: "4px 0 8px" }}>Candidates with confidence below 50 — consider gathering more evidence.</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {needsValidation.map(f => (
                 <div key={f.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", background: C.surface, borderRadius: 6, border: `1px solid ${C.border}` }}>
                   <span style={{ fontSize: 12, color: C.text, flex: 1 }}>{f.name}</span>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: C.warn, fontFamily: "'JetBrains Mono', monospace" }}>C:{f.confidence}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: C.warn, fontFamily: "var(--mono)" }}>C:{f.confidence}</span>
                 </div>
               ))}
             </div>
             {scored.filter(f => f.confidence < 50).length > 3 && (
-              <button onClick={() => onScreenChange("priorities")} style={{ marginTop: 8, padding: "4px 10px", border: `1px solid color-mix(in srgb, var(--warning) 19%, transparent)`, borderRadius: 6, background: "transparent", color: C.warn, fontSize: 10, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>
+              <button onClick={() => onScreenChange("priorities")} style={{ marginTop: 8, padding: "4px 10px", border: `1px solid color-mix(in srgb, var(--warning) 19%, transparent)`, borderRadius: 6, background: "transparent", color: C.warn, fontSize: 10, cursor: "pointer", fontFamily: "var(--mono)" }}>
                 View all {scored.filter(f => f.confidence < 50).length} candidates
               </button>
             )}
@@ -120,7 +120,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
         {/* Recent decisions */}
         {recentDecisions.length > 0 && (
           <div style={{ padding: 16, border: `1px solid ${C.purple}20`, borderRadius: 10, background: `${C.purple}08` }}>
-            <span style={{ fontSize: 9, fontWeight: 700, color: C.purple, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>RECENT DECISIONS</span>
+            <span style={{ fontSize: 9, fontWeight: 700, color: C.purple, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>RECENT DECISIONS</span>
             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
               {recentDecisions.map(d => (
                 <div key={d.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", background: C.surface, borderRadius: 6, border: `1px solid ${C.border}` }}>

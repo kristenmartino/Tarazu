@@ -4,7 +4,7 @@ export const Slider = ({ label, value, onChange, color, icon, aiMode, aiScore, a
   const C = useC();
   const toggleStyle = (active) => ({
     flex: 1, padding: "3px 6px", borderRadius: 3, border: "none", fontSize: 8, fontWeight: 600,
-    cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.15s",
+    cursor: "pointer", fontFamily: "var(--mono)", transition: "all 0.15s",
     background: active ? C.surface : "transparent",
     color: active ? C.purple : C.textMuted, // inactive label: --text-soft (chip rule, AA)
   });
@@ -14,11 +14,11 @@ export const Slider = ({ label, value, onChange, color, icon, aiMode, aiScore, a
       <span style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, letterSpacing: "0.06em", textTransform: "uppercase" }}>{icon} {label}</span>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         {aiLoading ? (
-          <span style={{ fontSize: 11, color: C.purple, fontFamily: "'JetBrains Mono', monospace" }}>
+          <span style={{ fontSize: 11, color: C.purple, fontFamily: "var(--mono)" }}>
             <span style={{ display: "inline-block", width: 10, height: 10, border: `1.5px solid ${C.border}`, borderTopColor: C.purple, borderRadius: "50%", animation: "spin 0.6s linear infinite", verticalAlign: "middle" }} />
           </span>
         ) : (
-          <span style={{ fontSize: 13, fontWeight: 700, color: aiMode ? C.purple : color, fontFamily: "'JetBrains Mono', monospace" }}>{value}</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: aiMode ? C.purple : color, fontFamily: "var(--mono)" }}>{value}</span>
         )}
       </div>
     </div>

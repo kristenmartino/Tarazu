@@ -181,7 +181,7 @@ export function DialogHost() {
             style={{
               padding: "8px 16px", border: `1px solid ${C.border}`, borderRadius: 8,
               background: "transparent", color: C.textMuted, fontSize: 12, cursor: "pointer",
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: "var(--mono)",
             }}
           >
             {state.cancelText}
@@ -191,7 +191,7 @@ export function DialogHost() {
             style={{
               padding: "8px 16px", border: `1px solid ${accent}40`, borderRadius: 8,
               background: `${accent}18`, color: accent, fontSize: 12, fontWeight: 700, cursor: "pointer",
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: "var(--mono)",
             }}
           >
             {state.confirmText}
