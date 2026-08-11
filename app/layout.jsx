@@ -19,9 +19,12 @@ export const metadata = {
   title: "Tarazu — Decision Intelligence for Product Teams",
   description:
     "Weigh what matters. Tarazu helps product teams prioritize candidates, compare tradeoffs, and document decisions with structured frameworks and explainable AI.",
-  icons: {
-    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='%23E2AC4D' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M16 5v22M9 27h14'/%3E%3Cpath d='M6 9h20' stroke='%23ECEAE4'/%3E%3C/svg%3E",
-  },
+  // No `icons` key on purpose. An explicit metadata.icons OVERRIDES the App
+  // Router file convention, so declaring one here would silently disable
+  // app/icon.svg, app/favicon.ico, and app/apple-icon.png.
+  //
+  // Points agents and LLM tooling at the generated markdown map of the site.
+  alternates: { types: { "text/markdown": "/llms.txt" } },
 };
 
 export default function RootLayout({ children }) {

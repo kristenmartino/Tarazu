@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Source of truth for every icon asset. scripts/generate-icons.mjs rasterizes
+       this into favicon.ico, apple-icon.png, and the manifest PNGs.
+
+       The dark plate is not decoration: the crossbar is bone (#ECEAE4), which
+       would be invisible against a light browser tab strip if the background
+       were transparent. -->
+  <rect width="32" height="32" rx="7" fill="#0E0F12"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M16 7v18M10 25h12" stroke="#E2AC4D" stroke-width="2"/>
+    <path d="M7 10.5h18" stroke="#ECEAE4" stroke-width="2"/>
+    <path d="M7 10.5l-3 6a3.4 3.4 0 0 0 6 0zM25 10.5l-3 6a3.4 3.4 0 0 0 6 0z"
+          stroke="#E2AC4D" stroke-width="1.5" stroke-linejoin="round" fill="rgba(226,172,77,0.14)"/>
+    <circle cx="16" cy="10.5" r="1.5" fill="#E2AC4D" stroke="none"/>
+  </g>
+</svg>

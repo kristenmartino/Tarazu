@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Maskable variant. Android crops a maskable icon to an arbitrary shape and
+       only guarantees the central 80% of the diameter survives, so the mark is
+       inset to ~64% of the canvas and the plate runs full-bleed with no corner
+       radius (the OS supplies the shape). Padding is baked in here rather than
+       applied at resize time, which would scale the artwork rather than inset it. -->
+  <rect width="32" height="32" fill="#0E0F12"/>
+  <g transform="translate(16 16) scale(0.64) translate(-16 -16)" fill="none" stroke-linecap="round">
+    <path d="M16 7v18M10 25h12" stroke="#E2AC4D" stroke-width="2"/>
+    <path d="M7 10.5h18" stroke="#ECEAE4" stroke-width="2"/>
+    <path d="M7 10.5l-3 6a3.4 3.4 0 0 0 6 0zM25 10.5l-3 6a3.4 3.4 0 0 0 6 0z"
+          stroke="#E2AC4D" stroke-width="1.5" stroke-linejoin="round" fill="rgba(226,172,77,0.14)"/>
+    <circle cx="16" cy="10.5" r="1.5" fill="#E2AC4D" stroke="none"/>
+  </g>
+</svg>
