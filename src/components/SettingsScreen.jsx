@@ -12,8 +12,8 @@ export const SettingsScreen = ({
   const C = useC();
   const { themeName, setThemeName, themes } = useTheme();
   const sectionStyle = { padding: 20, border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface };
-  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 };
-  const selectStyle = { padding: "8px 12px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", outline: "none", cursor: "pointer", width: "100%" };
+  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 6 };
+  const selectStyle = { padding: "8px 12px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "var(--mono)", outline: "none", cursor: "pointer", width: "100%" };
   const inputStyle = { ...selectStyle, cursor: "text" };
   const [wsName, setWsName] = useState(activeWs?.name || "");
   const [confirmClear, setConfirmClear] = useState(false);
@@ -54,7 +54,7 @@ export const SettingsScreen = ({
                       fontSize: 11,
                       fontWeight: 600,
                       cursor: "pointer",
-                      fontFamily: "'JetBrains Mono', monospace",
+                      fontFamily: "var(--mono)",
                       transition: "all 0.2s",
                     }}
                   >
@@ -77,7 +77,7 @@ export const SettingsScreen = ({
               <div style={labelStyle}>WORKSPACE NAME</div>
               <div style={{ display: "flex", gap: 8 }}>
                 <input value={wsName} onChange={e => setWsName(e.target.value)} onBlur={handleRename} onKeyDown={e => e.key === "Enter" && handleRename()} style={{ ...inputStyle, flex: 1 }} />
-                <button onClick={handleRename} style={{ padding: "8px 14px", border: `1px solid color-mix(in srgb, var(--accent) 19%, transparent)`, borderRadius: 8, background: C.blueDim, color: C.blue, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap" }}>Rename</button>
+                <button onClick={handleRename} style={{ padding: "8px 14px", border: `1px solid color-mix(in srgb, var(--accent) 19%, transparent)`, borderRadius: 8, background: C.blueDim, color: C.blue, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)", whiteSpace: "nowrap" }}>Rename</button>
               </div>
             </div>
             <div>
@@ -131,8 +131,8 @@ export const SettingsScreen = ({
               { label: "Storage", value: isSignedIn ? "Cloud (Supabase)" : "Local (Browser)" },
             ].map(r => (
               <div key={r.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${C.border}` }}>
-                <span style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>{r.label}</span>
-                <span style={{ fontSize: 11, color: C.text, fontFamily: "'JetBrains Mono', monospace" }}>{r.value}</span>
+                <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>{r.label}</span>
+                <span style={{ fontSize: 11, color: C.text, fontFamily: "var(--mono)" }}>{r.value}</span>
               </div>
             ))}
           </div>
@@ -149,11 +149,11 @@ export const SettingsScreen = ({
               </div>
               {confirmClear ? (
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button onClick={() => { onClear(); setConfirmClear(false); }} style={{ padding: "6px 12px", border: `1px solid ${C.danger}`, borderRadius: 6, background: C.danger, color: "#fff", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Confirm</button>
-                  <button onClick={() => setConfirmClear(false)} style={{ padding: "6px 12px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 10, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Cancel</button>
+                  <button onClick={() => { onClear(); setConfirmClear(false); }} style={{ padding: "6px 12px", border: `1px solid ${C.danger}`, borderRadius: 6, background: C.danger, color: "#fff", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Confirm</button>
+                  <button onClick={() => setConfirmClear(false)} style={{ padding: "6px 12px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 10, cursor: "pointer", fontFamily: "var(--mono)" }}>Cancel</button>
                 </div>
               ) : (
-                <button onClick={() => setConfirmClear(true)} style={{ padding: "6px 12px", border: `1px solid color-mix(in srgb, var(--danger) 19%, transparent)`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Clear</button>
+                <button onClick={() => setConfirmClear(true)} style={{ padding: "6px 12px", border: `1px solid color-mix(in srgb, var(--danger) 19%, transparent)`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Clear</button>
               )}
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderTop: `1px solid ${C.border}` }}>
@@ -163,11 +163,11 @@ export const SettingsScreen = ({
               </div>
               {confirmDelete ? (
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button onClick={() => { onDeleteWorkspace(); setConfirmDelete(false); }} style={{ padding: "6px 12px", border: `1px solid ${C.danger}`, borderRadius: 6, background: C.danger, color: "#fff", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Confirm</button>
-                  <button onClick={() => setConfirmDelete(false)} style={{ padding: "6px 12px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 10, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Cancel</button>
+                  <button onClick={() => { onDeleteWorkspace(); setConfirmDelete(false); }} style={{ padding: "6px 12px", border: `1px solid ${C.danger}`, borderRadius: 6, background: C.danger, color: "#fff", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Confirm</button>
+                  <button onClick={() => setConfirmDelete(false)} style={{ padding: "6px 12px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 10, cursor: "pointer", fontFamily: "var(--mono)" }}>Cancel</button>
                 </div>
               ) : (
-                <button onClick={() => setConfirmDelete(true)} style={{ padding: "6px 12px", border: `1px solid color-mix(in srgb, var(--danger) 19%, transparent)`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Delete</button>
+                <button onClick={() => setConfirmDelete(true)} style={{ padding: "6px 12px", border: `1px solid color-mix(in srgb, var(--danger) 19%, transparent)`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Delete</button>
               )}
             </div>
           </div>

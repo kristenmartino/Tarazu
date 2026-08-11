@@ -25,7 +25,7 @@ const FieldDiff = ({ change }) => {
   const isScore = ["reach", "impact", "confidence", "effort"].includes(field);
   const color = SCORE_COLORS[field] || C.textMuted;
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 0", fontSize: 10, fontFamily: "'JetBrains Mono', monospace" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 0", fontSize: 10, fontFamily: "var(--mono)" }}>
       <span style={{ color, width: 80, fontWeight: 600 }}>{field.toUpperCase()}</span>
       {isScore ? (
         <>
@@ -72,14 +72,14 @@ const RevisionRow = ({ revision, isExpanded, onToggle, onRevert, isReverting, is
         onMouseEnter={e => e.currentTarget.style.background = C.bg}
         onMouseLeave={e => e.currentTarget.style.background = "transparent"}
       >
-        <span style={{ fontSize: 10, fontWeight: 800, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", width: 28, flexShrink: 0 }}>
+        <span style={{ fontSize: 10, fontWeight: 800, color: C.textDim, fontFamily: "var(--mono)", width: 28, flexShrink: 0 }}>
           #{revision.revision_number}
         </span>
         <Pill color={tc.color} dimColor={tc.color + "20"} small>{tc.label}</Pill>
         {scoreChanges.length > 0 && (
           <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
             {scoreChanges.map(sc => (
-              <span key={sc.field} style={{ fontSize: 9, color: SCORE_COLORS[sc.field], fontFamily: "'JetBrains Mono', monospace" }}
+              <span key={sc.field} style={{ fontSize: 9, color: SCORE_COLORS[sc.field], fontFamily: "var(--mono)" }}
                 title={`${sc.field}: ${sc.old} \u2192 ${sc.new}`}>
                 {sc.field.charAt(0).toUpperCase()}{sc.new > sc.old ? "+" : "-"}
               </span>
@@ -89,7 +89,7 @@ const RevisionRow = ({ revision, isExpanded, onToggle, onRevert, isReverting, is
         <span style={{ flex: 1, fontSize: 10, color: C.textMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {revision.change_summary}
         </span>
-        <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>
+        <span style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", flexShrink: 0 }}>
           {formatRelativeTime(revision.created_at)}
         </span>
         <span style={{ fontSize: 8, color: C.textDim, transform: isExpanded ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.15s", flexShrink: 0 }}>
@@ -103,10 +103,10 @@ const RevisionRow = ({ revision, isExpanded, onToggle, onRevert, isReverting, is
             <FieldDiff key={cf.field} change={cf} />
           ))}
           {revision.changed_fields?.length === 0 && revision.change_type === "created" && (
-            <span style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>Initial version</span>
+            <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>Initial version</span>
           )}
           {revision.reverted_to_revision && (
-            <span style={{ display: "block", marginTop: 6, fontSize: 9, color: C.purple, fontFamily: "'JetBrains Mono', monospace" }}>
+            <span style={{ display: "block", marginTop: 6, fontSize: 9, color: C.purple, fontFamily: "var(--mono)" }}>
               Restored state from revision #{revision.reverted_to_revision}
             </span>
           )}
@@ -117,7 +117,7 @@ const RevisionRow = ({ revision, isExpanded, onToggle, onRevert, isReverting, is
               style={{
                 marginTop: 8, padding: "5px 12px", border: `1px solid ${C.purple}30`, borderRadius: 6,
                 background: C.purpleDim, color: C.purple, fontSize: 10, fontWeight: 600,
-                cursor: isReverting ? "not-allowed" : "pointer", fontFamily: "'JetBrains Mono', monospace",
+                cursor: isReverting ? "not-allowed" : "pointer", fontFamily: "var(--mono)",
                 opacity: isReverting ? 0.5 : 1, transition: "all 0.2s",
               }}
             >
@@ -201,7 +201,7 @@ export const FeatureHistory = ({ wsId, featureId, feature, onRevert }) => {
   return (
     <div style={{ border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface, overflow: "hidden" }}>
       <div style={{ padding: "10px 14px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>
           DECISION HISTORY
         </span>
         {total > 0 && <Pill color={C.purple} dimColor={C.purpleDim} small>{total}</Pill>}
@@ -231,7 +231,7 @@ export const FeatureHistory = ({ wsId, featureId, feature, onRevert }) => {
           {hasMore && (
             <button onClick={loadMore} style={{
               width: "100%", padding: 8, border: "none", background: "transparent",
-              color: C.accent, fontSize: 10, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace",
+              color: C.accent, fontSize: 10, cursor: "pointer", fontFamily: "var(--mono)",
             }}>
               Load older revisions...
             </button>

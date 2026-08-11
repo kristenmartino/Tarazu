@@ -18,8 +18,8 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
   const TYPE_KEYS = Object.keys(SIGNAL_TYPES);
   // Fold any unrecognized type (blank, or legacy "import" signals) into "note" for display & filtering.
   const normalizeType = (t) => (t && SIGNAL_TYPES[t] ? t : "note");
-  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" };
-  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 };
+  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "var(--mono)", outline: "none", boxSizing: "border-box" };
+  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4 };
   const selectStyle = { ...inputStyle, cursor: "pointer" };
   const [showForm, setShowForm] = useState(false);
   const [editingSignal, setEditingSignal] = useState(null);
@@ -126,20 +126,20 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
           <button onClick={() => setFilterType("all")} style={{
             padding: "4px 10px", borderRadius: 6, border: `1px solid ${filterType === "all" ? C.accent : C.border}`,
             background: filterType === "all" ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent", color: filterType === "all" ? C.accent : C.textMuted,
-            fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)",
           }}>ALL</button>
           {TYPE_KEYS.map(t => (
             <button key={t} onClick={() => setFilterType(t)} style={{
               padding: "4px 10px", borderRadius: 6, border: `1px solid ${filterType === t ? SIGNAL_TYPES[t].color : C.border}`,
               background: filterType === t ? SIGNAL_TYPES[t].color + "15" : "transparent",
               color: filterType === t ? SIGNAL_TYPES[t].color : C.textMuted,
-              fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase",
+              fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)", textTransform: "uppercase",
             }}>{SIGNAL_TYPES[t].label}{typeCounts[t] ? ` (${typeCounts[t]})` : ""}</button>
           ))}
           <div aria-hidden style={{ width: 1, height: 20, background: C.border, margin: "0 4px" }} />
-          <button onClick={downloadSignalsTemplate} style={{ padding: "6px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Download template</button>
-          <button onClick={() => fileInputRef.current?.click()} style={{ padding: "6px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Import CSV</button>
-          <button onClick={() => openForm()} style={{ padding: "6px 14px", border: `1px solid color-mix(in srgb, var(--success) 19%, transparent)`, borderRadius: 8, background: "color-mix(in srgb, var(--success) 6%, transparent)", color: C.accent, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>+ Add Signal</button>
+          <button onClick={downloadSignalsTemplate} style={{ padding: "6px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Download template</button>
+          <button onClick={() => fileInputRef.current?.click()} style={{ padding: "6px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Import CSV</button>
+          <button onClick={() => openForm()} style={{ padding: "6px 14px", border: `1px solid color-mix(in srgb, var(--success) 19%, transparent)`, borderRadius: 8, background: "color-mix(in srgb, var(--success) 6%, transparent)", color: C.accent, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>+ Add Signal</button>
         </div>
       </div>
 
@@ -157,8 +157,8 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
             {importData.length > 10 && <div style={{ fontSize: 11, color: C.textDim, padding: "6px 0" }}>...and {importData.length - 10} more</div>}
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={confirmImport} style={{ padding: "8px 16px", border: "none", borderRadius: 8, background: C.accent, color: C.bg, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Confirm Import</button>
-            <button onClick={() => setImportData(null)} style={{ padding: "8px 16px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Cancel</button>
+            <button onClick={confirmImport} style={{ padding: "8px 16px", border: "none", borderRadius: 8, background: C.accent, color: C.bg, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Confirm Import</button>
+            <button onClick={() => setImportData(null)} style={{ padding: "8px 16px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Cancel</button>
           </div>
         </div>
       )}
@@ -180,7 +180,7 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
                     border: `1px solid ${form.type === t ? SIGNAL_TYPES[t].color : C.border}`,
                     background: form.type === t ? SIGNAL_TYPES[t].color + "15" : "transparent",
                     color: form.type === t ? SIGNAL_TYPES[t].color : C.textMuted,
-                    fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)",
                   }}>{SIGNAL_TYPES[t].label}</button>
                 ))}
               </div>
@@ -226,8 +226,8 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
               <input value={form.tags} onChange={e => setForm(f => ({ ...f, tags: e.target.value }))} placeholder="e.g. ux, pricing, mobile" style={inputStyle} />
             </div>
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-              <button onClick={() => { setShowForm(false); setEditingSignal(null); }} style={{ padding: "8px 16px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Cancel</button>
-              <button onClick={handleSubmit} style={{ padding: "8px 16px", border: "none", borderRadius: 8, background: C.accent, color: C.bg, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>{editingSignal ? "Update" : "Add Signal"}</button>
+              <button onClick={() => { setShowForm(false); setEditingSignal(null); }} style={{ padding: "8px 16px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Cancel</button>
+              <button onClick={handleSubmit} style={{ padding: "8px 16px", border: "none", borderRadius: 8, background: C.accent, color: C.bg, fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>{editingSignal ? "Update" : "Add Signal"}</button>
             </div>
           </div>
         </div>
@@ -269,11 +269,11 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
                 </div>
               )}
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                {s.source && <span style={{ fontSize: 10, color: C.textDim, fontFamily: "'JetBrains Mono', monospace" }}>{s.source}</span>}
-                {s.linked_candidate_name && <span style={{ fontSize: 10, color: C.blue, fontFamily: "'JetBrains Mono', monospace", padding: "1px 6px", background: C.blueDim, borderRadius: 4 }}>{s.linked_candidate_name}</span>}
-                {s.theme && <span style={{ fontSize: 10, color: C.purple, fontFamily: "'JetBrains Mono', monospace", padding: "1px 6px", background: C.purpleDim, borderRadius: 4 }}>{s.theme}</span>}
+                {s.source && <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>{s.source}</span>}
+                {s.linked_candidate_name && <span style={{ fontSize: 10, color: C.blue, fontFamily: "var(--mono)", padding: "1px 6px", background: C.blueDim, borderRadius: 4 }}>{s.linked_candidate_name}</span>}
+                {s.theme && <span style={{ fontSize: 10, color: C.purple, fontFamily: "var(--mono)", padding: "1px 6px", background: C.purpleDim, borderRadius: 4 }}>{s.theme}</span>}
                 {Array.isArray(s.tags) && s.tags.map((tag, i) => (
-                  <span key={i} style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", padding: "1px 6px", border: `1px solid ${C.border}`, borderRadius: 4 }}>{tag}</span>
+                  <span key={i} style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", padding: "1px 6px", border: `1px solid ${C.border}`, borderRadius: 4 }}>{tag}</span>
                 ))}
                 <span style={{ fontSize: 10, color: C.textDim, marginLeft: "auto" }}>{s.created_at ? new Date(s.created_at).toLocaleDateString() : ""}</span>
               </div>

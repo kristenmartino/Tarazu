@@ -147,16 +147,16 @@ export const CenterCanvas = ({
     return null;
   }
 
-  const headerBtnStyle = { padding: "4px 10px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s" };
-  const filterLabelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" };
-  const filterSelectStyle = { padding: "5px 8px", border: `1px solid ${C.border}`, borderRadius: 6, background: C.bg, color: C.text, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", outline: "none", cursor: "pointer" };
+  const headerBtnStyle = { padding: "4px 10px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)", transition: "all 0.2s" };
+  const filterLabelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" };
+  const filterSelectStyle = { padding: "5px 8px", border: `1px solid ${C.border}`, borderRadius: 6, background: C.bg, color: C.text, fontSize: 10, fontFamily: "var(--mono)", outline: "none", cursor: "pointer" };
   const hasCandidates = scored.length > 0;
 
   // ── Shared building blocks ──
   const unifiedFilters = hasCandidates && (
     <div data-no-print style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       <div style={{ position: "relative" }}>
-        <input ref={searchInputRef} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} aria-label="Search candidates" placeholder="Search candidates..." style={{ width: "100%", padding: "8px 12px 8px 32px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "'JetBrains Mono', monospace", outline: "none", boxSizing: "border-box" }} />
+        <input ref={searchInputRef} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} aria-label="Search candidates" placeholder="Search candidates..." style={{ width: "100%", padding: "8px 12px 8px 32px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "var(--mono)", outline: "none", boxSizing: "border-box" }} />
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.textDim} strokeWidth="2" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         {searchQuery && <button onClick={() => setSearchQuery("")} aria-label="Clear search" style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", padding: "2px 6px", border: "none", background: "transparent", color: C.textMuted, fontSize: 12, cursor: "pointer" }}>✕</button>}
       </div>
@@ -190,7 +190,7 @@ export const CenterCanvas = ({
             </div>
           )}
           {filtersActive && (
-            <button onClick={clearFilters} style={{ padding: "4px 8px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 9, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Clear filters</button>
+            <button onClick={clearFilters} style={{ padding: "4px 8px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 9, cursor: "pointer", fontFamily: "var(--mono)" }}>Clear filters</button>
           )}
         </div>
       )}
@@ -199,8 +199,8 @@ export const CenterCanvas = ({
 
   const sortToggle = scored.length > 1 && (
     <div style={{ display: "flex", gap: 2, background: C.border, borderRadius: 6, padding: 2 }}>
-      <button onClick={() => onSortModeChange("rice")} aria-pressed={sortMode === "rice"} style={{ flex: 1, padding: "5px 10px", borderRadius: 4, border: "none", fontSize: 10, fontWeight: 600, background: sortMode === "rice" ? C.surface : "transparent", color: sortMode === "rice" ? C.accent : C.textMuted, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Framework Rank</button>
-      <button onClick={() => { if (manualOrder.length === 0) onManualOrderChange(sorted.map(f => f.id)); onSortModeChange("manual"); }} aria-pressed={sortMode === "manual"} style={{ flex: 1, padding: "5px 10px", borderRadius: 4, border: "none", fontSize: 10, fontWeight: 600, background: sortMode === "manual" ? C.surface : "transparent", color: sortMode === "manual" ? C.warn : C.textMuted, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }}>Judgment Override</button>
+      <button onClick={() => onSortModeChange("rice")} aria-pressed={sortMode === "rice"} style={{ flex: 1, padding: "5px 10px", borderRadius: 4, border: "none", fontSize: 10, fontWeight: 600, background: sortMode === "rice" ? C.surface : "transparent", color: sortMode === "rice" ? C.accent : C.textMuted, cursor: "pointer", fontFamily: "var(--mono)" }}>Framework Rank</button>
+      <button onClick={() => { if (manualOrder.length === 0) onManualOrderChange(sorted.map(f => f.id)); onSortModeChange("manual"); }} aria-pressed={sortMode === "manual"} style={{ flex: 1, padding: "5px 10px", borderRadius: 4, border: "none", fontSize: 10, fontWeight: 600, background: sortMode === "manual" ? C.surface : "transparent", color: sortMode === "manual" ? C.warn : C.textMuted, cursor: "pointer", fontFamily: "var(--mono)" }}>Judgment Override</button>
     </div>
   );
 
@@ -226,14 +226,14 @@ export const CenterCanvas = ({
   const legendBlock = (
     <div style={{ padding: 14, border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface, display: "flex", flexDirection: "column", gap: 12 }}>
       <div>
-        <span style={{ fontSize: 9, color: C.textDim, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.1em" }}>RICE FORMULA</span>
-        <p style={{ fontSize: 12, color: C.textMuted, margin: "4px 0 0", fontFamily: "'JetBrains Mono', monospace" }}>(Reach × Impact × Confidence) ÷ Effort</p>
+        <span style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", letterSpacing: "0.1em" }}>RICE FORMULA</span>
+        <p style={{ fontSize: 12, color: C.textMuted, margin: "4px 0 0", fontFamily: "var(--mono)" }}>(Reach × Impact × Confidence) ÷ Effort</p>
       </div>
       <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
         {[{ l: "QUICK WIN", c: C.accent }, { l: "STRATEGIC", c: C.blue }, { l: "FILL-IN", c: C.warn }, { l: "AVOID", c: C.danger }].map(t => (
           <div key={t.l} style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: t.c }} />
-            <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{t.l}</span>
+            <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "var(--mono)" }}>{t.l}</span>
           </div>
         ))}
       </div>
@@ -266,7 +266,7 @@ export const CenterCanvas = ({
   const stackedMap = (
     <div style={{ border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: mapExpanded ? `1px solid ${C.border}` : "none" }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.08em", fontFamily: "'JetBrains Mono', monospace" }}>TRADEOFF MAP</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>TRADEOFF MAP</span>
         <button onClick={toggleMapExpanded} aria-expanded={mapExpanded} data-no-print style={{ ...headerBtnStyle, padding: "3px 10px" }}>{mapExpanded ? "▲ Collapse" : "▼ Expand"}</button>
       </div>
       {mapExpanded && <div style={{ padding: "0 12px" }}>{mapControlsEl}</div>}
@@ -302,17 +302,17 @@ export const CenterCanvas = ({
       <div ref={measureRef} style={{ flex: 1, overflowY: "auto", maxHeight: isMobile ? "none" : "calc(100vh - 48px - 52px)", padding: 20, display: "flex", flexDirection: "column", gap: 12, paddingBottom: isMobile ? 72 : 20 }}>
         <div data-print-only style={{ display: "none", padding: "0 0 12px", borderBottom: "2px solid #333", marginBottom: 8 }}>
           <h1 style={{ fontSize: 18, fontWeight: 800, margin: "0 0 4px", color: "#1a1a1a" }}>{activeWs?.name || "Priorities"}</h1>
-          <p style={{ fontSize: 11, color: "#666", margin: 0, fontFamily: "'JetBrains Mono', monospace" }}>
+          <p style={{ fontSize: 11, color: "#666", margin: 0, fontFamily: "var(--mono)" }}>
             {features.length} candidates — RICE framework — Exported {new Date().toLocaleDateString()}
           </p>
         </div>
 
         <div data-no-print style={{ display: "flex", gap: 8 }}>
-          <button onClick={() => { onEditingFeature(null); onShowForm(true); }} style={{ flex: 1, padding: "10px 16px", border: `1px dashed color-mix(in srgb, var(--success) 31%, transparent)`, borderRadius: 8, background: C.accentGlow, color: C.accent, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", transition: "all 0.2s" }}
+          <button onClick={() => { onEditingFeature(null); onShowForm(true); }} style={{ flex: 1, padding: "10px 16px", border: `1px dashed color-mix(in srgb, var(--success) 31%, transparent)`, borderRadius: 8, background: C.accentGlow, color: C.accent, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "var(--mono)", transition: "all 0.2s" }}
             onMouseEnter={e => e.target.style.background = C.accentDim} onMouseLeave={e => e.target.style.background = C.accentGlow}>+ Add Candidate</button>
-          <button onClick={onLoadSamples} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }} title="Load example backlog">↻ Example Backlog</button>
-          <button onClick={onClear} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.danger, fontSize: 11, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }} title="Clear workspace">✕ Clear Workspace</button>
-          {undoSnapshot && <button onClick={onUndo} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.warn, fontSize: 11, cursor: "pointer", fontFamily: "'JetBrains Mono', monospace" }} title="Undo last action">↩ Undo</button>}
+          <button onClick={onLoadSamples} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Load example backlog">↻ Example Backlog</button>
+          <button onClick={onClear} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.danger, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Clear workspace">✕ Clear Workspace</button>
+          {undoSnapshot && <button onClick={onUndo} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.warn, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Undo last action">↩ Undo</button>}
         </div>
 
         {unifiedFilters}

@@ -24,7 +24,7 @@ const ClerkAuth = () => {
           fontSize: 10,
           fontWeight: 600,
           cursor: "pointer",
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: "var(--mono)",
           transition: "all 0.2s",
         }}
         onMouseEnter={(e) => { e.target.style.borderColor = C.accent; e.target.style.color = C.accent; }}

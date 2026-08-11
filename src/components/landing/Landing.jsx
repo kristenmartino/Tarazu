@@ -46,7 +46,18 @@ export function Landing() {
       { threshold: 0.15 }
     );
     els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    // Failsafe: IO only fires for what enters the viewport, and a crawler that
+    // renders with a tall viewport but never scrolls would leave every
+    // below-the-fold section at opacity:0 (landing.css gates [data-reveal] on
+    // html.js). Text is still in the DOM, but visual/screenshot crawlers would
+    // capture blank bands. Reveal everything unconditionally after 2.5s — the
+    // only cost is losing the animation for a visitor who never scrolls, who by
+    // definition never saw those sections anyway.
+    const failsafe = setTimeout(() => els.forEach((el) => el.classList.add("in")), 2500);
+    return () => {
+      clearTimeout(failsafe);
+      io.disconnect();
+    };
   }, []);
 
   const closeMenu = () => setMenuOpen(false);
@@ -337,13 +348,13 @@ export function Landing() {
             </div>
             <div className="foot-cols">
               <div className="foot-col">
-                <h5>Product</h5>
+                <h4>Product</h4>
                 <a href="#lifecycle">Lifecycle</a>
                 <a href="#features">Features</a>
                 <Link href="/sign-up">Start prioritizing</Link>
               </div>
               <div className="foot-col">
-                <h5>More</h5>
+                <h4>More</h4>
                 <a href="#why">Why Tarazu</a>
                 <Link href="/sign-in">Open the app</Link>
               </div>

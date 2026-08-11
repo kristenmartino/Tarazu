@@ -73,7 +73,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
               padding: "6px 12px", border: "none", background: "transparent",
               color: activeScreen === item.id ? C.accent : C.textDim,
               opacity: item.enabled ? 1 : 0.35, cursor: item.enabled ? "pointer" : "default",
-              fontSize: 9, fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 9, fontFamily: "var(--mono)",
             }}>
             {item.icon}
             <span>{item.label}</span>
@@ -98,7 +98,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
           padding: "10px 0", border: "none",
           background: wsDropdownOpen ? C.surface : "transparent",
           color: C.textMuted, cursor: "pointer",
-          fontSize: 9, fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 9, fontFamily: "var(--mono)",
           transition: "all 0.15s", borderLeft: "2px solid transparent",
         }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
@@ -125,7 +125,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
             <button onClick={() => { onAddWorkspace(); setWsDropdownOpen(false); }} style={{
               width: "100%", padding: "8px 12px", border: "none", background: "transparent",
               color: C.accent, fontSize: 11, fontWeight: 600, cursor: "pointer",
-              fontFamily: "'JetBrains Mono', monospace", textAlign: "left",
+              fontFamily: "var(--mono)", textAlign: "left",
             }} onMouseEnter={e => e.target.style.background = C.accentGlow} onMouseLeave={e => e.target.style.background = "transparent"}>
               + New Workspace
             </button>
@@ -148,7 +148,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
                 color: isActive ? C.accent : C.textDim,
                 opacity: item.enabled ? 1 : 0.35,
                 cursor: item.enabled ? "pointer" : "default",
-                fontSize: 9, fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 9, fontFamily: "var(--mono)",
                 transition: "all 0.15s",
               }}>
               {item.icon}

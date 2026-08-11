@@ -27,7 +27,7 @@ export const AdvisorPanel = ({
         <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>Decision Advisor</h2>
         <Pill color={C.purple} dimColor={C.purpleDim} small>AI</Pill>
       </div>
-      <p style={{ fontSize: 10, color: C.textDim, margin: "0 0 12px", lineHeight: 1.5, fontFamily: "'JetBrains Mono', monospace" }}>
+      <p style={{ fontSize: 10, color: C.textDim, margin: "0 0 12px", lineHeight: 1.5, fontFamily: "var(--mono)" }}>
         Recommendation generated from current candidate scores, strategy context, and available signals.
       </p>
       <AIPanel

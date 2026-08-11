@@ -24,7 +24,7 @@ function ErrorFallback({ name, message, onReset }) {
       </p>
       <p style={{
         fontSize: 11, color: C.textMuted, margin: 0,
-        fontFamily: "'JetBrains Mono', monospace", maxWidth: 300,
+        fontFamily: "var(--mono)", maxWidth: 300,
         textAlign: "center", lineHeight: 1.5,
       }}>
         {message}
@@ -33,7 +33,7 @@ function ErrorFallback({ name, message, onReset }) {
         padding: "8px 20px", border: `1px solid ${C.accent}`,
         borderRadius: 8, background: C.accentGlow, color: C.accent,
         fontSize: 12, fontWeight: 600, cursor: "pointer",
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "var(--mono)",
       }}>
         Try Again
       </button>
