@@ -2,7 +2,7 @@ import { Bricolage_Grotesque, Figtree, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
 import { SITE_URL } from "../lib/site";
-import { graph, organization, website, person } from "../lib/schema";
+import { graph, organization, website, person, webApplication } from "../lib/schema";
 import { JsonLd } from "../src/components/JsonLd";
 import "./tokens.css";
 
@@ -45,9 +45,15 @@ export default function RootLayout({ children }) {
       </head>
       <body style={{ margin: 0, background: "var(--bg)" }}>
         {/* Site-wide identity graph. Declared once here so page-level graphs can
-            reference these nodes by @id instead of restating them. It also renders
-            on the noindex routes, which costs ~600 bytes and nothing else. */}
-        <JsonLd id="ld-site" data={graph(organization(), website(), person())} />
+            reference these nodes by @id instead of restating them — a content page
+            emits only its own WebPage node and points `about` at the product and
+            `isPartOf` at the site. WebApplication belongs here rather than on the
+            landing precisely so that reference resolves on every page. It also
+            renders on the noindex routes, which costs ~1KB and nothing else. */}
+        <JsonLd
+          id="ld-site"
+          data={graph(organization(), website(), person(), webApplication())}
+        />
         {children}
         <Analytics />
         {process.env.NEXT_PUBLIC_GA_ID && (

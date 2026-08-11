@@ -1,19 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { BrandMark } from "../marketing/BrandMark";
 import "./landing.css";
-
-// Decorative brass "balance-scale" wordmark used in the header + footer.
-function BrandMark() {
-  return (
-    <svg className="mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <path d="M16 5v22M9 27h14" stroke="#E2AC4D" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6 9h20" stroke="#ECEAE4" strokeWidth="2" strokeLinecap="round" />
-      <path d="M6 9l-3.5 7a4 4 0 0 0 7 0L6 9zM26 9l-3.5 7a4 4 0 0 0 7 0L26 9z" stroke="#E2AC4D" strokeWidth="1.6" strokeLinejoin="round" fill="rgba(226,172,77,0.10)" />
-      <circle cx="16" cy="9" r="1.6" fill="#E2AC4D" />
-    </svg>
-  );
-}
 
 export function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
