@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "_comment": "Mutation testing: injects bugs into source, then checks whether the test suite notices. Coverage says a line RAN; this says the line is actually ASSERTED. Scoped to pure-logic modules that already have real coverage — mutating untested files just reports 0% and tells you nothing you didn't know from the coverage report.",
+  "_data_modules_comment": "lib/routes.js and lib/schema.js are deliberately NOT mutated. They are data: static object literals whose every surviving mutant is a swapped string ('Tarazu' -> ''). Killing those requires asserting each literal, which is a change-detector test that finds no defects and just makes the files annoying to edit. Their real invariants — @id cross-references resolving, description length bounds, the registry matching the filesystem, escape-safety of serialize() — are asserted in lib/schema.test.js and lib/routes.test.js, which is where the value actually is. Revisit lib/routes.js once navGroups() has real nav data to exercise.",
   "packageManager": "npm",
   "testRunner": "vitest",
   "reporters": [
@@ -17,6 +18,7 @@
     "lib/local-storage.js",
     "lib/ai.js",
     "lib/feedback-context.js",
+    "lib/metadata.js",
     "src/utils.js",
     "src/validate/validationScore.js",
     "src/hooks/useWeightedScored.js"
