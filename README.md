@@ -4,7 +4,9 @@
 
 Tarazu — from the Hindi/Urdu word for a balance scale — helps product teams prioritize ideas, compare tradeoffs, capture context, and generate explainable recommendations with structured frameworks like RICE — powered by Claude.
 
-[**→ Live Demo**](https://tarazu.app) · [**→ Read the PRD**](./docs/Tarazu_PRD.pdf)
+**[tarazu.app](https://tarazu.app)** · Free, and no account needed — guest mode runs entirely in your browser.
+
+[How it works](https://tarazu.app/how-it-works) · [RICE scoring guide](https://tarazu.app/frameworks/rice) · [vs. spreadsheets](https://tarazu.app/vs/spreadsheets) · [FAQ](https://tarazu.app/faq) · [Pricing](https://tarazu.app/pricing)
 
 ![Tarazu — the Priorities list with RICE-scored candidates and the AI Decision Advisor](docs/screenshots/hero.png)
 
@@ -34,11 +36,13 @@ Tarazu — from the Hindi/Urdu word for a balance scale — helps product teams 
 | ![Effort vs. Impact priority map with labeled quadrants](docs/screenshots/map.png) | ![Per-candidate RICE breakdown and metadata](docs/screenshots/candidate-detail.png) |
 | Effort × Impact with QUICK WIN / STRATEGIC / FILL-IN / AVOID quadrants | Per-candidate RICE breakdown, formula, and metadata |
 
-## Why I Built This
+## Why It Exists
 
-Prioritization often consumes hours per sprint-planning cycle, especially when teams rely on spreadsheets. Tarazu replaces that workflow with a purpose-built decision system that enforces RICE discipline, visualizes tradeoffs, and adds AI analysis that would otherwise require a senior PM or consultant.
+Deciding what to build next is the highest-leverage decision a product team makes, and it usually happens in a spreadsheet assembled the morning of sprint planning. That is what happens when the tooling for a decision is a general-purpose grid: the numbers get captured and the reasoning does not, so three months later nobody can reconstruct why the third item outranked the first.
 
-It sits at the intersection of **product management domain expertise** and **AI engineering** — the exact skillset I bring to PM and technical leadership roles.
+Tarazu is an argument that this deserves a purpose-built system — one that enforces consistent scoring, shows the tradeoff instead of collapsing it to a single number, and keeps the rationale attached to the decision.
+
+It is not a roadmap tracker and not a replacement for judgement. It ends where a tracking tool begins: with a ranked list, a recorded rationale, and something to measure against later. The AI drafts; a person decides.
 
 ## Tech Stack
 
@@ -90,42 +94,37 @@ defense-in-depth).
 - **Dual-mode AI** — live Claude analysis via serverless proxy when available; smart demo fallback when not
 - **Serverless proxies** — API keys stay server-side in `app/api/analyze/route.js` and `app/api/suggest-scores/route.js`
 
-## Getting Started
+## Development
+
+Maintainer notes. This repository is published for reference, not licensed for reuse — see [License](#license).
 
 ```bash
-git clone https://github.com/kristenmartino/Tarazu.git
-cd Tarazu
 npm install
-npm run dev
+npm run dev          # app + /api routes on one process
 ```
 
-### Enable Live AI Analysis (Local Development)
+Copy `.env.example` to `.env.local` and add an Anthropic API key to exercise live AI analysis. Without one the advisor falls back to locally generated analysis and labels itself demo mode. Clerk, Supabase, and GA values are all optional; without them the app runs in guest mode against `localStorage`.
 
-1. Copy `.env.example` to `.env.local`
-2. Add your Anthropic API key (and any optional Clerk / Supabase / GA values)
-3. Start the dev server:
-   ```bash
-   npm run dev
-   ```
+| Command | Purpose |
+|---------|---------|
+| `npm test` / `npm run test:coverage` | Vitest unit suite |
+| `npm run test:e2e` | Playwright, including the JS-disabled SEO suite |
+| `npm run mutation` | Stryker — does a test actually *assert* the line, not just run it |
+| `npm run check:secrets` | Fails if a secret reached the client bundle |
+| `npm run check:prerender` | Fails if a public route stopped prerendering to static HTML |
+| `npm run submit:indexnow` | Pushes the live sitemap's URLs to Bing/IndexNow after a deploy |
+| `npm run icons` | Regenerates the icon assets from `app/icon.svg` |
 
-Next.js serves both the app and the `/api/*` routes from a single process at `http://localhost:3000`.
+Adding a public page means adding one row to [`lib/routes.js`](./lib/routes.js) — the sitemap, marketing nav, JSON-LD, and `llms.txt` all read from it, and tests fail if the registry and the filesystem disagree.
 
-### Production Deployment
+## Design Record
 
-Deploy to Vercel for automatic serverless function support (auto-detects the `/api` directory).
+The full PRD — competitive analysis, requirements with acceptance criteria, technical architecture, risk mitigations, and launch plan — is in [`docs/Tarazu_PRD.pdf`](./docs/Tarazu_PRD.pdf). The brand system and product design spec is in [`tarazu-brand-system-spec.md`](./tarazu-brand-system-spec.md), and the forward plan for the Validate feature is in [`docs/tarazu-validate-roadmap.md`](./docs/tarazu-validate-roadmap.md).
 
-Without the API key, the app runs in demo mode with locally-generated analysis.
+## License
 
-## Deploy to Vercel
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/kristenmartino/Tarazu&env=ANTHROPIC_API_KEY)
-
-Add `ANTHROPIC_API_KEY` as an environment variable in Vercel's dashboard.
+Proprietary — all rights reserved. See [`LICENSE`](./LICENSE). The source is public so the engineering behind the product can be read and evaluated; it does not grant permission to use, copy, modify, or deploy it.
 
 ---
 
-## Project Context
-
-Tarazu was built as part of a portfolio demonstrating PM + AI capabilities. The full PRD — including competitive analysis, requirements with acceptance criteria, technical architecture, risk mitigations, and launch plan — is available in [`docs/Tarazu_PRD.pdf`](./docs/Tarazu_PRD.pdf). The complete brand system and product redesign spec lives in [`tarazu-brand-system-spec.md`](./tarazu-brand-system-spec.md). The forward plan for the Validate feature is in [`docs/tarazu-validate-roadmap.md`](./docs/tarazu-validate-roadmap.md).
-
-**Built by [Kristen Martino](https://linkedin.com/in/kristenmartino)** · Product & AI Strategist · MS Business Analytics & AI, UT Dallas
+**Designed and built by [Kristen Martino](https://linkedin.com/in/kristenmartino)** · Product manager and AI engineer · MS Business Analytics & AI, UT Dallas · [About](https://tarazu.app/about)
