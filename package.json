@@ -17,7 +17,8 @@
     "check:secrets:self-test": "node scripts/check-bundle-secrets.mjs --self-test",
     "test:coverage": "vitest run --coverage",
     "mutation": "stryker run",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "check:prerender": "node scripts/check-prerender.mjs"
   },
   "engines": {
     "node": ">=20"

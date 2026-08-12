@@ -25,6 +25,24 @@ export const metadata = {
   //
   // Points agents and LLM tooling at the generated markdown map of the site.
   alternates: { types: { "text/markdown": "/llms.txt" } },
+  // Search Console / Bing Webmaster ownership tokens.
+  //
+  // Deliberately NOT NEXT_PUBLIC_*: this file is a server component, so the
+  // value is read at render time and never enters the client bundle. A
+  // NEXT_PUBLIC_ prefix would inline it into .next/static for no reason, and
+  // scripts/check-bundle-secrets.mjs guards exactly that boundary — the tokens
+  // are public by nature, but pushing values across it casually is a bad habit.
+  //
+  // Undefined values are omitted by Next, so this is safe when unset. DNS TXT
+  // verification skips this path entirely and is the better option if you own
+  // the DNS; the meta tag is here because it is self-documenting and survives a
+  // registrar change.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    other: process.env.BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
+      : undefined,
+  },
 };
 
 export default function RootLayout({ children }) {
