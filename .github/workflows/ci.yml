@@ -52,3 +52,12 @@ jobs:
 
       - name: Scan client bundle for secrets
         run: npm run check:secrets
+
+      # Asserts every URL in the generated sitemap was actually prerendered to
+      # static HTML with a canonical, one h1, JSON-LD, an og:image, and real
+      # prose. A page that silently becomes dynamic — a stray hook, a cookies()
+      # call, a client-only import — still works in a browser but serves an
+      # empty shell to a crawler that does not run JavaScript. The missing .html
+      # is the only signal, and it does not exist until after a build.
+      - name: Verify public routes prerendered
+        run: npm run check:prerender

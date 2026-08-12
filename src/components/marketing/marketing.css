@@ -279,10 +279,19 @@
 .tz-page .foot-bottom a:hover { color: var(--brass); }
 
 /* responsive */
-@media (max-width: 720px) {
+
+/* The nav collapses earlier than the rest of the layout. The marketing nav grows
+   with the site — it is generated from lib/routes.js — and at six links the row
+   is already flush against the brand and the CTA at ~760px with zero slack, so
+   the next page added would collide rather than wrap. Collapsing at 980px keeps
+   headroom for that instead of relying on nobody adding a page. */
+@media (max-width: 980px) {
   .tz-page .nav-links { display: none; }
   .tz-page .nav-cta .btn { display: none; }
   .tz-page .nav-mobile { display: block; }
+}
+
+@media (max-width: 720px) {
   .tz-page .prose { font-size: 17px; }
   .tz-page .band { padding: 44px 0; }
   .tz-page .foot-cols { gap: 36px; }
