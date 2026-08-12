@@ -16,6 +16,12 @@ export default defineConfig({
       // worktree's Playwright spec fails under the vitest runner. CI never sees
       // it (clean checkout), so local runs silently disagree with CI.
       ".claude/**",
+      // Same failure mode: Stryker copies the whole project into sandboxes here.
+      // cleanTempDir removes it after a normal run, but an interrupted or failed
+      // one leaves it behind — and then the next `npm test` collects every test
+      // once per sandbox, reporting a wildly inflated count against mutated
+      // source. It is gitignored, so again only local runs disagree with CI.
+      ".stryker-tmp/**",
     ],
     coverage: {
       provider: "v8",

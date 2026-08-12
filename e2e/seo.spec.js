@@ -10,7 +10,11 @@ const ROUTES = [
   "/vs/spreadsheets",
   "/faq",
   "/pricing",
+  "/blog",
   "/about",
+  "/blog/a-decision-record-is-not-a-changelog",
+  "/blog/let-the-model-draft-the-score",
+  "/blog/reach-is-the-number-youre-guessing-at",
 ];
 
 // The whole point of this file. With JavaScript disabled, anything the page
@@ -85,6 +89,19 @@ test.describe("crawler-facing endpoints", () => {
     for (const record of records) {
       expect(record, `record missing Disallow:\n${record}`).toContain("Disallow: /api/");
     }
+  });
+
+  // Playwright needs the route list at collection time, so ROUTES above is
+  // literal. This asserts it still matches the generated sitemap in BOTH
+  // directions — otherwise adding a page silently leaves it untested here,
+  // which is exactly what happened when the blog landed.
+  test("the tested route list matches the sitemap exactly", async ({ request }) => {
+    const body = await (await request.get("/sitemap.xml")).text();
+    const fromSitemap = [...body.matchAll(/<loc>([^<]+)<\/loc>/g)]
+      .map((m) => new URL(m[1]).pathname)
+      .map((p) => (p === "/" ? "/" : p.replace(/\/$/, "")))
+      .sort();
+    expect(fromSitemap).toEqual([...ROUTES].sort());
   });
 
   test("sitemap.xml lists every public route with a lastmod", async ({ request }) => {
