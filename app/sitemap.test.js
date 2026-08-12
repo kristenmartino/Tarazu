@@ -1,14 +1,34 @@
 import { describe, it, expect } from "vitest";
 import sitemap from "./sitemap";
 import { ROUTES } from "../lib/routes";
+import { allPosts } from "../lib/content/posts";
 import { SITE_URL } from "../lib/site";
 
 describe("sitemap.xml", () => {
   const entries = sitemap();
+  const posts = allPosts().filter((p) => !p.canonical);
 
-  it("emits exactly one entry per registered route", () => {
-    expect(entries).toHaveLength(ROUTES.length);
+  it("emits one entry per registered route plus one per post", () => {
+    expect(entries).toHaveLength(ROUTES.length + posts.length);
     expect(new Set(entries.map((e) => e.url)).size).toBe(entries.length);
+  });
+
+  it("includes every published post", () => {
+    for (const post of posts) {
+      expect(
+        entries.some((e) => e.url === `${SITE_URL}/blog/${post.slug}`),
+        `sitemap missing /blog/${post.slug}`
+      ).toBe(true);
+    }
+  });
+
+  // A cross-post tells Google the canonical lives elsewhere. Advertising the
+  // URL here would contradict that.
+  it("excludes a post whose canonical points off-site", () => {
+    const crossPosted = allPosts().filter((p) => p.canonical);
+    for (const post of crossPosted) {
+      expect(entries.some((e) => e.url.endsWith(`/blog/${post.slug}`))).toBe(false);
+    }
   });
 
   it("emits absolute production URLs", () => {

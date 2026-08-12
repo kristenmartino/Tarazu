@@ -242,6 +242,40 @@
 .tz-page .grid-card h3 { font-size: 1.08rem; color: var(--text); margin-bottom: 10px; }
 .tz-page .grid-card p { color: var(--text-soft); font-size: 15.5px; line-height: 1.6; }
 
+/* blog index */
+.tz-page .post-list { display: flex; flex-direction: column; max-width: 74ch; }
+.tz-page .post-card + .post-card { margin-top: 36px; padding-top: 36px; border-top: 1px solid var(--line-2); }
+.tz-page .post-card h2 { font-size: clamp(1.35rem, 2.2vw, 1.7rem); line-height: 1.2; }
+.tz-page .post-card h2 a { color: var(--text); transition: color 0.2s; }
+.tz-page .post-card h2 a:hover { color: var(--brass); }
+.tz-page .post-excerpt { color: var(--text-soft); font-size: 17px; line-height: 1.65; margin-top: 10px; }
+.tz-page .post-more { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 14.5px; font-weight: 600; color: var(--brass); }
+.tz-page .post-more .arrow { transition: transform 0.25s ease; }
+.tz-page .post-more:hover .arrow { transform: translateX(4px); }
+
+/* blog post */
+.tz-page .post { max-width: 68ch; }
+.tz-page .post-kicker { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 22px; }
+.tz-page .post-kicker a { color: var(--text-faint); transition: color 0.2s; }
+.tz-page .post-kicker a:hover { color: var(--brass); }
+.tz-page .post h1 { font-size: clamp(2.1rem, 4vw, 3.1rem); line-height: 1.1; margin-bottom: 16px; }
+.tz-page .post-meta { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; color: var(--text-faint); margin-top: 8px; }
+.tz-page .post .prose { margin-top: 34px; }
+/* Rendered markdown has no wrapper elements to hang :first-child off, so the
+   heading rhythm comes from the generic .prose rules; this just tightens the
+   gap under the first heading of the body. */
+.tz-page .post .prose > h2:first-child { margin-top: 0; }
+.tz-page .post .prose hr { border: 0; border-top: 1px solid var(--line-2); margin: 2.2em 0; }
+.tz-page .post .prose table { font-size: 15px; }
+.tz-page .post .prose pre {
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  padding: 16px 18px;
+  overflow-x: auto;
+}
+.tz-page .post .prose pre code { background: transparent; border: 0; padding: 0; font-size: 14px; }
+
 /* pricing */
 .tz-page .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 1.6em; }
 .tz-page .tier { border: 1px solid var(--line); border-radius: 12px; background: var(--bg-2); padding: 26px; display: flex; flex-direction: column; }
