@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [main]
 
+# Supersede in-flight runs for the same pull request. Pushing twice to a branch
+# used to run both to completion. Keyed by SHA on push so a main run is never
+# cancelled — nothing consumes this workflow's conclusion today, but a
+# cancelled main run would silently become a gap if something ever does.
+concurrency:
+  group: ci-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -16,9 +24,24 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
+          # Caches the npm DOWNLOAD cache (~/.npm). Kept because it makes the
+          # miss path below cheaper, but note it does not save the install:
+          # `npm ci` still relinks the whole tree, which is where the 163s went.
           cache: npm
 
+      # Cache the installed tree, not the downloads. This is the step that
+      # actually removes the cost — `npm ci` is skipped entirely on a hit.
+      # Keyed on the lockfile (what `npm ci` reads) plus the Node major, so a
+      # dependency bump or a .nvmrc change reinstalls and nothing else does.
+      - name: Cache node_modules
+        id: modules-cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('package-lock.json') }}
+
       - run: npm ci
+        if: steps.modules-cache.outputs.cache-hit != 'true'
 
       - run: npm run lint
 

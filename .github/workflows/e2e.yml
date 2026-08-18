@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main]
 
+# Same rationale as ci.yml: supersede in-flight runs for the same pull request,
+# never cancel a main run.
+concurrency:
+  group: e2e-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   playwright:
     runs-on: ubuntu-latest
@@ -17,8 +23,33 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - run: npm ci
+      # This workflow runs on the same triggers as ci.yml, so PR wall-clock is
+      # max(CI, E2E) — caching only one of them would not shorten the wait at
+      # all. `npm ci` was 135s of a 189s job here.
+      - name: Cache node_modules
+        id: modules-cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('package-lock.json') }}
 
+      - run: npm ci
+        if: steps.modules-cache.outputs.cache-hit != 'true'
+
+      # Browsers live outside node_modules, so the cache above does not cover
+      # them. Keyed on the lockfile because that is what pins the Playwright
+      # version the browser build must match — a stale browser against a bumped
+      # Playwright is exactly the mismatch this key avoids.
+      - name: Cache Playwright browser
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # --with-deps installs OS packages too, which live outside the cached
+      # directory, so this still runs on a hit — but it is a no-op download when
+      # the browser is already present.
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
