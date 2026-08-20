@@ -30,36 +30,34 @@ export default function AboutPage() {
 
       <PageHero
         eyebrow="About"
-        title={<>Prioritization deserved <span className="br">better than a spreadsheet.</span></>}
-        lede="Tarazu exists because the most consequential recurring decision most product teams make is also the one they make with the least structure."
+        title={<>A backlog is a spreadsheet. <span className="br">A decision is not.</span></>}
+        lede="Most teams score their backlog in a grid on the morning of sprint planning and lose the reasoning by the next one. Tarazu keeps the reasoning."
       />
 
       <Section id="why">
         <Prose>
           <h2>Why it exists</h2>
           <p>
-            Deciding what to build next is the highest-leverage decision a product team
-            makes, and it usually happens in a spreadsheet assembled the morning of
-            sprint planning. That&apos;s not a criticism of anyone&apos;s discipline. It&apos;s
-            what happens when the tooling for a decision is a general-purpose grid: the
-            numbers get captured and the reasoning doesn&apos;t, so three months later
-            nobody can reconstruct why the third item outranked the first.
+            I kept watching the same thing happen on product teams: someone opens a
+            spreadsheet, plugs in reach and impact and confidence, and out comes a
+            ranking everyone nods at. Three months later, someone asks why the fourth
+            item shipped before the second, and nobody remembers. The numbers are still
+            there. The argument that produced them is gone, because a spreadsheet has
+            nowhere to put it.
           </p>
           <p>
-            Tarazu is an argument that this deserves a purpose-built system — one that
-            enforces consistent scoring, shows the tradeoff instead of collapsing it to
-            a single number, and keeps the rationale attached to the decision. Not
-            because frameworks are magic, but because a decision you can explain is a
-            decision you can revisit.
+            Tarazu keeps the argument. It scores a backlog the same way most teams
+            already do — RICE, plotted as a tradeoff instead of collapsed into one
+            number — and it holds onto the reasoning behind each score long enough for
+            someone to check it later.
           </p>
 
           <h3>What it isn&apos;t</h3>
           <p>
-            It isn&apos;t a roadmap tracker, a project manager, or a replacement for
-            judgement. It ends where a tracking tool begins — with a ranked list, a
-            recorded rationale, and something to measure against later. The AI drafts;
-            a person decides. That division is deliberate, and it isn&apos;t going to
-            move.
+            It&apos;s not a roadmap tool or a project tracker, and it doesn&apos;t make the
+            call for you. The AI drafts a score; a person decides whether to keep it.
+            Where it stops is on purpose — a ranked list and a written-down reason is
+            the handoff to whatever you actually run delivery in.
           </p>
         </Prose>
       </Section>
@@ -68,22 +66,21 @@ export default function AboutPage() {
         <Prose>
           <h2>Who built it</h2>
           <p>
-            Tarazu is designed and built by{" "}
+            I&apos;m{" "}
             <a href="https://linkedin.com/in/kristenmartino">Kristen Martino</a>, a
-            product manager and AI engineer with a Master&apos;s in Business Analytics
-            from UT Dallas.
+            product manager with a Master&apos;s in Business Analytics from UT Dallas. I
+            built Tarazu myself — product decisions and code both.
           </p>
           <p>
-            It sits at the intersection of two things that usually live in different
-            people: product judgement about what makes a prioritization decision hold
-            up, and the engineering to build the system that supports it.
+            Writing the PRD before touching the backlog UI was slower than it needed to
+            be, but it&apos;s also the reason the scoring model, the AI, and the tradeoff
+            map agree with each other instead of pulling in three directions. That PRD,
+            the competitive research, and the launch plan are still in the repo.
           </p>
           <p>
             The source is on{" "}
-            <a href="https://github.com/kristenmartino/Tarazu">GitHub</a>, and the
-            product decisions behind it — competitive analysis, requirements, technical
-            architecture, launch plan — were written down as a PRD before any of it was
-            built. If you want to see how the thinking went, that&apos;s where to look.
+            <a href="https://github.com/kristenmartino/Tarazu">GitHub</a> if you want to
+            see how any of it works.
           </p>
         </Prose>
       </Section>
@@ -93,16 +90,14 @@ export default function AboutPage() {
           <h2>The name</h2>
           <p>
             <strong>Tarazu</strong> (तराज़ू / ترازو) is the Hindi and Urdu word for a
-            balance scale, from the Persian <em>tarāzū</em>. It was chosen because a
-            balance scale doesn&apos;t tell you what to do — it shows you which side is
-            heavier and leaves the judgement to you. That&apos;s exactly the relationship
-            this product is trying to have with the people who use it.
+            balance scale, from the Persian <em>tarāzū</em>. A scale doesn&apos;t decide
+            anything — it shows you which side is heavier and leaves the rest to you.
+            That&apos;s the whole design philosophy in one object.
           </p>
           <p>
-            If you want the mechanics rather than the philosophy,{" "}
-            <Link href="/how-it-works">how it works</Link> covers the full loop, and{" "}
-            <Link href="/frameworks/rice">the RICE guide</Link> covers the scoring model
-            and where it breaks down.
+            <Link href="/how-it-works">How it works</Link> covers the full loop end to
+            end, and <Link href="/frameworks/rice">the RICE guide</Link> gets into the
+            scoring model, including where it breaks down.
           </p>
         </Prose>
       </Section>
