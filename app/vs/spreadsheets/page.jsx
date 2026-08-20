@@ -36,7 +36,7 @@ export default function VsSpreadsheetsPage() {
         <Prose>
           <h2>Three failure modes of spreadsheet prioritization</h2>
           <p>
-            Spreadsheets are not bad at arithmetic. They are bad at the three things
+            Spreadsheets aren&apos;t bad at arithmetic. They&apos;re bad at the three things
             that make a prioritization decision hold up a quarter later.
           </p>
         </Prose>
@@ -47,7 +47,7 @@ export default function VsSpreadsheetsPage() {
         <Prose>
           <h2>Built for prioritization, not just tracking</h2>
           <p>
-            Four categories of tool get used for this job. They are genuinely
+            Four categories of tool get used for this job. They&apos;re genuinely
             different, and none of them is bad at everything:
           </p>
         </Prose>
@@ -73,21 +73,20 @@ export default function VsSpreadsheetsPage() {
         <Prose>
           <h2>When a spreadsheet is the right answer</h2>
           <p>
-            Genuinely, often. Do not adopt a tool for a problem you do not have:
+            Genuinely, often. Do not adopt a tool for a problem you don&apos;t have:
           </p>
           <ul>
             <li>
               <strong>Fewer than about fifteen candidates.</strong> Below that, you can
-              hold the whole set in your head, and the ranking is not the hard part.
+              hold the whole set in your head, and the ranking isn&apos;t the hard part.
             </li>
             <li>
               <strong>One decision-maker.</strong> Most of what Tarazu adds is about
-              making a decision legible to other people. If that is not your problem,
-              it is overhead.
+              making a decision legible to other people. If that&apos;s not your problem,
+              it&apos;s overhead.
             </li>
             <li>
-              <strong>A one-off call.</strong> Decision memory only pays off when there
-              is a next decision that should learn from this one.
+              <strong>A one-off call.</strong> Decision memory only pays off when there&apos;s a next decision that should learn from this one.
             </li>
             <li>
               <strong>A genuinely bespoke scoring model.</strong> If your organisation
@@ -97,7 +96,7 @@ export default function VsSpreadsheetsPage() {
           </ul>
           <p>
             The case for something else starts when the same spreadsheet gets reopened
-            every quarter by people who were not there when the numbers were written.
+            every quarter by people who weren&apos;t there when the numbers were written.
           </p>
         </Prose>
       </Section>
