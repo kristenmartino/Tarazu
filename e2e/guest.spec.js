@@ -1,9 +1,13 @@
 import { test, expect } from "@playwright/test";
 
 // Desktop guest-mode happy path: boot → navigate → load samples → confirm the
-// list and tradeoff map render together → run the AI advisor and confirm the
-// demo fallback renders (no ANTHROPIC_API_KEY in this environment).
-test("guest can boot, load samples, see the map beside the list, and get a demo recommendation", async ({ page }) => {
+// list and tradeoff map render together → confirm the AI advisor prompts for
+// sign-in rather than serving a guest.
+//
+// The free, no-account product surface (scoring, the map, CSV) stays intact for
+// guests; only the AI advisor is gated, because /api/analyze bills the Anthropic
+// API per call and must never run anonymously.
+test("guest can boot, load samples, see the map beside the list, and is prompted to sign in for AI", async ({ page }) => {
   await page.goto("/app");
 
   // App shell boots in guest mode. Scope to the nav landmark — "Priorities"
@@ -28,9 +32,16 @@ test("guest can boot, load samples, see the map beside the list, and get a demo 
   // desktop), so the matrix canvas is visible without a view toggle.
   await expect(page.locator("#main-content canvas").first()).toBeVisible();
 
-  // The right-rail advisor runs; with no API key it falls back to demo mode.
+  // The right-rail advisor is reachable, but /api/analyze 401s an anonymous
+  // caller, so the panel prompts for sign-in.
   const generate = page.getByRole("button", { name: /Generate Recommendation/i });
   await expect(generate).toBeEnabled();
   await generate.click();
-  await expect(page.getByText(/DEMO MODE/i)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText(/Sign in to run the AI advisor/i)).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole("link", { name: /^Sign in$/i })).toBeVisible();
+
+  // The regression this guards: AIPanel used to fall back to a locally
+  // generated "DEMO MODE" recommendation on ANY non-OK response. Serving that
+  // to a signed-out visitor gives them no reason to ever sign in.
+  await expect(page.getByText(/DEMO MODE/i)).toHaveCount(0);
 });

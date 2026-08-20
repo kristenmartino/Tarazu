@@ -1,4 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+// This route bills the Anthropic API per call, so it is gated behind Clerk.
+// vi.mock intercepts the dynamic import inside lib/api-auth's getUserId().
+// Default to authenticated; the auth-gate describe block below overrides it.
+const { mockAuth } = vi.hoisted(() => ({ mockAuth: vi.fn() }));
+vi.mock("@clerk/nextjs/server", () => ({ auth: mockAuth }));
+
 import { POST } from "./route";
 
 const makeRequest = (body) => ({ json: () => Promise.resolve(body) });
@@ -30,6 +36,7 @@ const features = [
 beforeEach(() => {
   vi.stubGlobal("fetch", vi.fn());
   process.env.ANTHROPIC_API_KEY = "sk-test";
+  mockAuth.mockResolvedValue({ userId: "user_test" });
 });
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -97,5 +104,31 @@ describe("POST /api/analyze", () => {
     const data = await res.json();
     expect(data.topPick.name).toBe("A");
     expect(data.sprintPlan).toEqual(["A", "C", "B"]);
+  });
+});
+
+describe("POST /api/analyze — auth gate", () => {
+  it("rejects an anonymous caller with 401 and never calls the AI API", async () => {
+    mockAuth.mockResolvedValue({ userId: null });
+    const res = await POST(makeRequest({ features: [{ name: "A", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }, { name: "B", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }] }));
+    expect(res.status).toBe(401);
+    const data = await res.json();
+    expect(data.code).toBe("auth_required");
+    // The point of the gate: an anonymous request must cost nothing upstream.
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("rejects when Clerk is not configured at all (guest mode)", async () => {
+    mockAuth.mockRejectedValue(new Error("Missing publishableKey"));
+    const res = await POST(makeRequest({ features: [{ name: "A", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }, { name: "B", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }] }));
+    expect(res.status).toBe(401);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("control: the same request succeeds once authenticated", async () => {
+    // Guards against the 401s above passing for an unrelated reason (a bad
+    // body, a defeated mock). If this fails, the gate tests prove nothing.
+    const res = await POST(makeRequest({ features: [{ name: "A", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }, { name: "B", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }] }));
+    expect(res.status).not.toBe(401);
   });
 });
