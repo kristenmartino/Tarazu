@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requestJson, AiError } from "../../../lib/ai";
+import { withUser } from "../../../lib/api-auth";
 
 const VALID_DIMS = ["reach", "impact", "confidence", "effort"];
 
@@ -13,7 +14,13 @@ function buildSchema(dims) {
   return z.object(Object.fromEntries(dims.map((d) => [d, DimResult]))).passthrough();
 }
 
+// Authenticated: this endpoint bills the Anthropic API per call, so it must
+// never run for an anonymous caller. Identity only — no database needed.
 export async function POST(request) {
+  return withUser(() => handlePost(request));
+}
+
+async function handlePost(request) {
   try {
     const body = await request.json().catch(() => null);
     if (!body) return NextResponse.json({ error: "Invalid request body" }, { status: 400 });

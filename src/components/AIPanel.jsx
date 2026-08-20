@@ -31,12 +31,13 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [authRequired, setAuthRequired] = useState(false);
   const [mode, setMode] = useState(null);
   const [eventId, setEventId] = useState(null);
   const [thumbs, setThumbs] = useState(null);
 
   const runAnalysis = async () => {
-    setLoading(true); setError(null); setThumbs(null); setEventId(null);
+    setLoading(true); setError(null); setAuthRequired(false); setThumbs(null); setEventId(null);
     const startTime = Date.now();
     try {
       const sorted = [...scored].sort((a, b) => b.score - a.score);
@@ -54,6 +55,14 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
           const id = await onAnalysisEvent({ feature_count: sorted.length, mode: "live", response_ms: elapsed, top_pick: data.topPick?.name, quick_win: data.quickWin?.name, risk_flag: data.riskFlag?.name, error: false });
           setEventId(id);
         }
+      } else if (res.status === 401) {
+        // Deliberately does NOT fall through to the demo fallback below.
+        // Handing an anonymous visitor a locally-generated recommendation
+        // removes every reason to sign in, which is the entire point of
+        // gating this endpoint. Prompt instead.
+        setAuthRequired(true);
+        setLoading(false);
+        return;
       } else {
         throw new Error("API unavailable");
       }
@@ -76,6 +85,21 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
       onAnalysisFeedback(eventId, isUp);
     }
   };
+
+  if (authRequired) {
+    return (
+      <div style={{ padding: 16, border: `1px solid ${C.blue}40`, borderRadius: 10, background: C.blueDim }}>
+        <p style={{ fontSize: 12, color: C.blue, margin: 0, lineHeight: 1.6 }}>
+          Sign in to run the AI advisor. RICE scoring, the tradeoff map, and CSV
+          export stay free and need no account.
+        </p>
+        <a href="/sign-in"
+          style={{ display: "inline-block", marginTop: 10, padding: "6px 14px", border: `1px solid ${C.blue}40`, borderRadius: 6, background: "transparent", color: C.blue, fontSize: 11, textDecoration: "none", fontFamily: "var(--mono)" }}>
+          Sign in
+        </a>
+      </div>
+    );
+  }
 
   if (!analysis && !loading) {
     return (
