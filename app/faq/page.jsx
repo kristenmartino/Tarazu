@@ -32,7 +32,7 @@ export default function FaqPage() {
       <PageHero
         eyebrow="Reference"
         title={<>Questions, <span className="br">answered directly.</span></>}
-        lede="No hedging and no demo-request gates. If something here is out of date or unclear, that is a bug."
+        lede="No hedging and no demo-request gates. If something here is out of date or unclear, that’s a bug."
       />
 
       <Section id="questions">
