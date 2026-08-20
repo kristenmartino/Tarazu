@@ -75,8 +75,8 @@ export default function RicePage() {
 
           <p>
             The framework comes from Intercom, which needed a way to compare features
-            that different teams each believed were urgent. Its contribution is not
-            mathematical sophistication — it is forcing four separate judgements into
+            that different teams each believed were urgent. Its contribution isn&apos;t
+            mathematical sophistication — it&apos;s forcing four separate judgements into
             the open, where they can be argued with individually.
           </p>
 
@@ -99,7 +99,7 @@ export default function RicePage() {
             </li>
             <li>
               <strong>Effort</strong> — total cost across everyone involved, not just
-              engineering. It is the denominator, so underestimating it inflates the
+              engineering. It&apos;s the denominator, so underestimating it inflates the
               score faster than overstating any other input.
             </li>
           </ul>
@@ -134,13 +134,13 @@ export default function RicePage() {
             The ranking falls out of the arithmetic: <strong>{ranked[0].name}</strong>{" "}
             wins at {n(ranked[0].score)} because it reaches a lot of people, matters to
             them, and is cheap. <strong>{ranked[ranked.length - 1].name}</strong> comes
-            last at {n(ranked[ranked.length - 1].score)} — not because it is a bad idea,
+            last at {n(ranked[ranked.length - 1].score)} — not because it&apos;s a bad idea,
             but because a low confidence estimate and the highest effort compound
             against it.
           </p>
           <p>
             Notice the absolute values are large and meaningless on their own. A RICE
-            score of {n(ranked[0].score)} does not denote anything in the world. It is
+            score of {n(ranked[0].score)} doesn&apos;t denote anything in the world. It&apos;s
             ordinal: the only question it answers is which item outranks which.
           </p>
         </Prose>
@@ -176,9 +176,9 @@ export default function RicePage() {
           <p>
             <strong>What it costs you</strong> is the literal reading. In classic RICE
             you can say &ldquo;this reaches 4,000 users a quarter.&rdquo; On a 1–100
-            scale you are saying &ldquo;this reaches far more people than that one,
-            about four-fifths of the most reach anything here has.&rdquo; That is a
-            real loss, and worth knowing you have accepted. If your team genuinely has
+            scale you&apos;re saying &ldquo;this reaches far more people than that one,
+            about four-fifths of the most reach anything here has.&rdquo; That&apos;s a
+            real loss, and worth knowing you&apos;ve accepted. If your team genuinely has
             trustworthy reach data in absolute units, classic RICE preserves
             information that normalization discards.
           </p>
@@ -196,26 +196,26 @@ export default function RicePage() {
 
           <h3>Confidence is the input people fake</h3>
           <p>
-            Multiplying by a made-up 0.8 does not represent uncertainty — it launders a
+            Multiplying by a made-up 0.8 doesn&apos;t represent uncertainty — it launders a
             guess into something that looks quantified. If nobody can say what evidence
             moved confidence from 50 to 80, the number is decoration. The honest move
             when confidence is genuinely low is to stop scoring and go get evidence,
             not to score anyway with a discount applied.
           </p>
 
-          <h3>Reach you cannot measure is not reach</h3>
+          <h3>Reach you cannot measure isn&apos;t reach</h3>
           <p>
             Reach is the one input you can usually verify, which makes it the one most
             worth verifying. A reach estimate produced in the same meeting as the
-            score, by the same person advocating for the item, is not an input — it is
+            score, by the same person advocating for the item, isn&apos;t an input — it&apos;s
             the conclusion wearing a number.
           </p>
 
-          <h3>RICE ranks; it does not sequence</h3>
+          <h3>RICE ranks; it doesn&apos;t sequence</h3>
           <p>
             The formula has no concept of dependency, and a ranked list reads as an
-            order of work even though it is not one. If the third item is a
-            prerequisite for the first, RICE will not tell you — it will confidently
+            order of work even though it&apos;s not one. If the third item is a
+            prerequisite for the first, RICE won&apos;t tell you — it will confidently
             hand you an ordering that cannot be executed.
           </p>
 
@@ -234,7 +234,7 @@ export default function RicePage() {
         <Prose>
           <h2>RICE vs ICE vs weighted scoring</h2>
           <p>
-            RICE is not the only option and often not the right one. The useful
+            RICE isn&apos;t the only option and often not the right one. The useful
             question is what each framework chooses to ignore:
           </p>
         </Prose>
@@ -275,8 +275,7 @@ export default function RicePage() {
             serves roughly the same audience, <strong>RICE</strong> when audience size
             genuinely varies between items, and <strong>weighted scoring</strong> when
             your organisation has real criteria RICE cannot express. Switching
-            frameworks mid-quarter to get a different answer is not prioritization; it
-            is looking for permission.
+            frameworks mid-quarter to get a different answer isn&apos;t prioritization; it&apos;s looking for permission.
           </p>
         </Prose>
       </Section>
@@ -314,16 +313,16 @@ export default function RicePage() {
             quadrant — cheap to build and the most confident estimate on the board — yet
             ranks only {ORDINALS[quickWinIndex]} of {ranked.length}, because its narrow
             reach drags the score down. That disagreement is information, not an error:
-            it is exactly what a ranked list on its own will hide from you.
+            it&apos;s exactly what a ranked list on its own will hide from you.
           </p>
 
           <h3>Write down why</h3>
           <p>
-            The score explains the ordering. It does not explain the choice — the
+            The score explains the ordering. It doesn&apos;t explain the choice — the
             override you made, the dependency you sequenced around, the bet you took on
-            low confidence anyway. Recording that is what makes a decision reviewable
-            in six months, and it is precisely what a spreadsheet throws away. The
-            numbers survive; the argument that produced them does not, which is why the
+            low confidence anyway. Recording that&apos;s what makes a decision reviewable
+            in six months, and it&apos;s precisely what a spreadsheet throws away. The
+            numbers survive; the argument that produced them doesn&apos;t, which is why the
             same debate reopens every quarter.
           </p>
           <p>

@@ -199,7 +199,7 @@ export default function HowItWorksPage() {
           <p>
             When you do sign in, workspaces sync to a Postgres database with row-level
             security, and the Anthropic API key that powers the AI features lives
-            server-side — it is never shipped to the browser.
+            server-side — it&apos;s never shipped to the browser.
           </p>
           <p>
             Curious about the scoring model itself? The{" "}

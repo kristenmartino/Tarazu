@@ -40,9 +40,9 @@ export default function AboutPage() {
           <p>
             Deciding what to build next is the highest-leverage decision a product team
             makes, and it usually happens in a spreadsheet assembled the morning of
-            sprint planning. That is not a criticism of anyone&apos;s discipline. It is
+            sprint planning. That&apos;s not a criticism of anyone&apos;s discipline. It&apos;s
             what happens when the tooling for a decision is a general-purpose grid: the
-            numbers get captured and the reasoning does not, so three months later
+            numbers get captured and the reasoning doesn&apos;t, so three months later
             nobody can reconstruct why the third item outranked the first.
           </p>
           <p>
@@ -53,12 +53,13 @@ export default function AboutPage() {
             decision you can revisit.
           </p>
 
-          <h3>What it is not</h3>
+          <h3>What it isn&apos;t</h3>
           <p>
-            It is not a roadmap tracker, a project manager, or a replacement for
+            It isn&apos;t a roadmap tracker, a project manager, or a replacement for
             judgement. It ends where a tracking tool begins — with a ranked list, a
             recorded rationale, and something to measure against later. The AI drafts;
-            a person decides. That division is deliberate and it is not going to move.
+            a person decides. That division is deliberate, and it isn&apos;t going to
+            move.
           </p>
         </Prose>
       </Section>
@@ -69,22 +70,20 @@ export default function AboutPage() {
           <p>
             Tarazu is designed and built by{" "}
             <a href="https://linkedin.com/in/kristenmartino">Kristen Martino</a>, a
-            product manager and AI engineer with a master&apos;s in Business Analytics
-            and Artificial Intelligence from UT Dallas.
+            product manager and AI engineer with a Master&apos;s in Business Analytics
+            from UT Dallas.
           </p>
           <p>
             It sits at the intersection of two things that usually live in different
-            people: product management judgement about what makes a prioritization
-            decision hold up, and the engineering to build the system that supports it.
-            Most prioritization tools are built by people who have never had to defend a
-            roadmap to a skeptical stakeholder. This one is not.
+            people: product judgement about what makes a prioritization decision hold
+            up, and the engineering to build the system that supports it.
           </p>
           <p>
             The source is on{" "}
             <a href="https://github.com/kristenmartino/Tarazu">GitHub</a>, and the
             product decisions behind it — competitive analysis, requirements, technical
             architecture, launch plan — were written down as a PRD before any of it was
-            built.
+            built. If you want to see how the thinking went, that&apos;s where to look.
           </p>
         </Prose>
       </Section>
@@ -95,8 +94,8 @@ export default function AboutPage() {
           <p>
             <strong>Tarazu</strong> (तराज़ू / ترازو) is the Hindi and Urdu word for a
             balance scale, from the Persian <em>tarāzū</em>. It was chosen because a
-            balance scale does not tell you what to do — it shows you which side is
-            heavier and leaves the judgement to you. That is exactly the relationship
+            balance scale doesn&apos;t tell you what to do — it shows you which side is
+            heavier and leaves the judgement to you. That&apos;s exactly the relationship
             this product is trying to have with the people who use it.
           </p>
           <p>

@@ -79,14 +79,14 @@ export default function PricingPage() {
         <Prose>
           <KeyFact label="What it costs">
             <p>
-              <strong>$0.</strong> There is no paid tier to buy right now, so nothing on
-              this page is gated. You do not even need an account — guest mode runs
+              <strong>$0.</strong> There&apos;s no paid tier to buy right now, so nothing on
+              this page is gated. You don&apos;t even need an account — guest mode runs
               entirely in your browser.
             </p>
           </KeyFact>
           <p>
-            Paid tiers are planned, and they are listed below so you can see where this
-            is going. They carry no prices because they are not for sale yet, and
+            Paid tiers are planned, and they&apos;re listed below so you can see where this
+            is going. They carry no prices because they aren&apos;t for sale yet, and
             quoting a number for something you cannot buy is a promise nobody has made.
           </p>
         </Prose>
@@ -123,7 +123,7 @@ export default function PricingPage() {
           <h2>Why it&apos;s free</h2>
           <p>
             Tarazu began as a demonstration that prioritization deserves a purpose-built
-            system rather than another spreadsheet, and it is more useful as something
+            system rather than another spreadsheet, and it&apos;s more useful as something
             people actually use than as something people read about. The AI features
             cost real money to run, which is what the planned Team and Enterprise tiers
             are eventually for — shared workspaces and org-level controls, not
