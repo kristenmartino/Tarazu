@@ -67,9 +67,9 @@ export default function AboutPage() {
           <h2>Who built it</h2>
           <p>
             I&apos;m{" "}
-            <a href="https://linkedin.com/in/kristenmartino">Kristen Martino</a>, a
-            product manager with a Master&apos;s in Business Analytics from UT Dallas. I
-            built Tarazu myself — product decisions and code both.
+            <a href="https://linkedin.com/in/kristenmartino">Kristen Martino</a>, an
+            AI-native product manager with a Master&apos;s in Business Analytics from UT
+            Dallas. I built Tarazu myself — product decisions and code both.
           </p>
           <p>
             Writing the PRD before touching the backlog UI was slower than it needed to
