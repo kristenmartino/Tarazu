@@ -25,7 +25,8 @@ describe("/frameworks/rice renders server-side", () => {
 
   it("keeps the honest sections, not just the sales ones", () => {
     expect(html).toContain("Where RICE breaks");
-    expect(html).toContain("RICE ranks; it does not sequence");
+    // Rendered HTML escapes the apostrophe, hence the entity rather than "it doesn't".
+    expect(html).toContain("RICE ranks; it doesn&#x27;t sequence");
   });
 
   it("compares against the alternative frameworks", () => {
