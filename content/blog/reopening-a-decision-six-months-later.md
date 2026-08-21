@@ -29,7 +29,7 @@ It was August.
 
 ## The date nobody looked at
 
-That review date is the field that explains why this argument came back at all. May 1 wasn't a guess or an afterthought — it's a real column on the decision, sitting right next to the decision date, filled in on purpose because the risk we'd just written down had a natural check-in point: a full quarter of send data. The date got set. Nothing after that date did anything with it. Nobody gets a nudge on May 1 saying a review is due; the field just sits there, correct and inert, until a person happens to open the card, which nobody did until Dana raised the question again, three and a half months late. [A decision record isn't a changelog](/blog/a-decision-record-is-not-a-changelog) calls this a tripwire, and argues that a decision without one gets revisited at random. A tripwire nobody's watching lands in roughly the same place.
+That review date is the field that explains why this argument came back at all. May 1 sat there deliberately, a real column on the decision right next to the decision date, filled in on purpose because the risk we'd just written down had a natural check-in point: a full quarter of send data. The date got set. Nothing after that date did anything with it. Nobody gets a nudge on May 1 saying a review is due; the field just sits there, correct and inert, until a person happens to open the card, which nobody did until Dana raised the question again, three and a half months late. [A decision record isn't a changelog](/blog/a-decision-record-is-not-a-changelog) calls this a tripwire, and argues that a decision without one gets revisited at random. A tripwire nobody's watching lands in roughly the same place.
 
 ## Checking the feature itself
 

@@ -24,19 +24,29 @@ Three months later someone asks why SSO isn't shipping. The honest answer is "be
 
 A spreadsheet preserves the numbers and discards the argument. The numbers are the part you could reconstruct; the argument is the part you cannot.
 
-## What a decision record actually contains
+## What a decision record contains
 
 Not a lot. This is a five-minute artifact, and the discipline is in what you leave out.
 
-**The choice.** What you're doing, stated so a stranger could tell whether it happened.
+### The choice
 
-**The alternatives you rejected.** This is the part that matters most later, and the part everyone skips. "We chose A" is barely information. "We chose A over B and C, and B was close" is the actual decision, because it tells a future reader which door to reopen when conditions change.
+What you're doing, stated so a stranger could tell whether it happened.
 
-**The reasoning, in one or two sentences.** Not the full debate. The compressed version that survived it: *SSO ranks third because it affects roughly 12% of accounts and the effort estimate is the highest on the board. If enterprise pipeline grows, reach changes and so does the rank.*
+### The alternatives you rejected
 
-**Your confidence, and in what.** "High confidence on effort, low on reach" is worth more than a single number, because it tells you which input to go check when the decision starts feeling wrong.
+This is the part that matters most later, and the part everyone skips. "We chose A" is barely information. "We chose A over B and C, and B was close" is the actual decision, because it tells a future reader which door to reopen when conditions change.
 
-**The tripwire.** The condition that should make you revisit this. Sometimes it's a metric, sometimes a date, sometimes an event — *if two more enterprise deals cite SSO, re-score it.* A decision without a tripwire is a decision you'll either never revisit or revisit at random.
+### The reasoning, in one or two sentences
+
+Not the full debate. The compressed version that survived it: *SSO ranks third because it affects roughly 12% of accounts and the effort estimate is the highest on the board. If enterprise pipeline grows, reach changes and so does the rank.*
+
+### Your confidence, and in what
+
+"High confidence on effort, low on reach" is worth more than a single number, because it tells you which input to go check when the decision starts feeling wrong.
+
+### The tripwire
+
+The condition that should make you revisit this. Sometimes it's a metric, sometimes a date, sometimes an event — *if two more enterprise deals cite SSO, re-score it.* A decision without a tripwire is a decision you'll either never revisit or revisit at random.
 
 ## Why the rejected options matter most
 
@@ -48,11 +58,11 @@ Writing down what you rejected is the highest-leverage part of the whole exercis
 
 ## What this isn't
 
-**It's not a changelog.** A changelog records what shipped, after it shipped. A decision record is written at the moment of choosing, before the outcome is known, and its value comes precisely from being uncontaminated by hindsight. If you write it afterwards you'll write down the reasoning that turned out to be right, which isn't the reasoning you had.
+A changelog records what shipped, after it shipped. A decision record is written at the moment of choosing, before the outcome is known, and its value comes precisely from being uncontaminated by hindsight. Write it afterwards and you'll write down the reasoning that turned out to be right, which isn't the reasoning you had.
 
-**It's not a postmortem.** Postmortems examine outcomes. Decision records examine the choice under the information available at the time. A decision can be good and the outcome bad; you cannot tell those apart later without a record of what you knew.
+Postmortems examine outcomes. Decision records examine the choice under the information available at the time. A decision can be good and the outcome bad; you cannot tell those apart later without a record of what you knew.
 
-**It's not a document nobody reads.** If it takes more than five minutes to write or more than thirty seconds to read, it won't survive contact with a real sprint. Length is the enemy here.
+And it has to stay short enough to survive contact with a real sprint. More than five minutes to write, or more than thirty seconds to read, and it won't get written the next time either. Length is the enemy here.
 
 ## The compounding part
 
@@ -60,7 +70,7 @@ One decision record is a note. A quarter of them is something else: a record of 
 
 None of that's visible from a backlog, because a backlog only ever shows the current state. It's visible from a sequence of decisions with their reasoning attached — which is the same reason the last step of a prioritization loop should feed the first.
 
-That's the whole argument for treating prioritization as a system rather than a recurring spreadsheet: not that scoring is hard, but that a decision you can explain is a decision you can learn from, and a decision you can only re-derive is one you'll pay for repeatedly.
+That's the whole argument for treating prioritization as a system instead of a recurring spreadsheet. Scoring was never the hard part — a decision you can explain is a decision you can learn from, and one you can only re-derive is one you'll keep paying for.
 
 ---
 
