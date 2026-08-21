@@ -36,7 +36,7 @@ Impact's labels are the classic RICE ladder's own words, just repositioned as la
 
 Effort borrows t-shirt sizing on purpose. It's the one estimation vocabulary that's already common ground between product and engineering, so there was no case for inventing new words there — XS through XL needs zero onboarding for anyone who's sat in a planning meeting before.
 
-Confidence is the one I'd point to first. We've written before about [confidence being the RICE input people most often fake](/blog/let-the-model-draft-the-score) — nobody wants to type a low number and defend it out loud. A band on the scale that's just labeled "Guess" lowers that cost to almost nothing. Dragging the slider into that band is just where the honest answer happens to sit, no confession required.
+Confidence is the one I'd point to first. The [RICE guide](/frameworks/rice) already argues it's the input people most often fake — nobody wants to type a low number and defend it out loud. A band on the scale that's just labeled "Guess" lowers that cost to almost nothing. Dragging the slider into that band is just where the honest answer happens to sit, no confession required.
 
 ## The one thing we caught by looking, not reasoning
 
