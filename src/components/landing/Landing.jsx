@@ -64,6 +64,7 @@ export function Landing() {
             <a href="#lifecycle" onClick={closeMenu}>Lifecycle</a>
             <a href="#features" onClick={closeMenu}>Features</a>
             <a href="#why" onClick={closeMenu}>Why Tarazu</a>
+            <Link href="/frameworks/rice" onClick={closeMenu}>RICE Guide</Link>
             <Link href="/blog" onClick={closeMenu}>Blog</Link>
           </nav>
           <div className="nav-cta">
