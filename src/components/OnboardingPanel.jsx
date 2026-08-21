@@ -35,7 +35,7 @@ export const OnboardingPanel = ({ onAddCandidate, onLoadSamples }) => {
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><line x1="4" y1="6" x2="20" y2="6" strokeLinecap="round"/><line x1="12" y1="6" x2="12" y2="20" strokeLinecap="round"/><circle cx="5" cy="6" r="2" fill="#fff" stroke="none"/><circle cx="19" cy="6" r="2" fill="#fff" stroke="none"/></svg>
       </div>
       <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, margin: "0 0 4px" }}>Welcome to Tarazu</h3>
-      <p style={{ fontSize: 12, color: C.textMuted, margin: 0, lineHeight: 1.5 }}>Decision intelligence for product teams. Get started in three steps.</p>
+      <p style={{ fontSize: 12, color: C.textMuted, margin: 0, lineHeight: 1.5 }}>Prioritization your team can defend. Get started in three steps.</p>
     </div>
     {steps.map(s => (
       <div key={s.num} style={{ display: "flex", gap: 14, padding: 16, border: `1px solid ${s.color}20`, borderRadius: 10, background: `${s.color}06` }}>

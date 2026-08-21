@@ -16,7 +16,7 @@ export const metadata = {
   // Resolves relative OG/canonical URLs (including the generated opengraph-image)
   // to absolute ones. Inherited by every route, so child metadata can stay relative.
   metadataBase: new URL(SITE_URL),
-  title: "Tarazu — Decision Intelligence for Product Teams",
+  title: "Tarazu — Prioritization your team can defend.",
   description:
     "Weigh what matters. Tarazu helps product teams prioritize candidates, compare tradeoffs, and document decisions with structured frameworks and explainable AI.",
   // No `icons` key on purpose. An explicit metadata.icons OVERRIDES the App
