@@ -20,6 +20,7 @@ const ROUTES = [
   "/blog/reach-is-the-number-youre-guessing-at",
   "/blog/what-the-number-on-the-slider-means",
   "/blog/the-argument-already-happened",
+  "/blog/reopening-a-decision-six-months-later",
 ];
 
 // The whole point of this file. With JavaScript disabled, anything the page
