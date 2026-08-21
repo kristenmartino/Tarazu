@@ -8,6 +8,9 @@
 create table public.workspaces (
   id uuid primary key default gen_random_uuid(),
   user_id text not null,
+  org_id text, -- Clerk Organization id; nullable and unused until the
+               -- shared-workspace auth-layer switch (see migrations/
+               -- 20260821130000_workspace_org_id.sql)
   name text not null default 'My Backlog',
   position int not null default 0,
   product_summary text default '',
@@ -44,6 +47,7 @@ create table public.features (
 
 -- Indexes
 create index idx_workspaces_user on public.workspaces(user_id);
+create index idx_workspaces_org on public.workspaces(org_id);
 create index idx_features_workspace on public.features(workspace_id);
 
 -- Auto-stamp features.updated_at on every update
