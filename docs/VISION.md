@@ -49,9 +49,9 @@ Three observable consequences:
    re-litigating settled decisions at roughly $180K/year for a five-PM team. We
    have not independently verified this figure and are not relying on it.
 
-This also explains Tarazu's own adoption. The current product asks one person to
-score a backlog alone. A single user has no discussion to structure, which is the
-situation the product is designed for.
+This also explains Tarazu's adoption problem so far. The current product asks one
+person to score a backlog alone, and prioritization only becomes a discussion
+worth structuring once more than one person has a stake in the answer.
 
 ---
 
@@ -70,18 +70,89 @@ column.
 | Teams want prioritization to be defensible rather than fast | **None. This is the load-bearing assumption of the entire plan.** | **Unvalidated** |
 
 The last two rows are the risk. Everything downstream depends on them and
-neither has been tested.
+neither has been tested. §5 covers how they get tested.
 
 ---
 
-## 4. Goals
+## 4. Target customer
+
+A product lead on a team of five to thirty people, where prioritization is
+genuinely contested and no one has the authority to mandate a process for
+resolving it.
+
+Team size is doing specific work here. Past roughly a hundred people,
+organizations often have a product-ops function — someone whose job is
+standardizing how these decisions get made, with a required template and a
+review cadence. Where that role exists, adoption is a decision made by
+whoever holds it. That is a sales motion, and it is the one this plan
+explicitly avoids (§7).
+
+Below that size, nothing enforces a process. If people do not like the
+spreadsheet, no one makes them use it, so prioritization gets argued out
+informally in Slack threads and standups instead. Stage 1 in §8 is built for
+that specific gap.
+
+"Contested" matters as much as team size. A single founder just decides;
+there is no argument to capture. A large enterprise resolves priority
+through hierarchy and procurement more than open argument, which mostly
+routes around what this product does. The target is the middle: more than
+one person with a real say, and no structural authority settling it for
+them.
+
+---
+
+## 5. Validation plan
+
+The two unvalidated rows in §3 gate everything from §8 onward. Before more
+of that roadmap gets built, both need direct evidence, not more analysis.
+
+This is not a survey. Stated intent is unreliable — nearly everyone agrees a
+demo sounds useful. The method is a real conversation: post something worth
+responding to where PMs already are, then follow up with anyone who engages.
+
+Draft outreach, ready to post as-is. First person, no claimed professional
+history, consistent with the About page rewrite:
+
+> I've been building a prioritization tool, which means staring at a lot of
+> RICE scores. The thing I keep getting stuck on: three of those four
+> numbers are openly judgment calls, but reach is supposed to be the
+> measurement. From what I can tell it's the one people most often just
+> make up.
+>
+> Maybe that's fine in practice? But reach is the only unbounded one.
+> Impact sits on a fixed ladder, nobody writes confidence above 90. Reach
+> you can double and nobody blinks, and the whole ranking moves with it.
+>
+> Is this a real problem, or am I overthinking a number that mostly works
+> out?
+
+Where to post: r/ProductManagement, the Lenny's Newsletter community, Mind
+the Product's Slack, LinkedIn (posted directly, not as a link out), and
+existing network first.
+
+What counts as engagement: a reply that agrees or disagrees with a
+specific claim, a DM, or someone volunteering their own example. A generic
+positive comment does not count.
+
+Timeline: 30 days, matching Goal 2 below. Track replies against the
+five-of-twenty threshold in §10.
+
+Output: the Confidence column in §3 moves from Unvalidated to Confirmed or
+Refuted, with the evidence noted next to it. This step runs manually — it
+depends on real conversations under Kristen's own identity and cannot be
+delegated or automated.
+
+---
+
+## 6. Goals
 
 1. Reach 25 teams running at least two prioritization decisions per month
    within 90 days.
-2. Validate or kill the two unvalidated assumptions in §3 within 30 days.
+2. Validate or kill the two unvalidated assumptions in §3, per the plan in §5,
+   within 30 days.
 3. Establish a monetization path that does not depend on paid acquisition.
 
-## 5. Non-goals
+## 7. Non-goals
 
 Explicitly out of scope for the next two quarters. Each is a plausible adjacent
 market that would consume the roadmap without serving the goals above.
@@ -97,7 +168,7 @@ market that would consume the roadmap without serving the goals above.
 
 ---
 
-## 6. Proposal
+## 8. Proposal
 
 Three stages. Each depends on the output of the previous one.
 
@@ -141,43 +212,45 @@ quality: whether a team's reach figures are systematically high, whether their
 confidence scores correlate with anything, whether top-ranked items ship on the
 timelines assumed.
 
-This is the only component that is difficult to replicate. It is not a feature
-that can be built on demand; it requires the accumulated data that Stages 1 and 2
-produce. Outcome capture must therefore be instrumented in Stage 2, well before
-it delivers value.
+This is the only piece that is genuinely difficult to copy. It depends on the
+accumulated data that Stages 1 and 2 produce, so it cannot be built on demand.
+Outcome capture needs to be instrumented starting in Stage 2, well before it
+pays off.
 
-**Output:** a switching cost, and a capability no competitor currently offers.
-
----
-
-## 7. Alternatives considered
-
-**Continue as a single-player scoring tool.** Rejected. Free spreadsheet and
-Notion templates perform this function adequately, which is consistent with the
-product having no paying users after six months.
-
-**Reposition on "decision intelligence."** Rejected. IdeaLift holds this
-positioning with a stronger capture mechanism (automatic, from chat) and better
-distribution. Competing for a category term against better-funded distribution
-is not a good use of a single-person team.
-
-**Target enterprise directly.** Rejected for now, revisit in year two. The pain
-is likely more acute in large organizations, and willingness to pay is 10–50×
-higher. But the sales motion is incompatible with the 90-day goal, and the
-self-serve distribution mechanism in Stage 1 does not function in
-admin-controlled workspaces. The correct sequence is bottom-up adoption first,
-with the product kept enterprise-compatible (per-user identity, audit history,
-row-level security, data export) so the option is preserved.
-
-**Build feedback-tool integration first.** Deferred to Stage 2, not rejected.
-Pulling reach data from Canny or Productboard would replace the most frequently
-invented input with a measured one, which is the highest-value integration
-available. It does not, however, solve distribution, which is the binding
-constraint.
+**Output:** a capability no competitor currently offers, which is what makes it
+a switching cost.
 
 ---
 
-## 8. Success metrics and kill criteria
+## 9. Alternatives considered
+
+**Stay a single-player scoring tool.** Free spreadsheet and Notion templates
+already do this adequately — the six months with no paying users is consistent
+with that. Rejected.
+
+**Reposition on "decision intelligence."** IdeaLift already holds this
+positioning, with a stronger capture mechanism (automatic, from chat) and more
+distribution behind it. Competing for a category term against better-funded
+distribution is not where a single-person team should spend the next quarter.
+Rejected.
+
+**Target enterprise directly.** Probably the largest prize on this list — the
+pain is likely more acute at scale, and willingness to pay is 10 to 50 times
+higher. It is also incompatible with the 90-day goal: the sales cycle alone runs
+longer than that, and the self-serve distribution mechanism in Stage 1 does not
+function inside admin-controlled workspaces. Bottom-up first, with the product
+kept enterprise-compatible (per-user identity, audit history, row-level
+security, data export) so the option stays open. Revisit in year two.
+
+**Build the feedback-tool integration first.** Pulling reach data from Canny or
+Productboard would replace the most frequently invented input in the model with
+a measured one — probably the single highest-value integration available. It
+does not solve distribution, though, which is the actual constraint right now.
+Deferred to Stage 2, not dropped.
+
+---
+
+## 10. Success metrics and kill criteria
 
 Thresholds set before data collection.
 
@@ -194,7 +267,7 @@ and 3 both depend on it.
 
 ---
 
-## 9. Risks and open questions
+## 11. Risks and open questions
 
 **R1 — The core assumption may be wrong.** Some teams want prioritization to be
 fast, not defensible. For those teams, structure applied during a discussion is
