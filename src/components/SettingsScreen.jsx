@@ -144,10 +144,18 @@ export const SettingsScreen = ({
               </div>
             ))}
           </div>
-          <a href="/about" target="_blank" rel="noopener noreferrer"
-            style={{ display: "block", marginTop: 12, fontSize: 11, color: C.accent, fontFamily: "var(--mono)", textDecoration: "none" }}>
-            Who built this, and why →
-          </a>
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 12 }}>
+            {[
+              { label: "How it works", href: "/how-it-works" },
+              { label: "FAQ", href: "/faq" },
+              { label: "About", href: "/about" },
+            ].map(l => (
+              <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: 11, color: C.accent, fontFamily: "var(--mono)", textDecoration: "none" }}>
+                {l.label} →
+              </a>
+            ))}
+          </div>
         </div>
 
         {/* Danger zone */}
