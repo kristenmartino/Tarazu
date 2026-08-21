@@ -21,7 +21,7 @@ Current state:
 | Revenue | $0. No payment integration exists |
 | Pricing page | One tier available (Free, $0). Pro, Team, Enterprise marked "Planned" |
 | Stack | Next.js 14, Clerk, Supabase, Anthropic API, Vercel |
-| Marketing | 7 SEO pages and 3 posts, indexed, no measurable traffic |
+| Marketing | 7 SEO pages and 7 posts, indexed, no measurable traffic. `llms.txt`/`llms-full.txt` shipped and tested (`e2e/seo.spec.js`) — AI-answer-engine discoverability (ChatGPT, Perplexity, Claude), not yet leaned on as a deliberate content strategy |
 
 The product works and is not adopted. This document proposes why, and what to
 change.
