@@ -1,6 +1,6 @@
 import { useC } from "../ThemeProvider";
 
-export const Slider = ({ label, value, onChange, color, icon, aiMode, aiScore, aiJustification, aiLoading, onToggleAi }) => {
+export const Slider = ({ label, value, onChange, color, icon, aiMode, aiScore, aiJustification, aiLoading, onToggleAi, anchors }) => {
   const C = useC();
   const toggleStyle = (active) => ({
     flex: 1, padding: "3px 6px", borderRadius: 3, border: "none", fontSize: 8, fontWeight: 600,
@@ -30,6 +30,20 @@ export const Slider = ({ label, value, onChange, color, icon, aiMode, aiScore, a
     )}
     <input type="range" min={1} max={100} value={value} onChange={(e) => onChange(parseInt(e.target.value))}
       style={{ width: "100%", height: 6, appearance: "none", background: `linear-gradient(to right, ${aiMode ? C.purple : color} ${value}%, ${C.border} ${value}%)`, borderRadius: 3, outline: "none", cursor: "pointer", accentColor: aiMode ? C.purple : color }} />
+    {/* Reference labels, not snap points — the value stays a free 1-100 drag.
+        Purely a shared vocabulary so "62" means roughly the same thing across
+        two different people's sliders, not a constraint on where the handle
+        can land. */}
+    {anchors && (
+      <div style={{ position: "relative", height: 11 }}>
+        {anchors.map((a) => (
+          <span key={a.label} style={{
+            position: "absolute", left: `${a.pos}%`, transform: "translateX(-50%)",
+            fontSize: 8, color: C.textDim, fontFamily: "var(--mono)", whiteSpace: "nowrap",
+          }}>{a.label}</span>
+        ))}
+      </div>
+    )}
     {aiMode && aiJustification && (
       <p style={{ fontSize: 10, color: C.textMuted, fontStyle: "italic", margin: 0, lineHeight: 1.4 }}>{aiJustification}</p>
     )}
