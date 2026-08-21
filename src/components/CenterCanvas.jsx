@@ -230,7 +230,7 @@ export const CenterCanvas = ({
         <p style={{ fontSize: 12, color: C.textMuted, margin: "4px 0 0", fontFamily: "var(--mono)" }}>(Reach × Impact × Confidence) ÷ Effort</p>
       </div>
       <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-        {[{ l: "QUICK WIN", c: C.accent }, { l: "STRATEGIC", c: C.blue }, { l: "FILL-IN", c: C.warn }, { l: "AVOID", c: C.danger }].map(t => (
+        {[{ l: "QUICK WIN", c: C.accent }, { l: "STRATEGIC", c: C.blue }, { l: "FILL-IN", c: C.warn }, { l: "THANKLESS", c: C.danger }].map(t => (
           <div key={t.l} style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: t.c }} />
             <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "var(--mono)" }}>{t.l}</span>

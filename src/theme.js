@@ -162,7 +162,7 @@ export const quadrantLabels = (theme) => [
   { label: "Quick Wins", sub: "High Impact · Low Effort", x: 0.25, y: 0.82, color: theme.accent },
   { label: "Strategic Bets", sub: "High Impact · High Effort", x: 0.75, y: 0.82, color: theme.blue },
   { label: "Fill-ins", sub: "Low Impact · Low Effort", x: 0.25, y: 0.18, color: theme.textMuted },
-  { label: "Avoid", sub: "Low Impact · High Effort", x: 0.75, y: 0.18, color: theme.danger },
+  { label: "Thankless", sub: "Low Impact · High Effort", x: 0.75, y: 0.18, color: theme.danger },
 ];
 
 export const SAMPLES = [
