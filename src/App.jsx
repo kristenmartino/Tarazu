@@ -744,6 +744,12 @@ export default function App() {
           {!isMobile && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", letterSpacing: "0.06em" }}>DEFENSIBLE PRIORITIZATION</span>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {!isMobile && (
+            <a href="/frameworks/rice" target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: 11, color: C.textMuted, fontFamily: "var(--mono)", textDecoration: "none" }}>
+              RICE Guide
+            </a>
+          )}
           <ThemeMenu compact={isMobile} />
           {isMobile && (
           <div ref={mobileWsRef} style={{ position: "relative" }}>
