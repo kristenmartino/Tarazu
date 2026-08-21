@@ -19,6 +19,7 @@ const ROUTES = [
   "/blog/let-the-model-draft-the-score",
   "/blog/reach-is-the-number-youre-guessing-at",
   "/blog/what-the-number-on-the-slider-means",
+  "/blog/the-argument-already-happened",
 ];
 
 // The whole point of this file. With JavaScript disabled, anything the page
