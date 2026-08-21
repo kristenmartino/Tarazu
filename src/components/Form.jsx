@@ -28,7 +28,7 @@ const EFFORT_ANCHORS = [
   { pos: 75, label: "L" }, { pos: 95, label: "XL" },
 ];
 
-export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEvent, onResolveScores, feedbackContext }) => {
+export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEvent, onResolveScores, feedbackContext, scored = [] }) => {
   const C = useC();
   const [name, setName] = useState(editFeature?.name || ""); const [desc, setDesc] = useState(editFeature?.description || "");
   const [owner, setOwner] = useState(editFeature?.owner || ""); const [theme, setTheme] = useState(editFeature?.theme || ""); const [status, setStatus] = useState(editFeature?.status || "");
@@ -39,6 +39,15 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   const [aiError, setAiError] = useState(null);
   const pendingFeatureId = useMemo(() => editFeature?.id || `f-${Date.now()}`, [editFeature]);
   const preview = useMemo(() => rice({ reach: r, impact: i, confidence: c, effort: e }), [r, i, c, e]);
+  // Rank among the rest of the backlog if saved with these values right now.
+  // A raw RICE score means nothing on its own — only its standing relative to
+  // the other candidates does — so pair the number with that context instead
+  // of showing it in isolation.
+  const { previewRank, previewTotal } = useMemo(() => {
+    const others = scored.filter(f => f.id !== editFeature?.id);
+    const higher = others.filter(f => f.score > preview).length;
+    return { previewRank: higher + 1, previewTotal: others.length + 1 };
+  }, [scored, preview, editFeature]);
   const submit = () => {
     if (!name.trim()) return;
     onAdd({ id: pendingFeatureId, name: name.trim(), description: desc.trim(), reach: r, impact: i, confidence: c, effort: e, owner: owner.trim() || null, theme: theme.trim() || null, status: status || null });
@@ -158,6 +167,9 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
         <div style={{ padding: 12, borderRadius: 8, background: C.accentGlow, border: `1px solid ${C.accent}20`, textAlign: "center" }}>
           <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "var(--mono)" }}>RICE SCORE</span>
           <p style={{ fontSize: 28, fontWeight: 800, color: C.accent, margin: "4px 0 0", fontFamily: "var(--mono)" }}>{preview.toLocaleString()}</p>
+          {previewTotal > 1 && (
+            <p style={{ fontSize: 11, color: C.textMuted, margin: "2px 0 0", fontFamily: "var(--mono)" }}>#{previewRank} of {previewTotal}</p>
+          )}
         </div>
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={submit} disabled={!name.trim()} style={{ flex: 1, padding: "10px 16px", border: "none", borderRadius: 8, background: name.trim() ? C.accent : C.border, color: name.trim() ? C.bg : C.textDim, fontSize: 13, fontWeight: 700, cursor: name.trim() ? "pointer" : "not-allowed", fontFamily: "var(--mono)" }}>{editFeature ? "Save Changes" : "Add Candidate"}</button>
