@@ -149,6 +149,7 @@ export const SettingsScreen = ({
               { label: "How it works", href: "/how-it-works" },
               { label: "FAQ", href: "/faq" },
               { label: "About", href: "/about" },
+              { label: "Blog", href: "/blog" },
             ].map(l => (
               <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer"
                 style={{ fontSize: 11, color: C.accent, fontFamily: "var(--mono)", textDecoration: "none" }}>
