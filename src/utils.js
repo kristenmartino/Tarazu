@@ -7,7 +7,7 @@ export const getTier = (f, theme) => {
   if (f.effort <= 50 && f.impact > 50) return { color: theme.accent, label: "QUICK WIN" };
   if (f.effort > 50 && f.impact > 50) return { color: theme.blue, label: "STRATEGIC" };
   if (f.effort <= 50 && f.impact <= 50) return { color: theme.warn, label: "FILL-IN" };
-  return { color: theme.danger, label: "AVOID" };
+  return { color: theme.danger, label: "THANKLESS" };
 };
 
 export const getConfidenceColor = (confidence, theme) => {

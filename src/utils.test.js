@@ -62,9 +62,9 @@ describe("getTier", () => {
     expect(tier.color).toBe(C.warn);
   });
 
-  it("returns AVOID for high effort, low impact", () => {
+  it("returns THANKLESS for high effort, low impact", () => {
     const tier = getTier({ effort: 70, impact: 30 }, C);
-    expect(tier.label).toBe("AVOID");
+    expect(tier.label).toBe("THANKLESS");
     expect(tier.color).toBe(C.danger);
   });
 
@@ -72,8 +72,8 @@ describe("getTier", () => {
     expect(getTier({ effort: 50, impact: 51 }, C).label).toBe("QUICK WIN");
   });
 
-  it("boundary: effort=51 impact=50 is AVOID", () => {
-    expect(getTier({ effort: 51, impact: 50 }, C).label).toBe("AVOID");
+  it("boundary: effort=51 impact=50 is THANKLESS", () => {
+    expect(getTier({ effort: 51, impact: 50 }, C).label).toBe("THANKLESS");
   });
 
   it("boundary: effort=50 impact=50 is FILL-IN", () => {
@@ -335,7 +335,7 @@ describe("csvSafe — spreadsheet formula injection", () => {
 
 describe("exportCSV", () => {
   const rows = [
-    // effort 30 / impact 60 -> QUICK WIN; 80/70 -> STRATEGIC; 90/20 -> AVOID
+    // effort 30 / impact 60 -> QUICK WIN; 80/70 -> STRATEGIC; 90/20 -> THANKLESS
     { name: "A", description: "da", reach: 80, impact: 60, confidence: 90, effort: 30, score: 14400 },
     { name: "B", description: "db", reach: 70, impact: 70, confidence: 60, effort: 80, score: 3675 },
     { name: "C", description: "dc", reach: 10, impact: 20, confidence: 30, effort: 90, score: 67 },
@@ -347,7 +347,7 @@ describe("exportCSV", () => {
     expect(lines[0]).toBe("Rank,Name,Description,Reach,Impact,Confidence,Effort,RICE Score,Tier");
     expect(lines[1]).toBe(`1,"A","da",80,60,90,30,14400,"QUICK WIN"`);
     expect(lines[2]).toBe(`2,"B","db",70,70,60,80,3675,"STRATEGIC"`);
-    expect(lines[3]).toBe(`3,"C","dc",10,20,30,90,67,"AVOID"`);
+    expect(lines[3]).toBe(`3,"C","dc",10,20,30,90,67,"THANKLESS"`);
     expect(lines).toHaveLength(4);
   });
 
@@ -573,8 +573,8 @@ describe("getTier — remaining boundaries", () => {
     expect(getTier({ effort: 51, impact: 51 }, C).label).toBe("STRATEGIC");
   });
 
-  it("effort=51, impact=50 is AVOID", () => {
-    expect(getTier({ effort: 51, impact: 50 }, C).label).toBe("AVOID");
+  it("effort=51, impact=50 is THANKLESS", () => {
+    expect(getTier({ effort: 51, impact: 50 }, C).label).toBe("THANKLESS");
   });
 
   it("effort=50, impact=51 is QUICK WIN", () => {

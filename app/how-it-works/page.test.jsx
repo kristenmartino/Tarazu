@@ -23,7 +23,7 @@ describe("/how-it-works renders server-side", () => {
     expect(html).toContain("QUICK WIN");
     expect(html).toContain("STRATEGIC");
     expect(html).toContain("FILL-IN");
-    expect(html).toContain("AVOID");
+    expect(html).toContain("THANKLESS");
     expect(html).toContain("<table");
     expect(html).toContain("<th");
   });

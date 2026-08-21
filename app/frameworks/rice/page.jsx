@@ -302,7 +302,7 @@ export default function RicePage() {
             ["QUICK WIN", "≤ 50", "> 50", "Do these first — cheap and consequential."],
             ["STRATEGIC", "> 50", "> 50", "Worth it, but plan for the cost."],
             ["FILL-IN", "≤ 50", "≤ 50", "Cheap but minor. Fill gaps; don't build a roadmap on them."],
-            ["AVOID", "> 50", "≤ 50", "Expensive and minor. Say no, and record why."],
+            ["THANKLESS", "> 50", "≤ 50", "Expensive and minor. Say no, and record why."],
           ]}
         />
 
