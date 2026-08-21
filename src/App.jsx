@@ -745,6 +745,12 @@ export default function App() {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {!isMobile && (
+            <a href="/pricing" target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: 11, color: C.textMuted, fontFamily: "var(--mono)", textDecoration: "none" }}>
+              Pricing
+            </a>
+          )}
+          {!isMobile && (
             <a href="/frameworks/rice" target="_blank" rel="noopener noreferrer"
               style={{ fontSize: 11, color: C.textMuted, fontFamily: "var(--mono)", textDecoration: "none" }}>
               RICE Guide
