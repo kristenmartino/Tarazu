@@ -5,7 +5,7 @@ import { ImageResponse } from "next/og";
 // every container div needs an explicit display:flex, and only a subset of CSS
 // is supported — keep the primitives to rectangles.
 
-export const alt = "Tarazu — Weigh what matters. Decision intelligence for product teams.";
+export const alt = "Tarazu — Weigh what matters. Prioritization your team can defend.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -66,7 +66,7 @@ export default function OpengraphImage() {
               lineHeight: 1.35,
             }}
           >
-            Decision intelligence for product teams.
+            Prioritization your team can defend.
           </div>
         </div>
 

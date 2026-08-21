@@ -64,6 +64,7 @@ export function Landing() {
             <a href="#lifecycle" onClick={closeMenu}>Lifecycle</a>
             <a href="#features" onClick={closeMenu}>Features</a>
             <a href="#why" onClick={closeMenu}>Why Tarazu</a>
+            <Link href="/blog" onClick={closeMenu}>Blog</Link>
           </nav>
           <div className="nav-cta">
             <Link href="/sign-up" className="btn btn-solid">
@@ -87,7 +88,7 @@ export function Landing() {
         <section className="hero">
           <div className="wrap hero-grid">
             <div className="hero-copy">
-              <span className="eyebrow">Product decision intelligence</span>
+              <span className="eyebrow">Product prioritization</span>
               <h1>Weigh what to <span className="br">build next.</span></h1>
               <p className="lede">
                 Tarazu turns scattered requests, feedback, and data into ranked, defensible

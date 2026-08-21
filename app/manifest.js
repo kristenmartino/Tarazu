@@ -10,7 +10,7 @@ import { SITE_NAME } from "../lib/site";
 // support; if a service worker is ever added, revisit that promise deliberately.
 export default function manifest() {
   return {
-    name: "Tarazu — Decision Intelligence for Product Teams",
+    name: "Tarazu — Prioritization your team can defend.",
     short_name: SITE_NAME,
     description:
       "Weigh what matters. Rank product candidates, compare tradeoffs, and record the rationale behind each decision.",
