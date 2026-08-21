@@ -144,6 +144,10 @@ export const SettingsScreen = ({
               </div>
             ))}
           </div>
+          <a href="/about" target="_blank" rel="noopener noreferrer"
+            style={{ display: "block", marginTop: 12, fontSize: 11, color: C.accent, fontFamily: "var(--mono)", textDecoration: "none" }}>
+            Who built this, and why →
+          </a>
         </div>
 
         {/* Danger zone */}
