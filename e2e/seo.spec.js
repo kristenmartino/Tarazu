@@ -2,7 +2,10 @@ import { test, expect } from "@playwright/test";
 
 // Every public route, kept in step with lib/routes.js by
 // scripts/check-prerender.mjs (which reads the generated sitemap) and by
-// lib/routes.test.js (which walks app/ on disk).
+// lib/routes.test.js (which walks app/ on disk). Blog posts are NOT in
+// lib/routes.js at all — they're auto-discovered from content/blog/*.md by
+// lib/content/posts.js — so nothing enforces adding a new post's slug here.
+// Add it by hand in the same PR, or "matches the sitemap exactly" below fails.
 const ROUTES = [
   "/",
   "/how-it-works",
@@ -15,6 +18,7 @@ const ROUTES = [
   "/blog/a-decision-record-is-not-a-changelog",
   "/blog/let-the-model-draft-the-score",
   "/blog/reach-is-the-number-youre-guessing-at",
+  "/blog/what-the-number-on-the-slider-means",
 ];
 
 // The whole point of this file. With JavaScript disabled, anything the page
