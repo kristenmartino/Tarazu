@@ -126,13 +126,20 @@ export const SettingsScreen = ({
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {[
               { label: "Application", value: "Tarazu" },
-              { label: "Framework", value: "RICE" },
+              { label: "Framework", value: "RICE", href: "/frameworks/rice" },
               { label: "Candidates", value: features.length },
               { label: "Storage", value: isSignedIn ? "Cloud (Supabase)" : "Local (Browser)" },
             ].map(r => (
               <div key={r.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${C.border}` }}>
                 <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>{r.label}</span>
-                <span style={{ fontSize: 11, color: C.text, fontFamily: "var(--mono)" }}>{r.value}</span>
+                {r.href ? (
+                  <a href={r.href} target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: 11, color: C.accent, fontFamily: "var(--mono)", textDecoration: "none" }}>
+                    {r.value} — guide →
+                  </a>
+                ) : (
+                  <span style={{ fontSize: 11, color: C.text, fontFamily: "var(--mono)" }}>{r.value}</span>
+                )}
               </div>
             ))}
           </div>
