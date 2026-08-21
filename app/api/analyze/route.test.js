@@ -1,11 +1,25 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-// This route bills the Anthropic API per call, so it is gated behind Clerk.
-// vi.mock intercepts the dynamic import inside lib/api-auth's getUserId().
-// Default to authenticated; the auth-gate describe block below overrides it.
-const { mockAuth } = vi.hoisted(() => ({ mockAuth: vi.fn() }));
+// This route bills the Anthropic API per call, so it is gated behind Clerk
+// AND a per-user daily quota (lib/api-auth.js's withUser), which needs
+// Supabase. vi.mock intercepts the dynamic import inside getUserId() and the
+// static import of lib/supabase. Both default to "authenticated, well under
+// quota"; the describe blocks below override one or the other.
+const { mockAuth, mockGetSupabase } = vi.hoisted(() => ({
+  mockAuth: vi.fn(),
+  mockGetSupabase: vi.fn(),
+}));
 vi.mock("@clerk/nextjs/server", () => ({ auth: mockAuth }));
+vi.mock("../../../lib/supabase", () => ({ getSupabase: mockGetSupabase }));
 
 import { POST } from "./route";
+
+/** Chainable Supabase stub: the quota count query always returns `count`, and insert is a no-op success. Mirrors fakeQuotaSupabase in lib/api-auth.test.js, which covers the quota mechanism itself exhaustively — this file only needs enough to keep the AI-response tests unblocked and to prove the route is actually wired to it. */
+const fakeSupabase = (count = 0) => ({
+  from: () => ({
+    select: () => ({ eq: () => ({ gte: async () => ({ count, error: null }) }) }),
+    insert: async () => ({ error: null }),
+  }),
+});
 
 const makeRequest = (body) => ({ json: () => Promise.resolve(body) });
 
@@ -37,6 +51,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", vi.fn());
   process.env.ANTHROPIC_API_KEY = "sk-test";
   mockAuth.mockResolvedValue({ userId: "user_test" });
+  mockGetSupabase.mockReturnValue(fakeSupabase(0));
 });
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -130,5 +145,19 @@ describe("POST /api/analyze — auth gate", () => {
     // body, a defeated mock). If this fails, the gate tests prove nothing.
     const res = await POST(makeRequest({ features: [{ name: "A", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }, { name: "B", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }] }));
     expect(res.status).not.toBe(401);
+  });
+});
+
+describe("POST /api/analyze — quota gate", () => {
+  // The quota mechanism itself (boundary, recording, fail-closed behavior) is
+  // covered exhaustively in lib/api-auth.test.js. This just proves the route
+  // is actually wired to it under the right name.
+  it("refuses with 429 once the caller is at the daily limit, and never calls the AI API", async () => {
+    mockGetSupabase.mockReturnValue(fakeSupabase(50));
+    const res = await POST(makeRequest({ features: [{ name: "A", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }, { name: "B", reach: 1, impact: 1, confidence: 1, effort: 1, score: 1 }] }));
+    expect(res.status).toBe(429);
+    const data = await res.json();
+    expect(data.code).toBe("quota_exceeded");
+    expect(fetch).not.toHaveBeenCalled();
   });
 });

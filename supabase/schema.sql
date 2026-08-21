@@ -183,6 +183,20 @@ create table public.scenarios (
 );
 create index idx_scenarios_workspace on public.scenarios(workspace_id);
 
+-- ─── AI call quota ────────────────────────────────────────────────────
+-- Server-side record of every billed AI call, written at call time by
+-- lib/api-auth.js's withUser(). Not the same job as ai_score_events /
+-- ai_analysis_events above, which are client-written feedback-loop
+-- telemetry, not a reliable record of API usage.
+
+create table public.ai_call_log (
+  id uuid primary key default gen_random_uuid(),
+  user_id text not null,
+  route text not null,
+  created_at timestamptz not null default now()
+);
+create index idx_ai_call_log_user_created on public.ai_call_log(user_id, created_at);
+
 -- ─── Row Level Security ─────────────────────────────────────────────────
 -- Deny-all for anon/authenticated; the server's service-role key bypasses RLS.
 -- See migrations/20260529130003_enable_rls.sql for the rationale.
@@ -194,3 +208,4 @@ alter table public.feature_revisions   enable row level security;
 alter table public.decisions           enable row level security;
 alter table public.signals             enable row level security;
 alter table public.scenarios           enable row level security;
+alter table public.ai_call_log         enable row level security;
