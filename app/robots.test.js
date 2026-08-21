@@ -9,7 +9,7 @@ describe("robots.txt", () => {
     expect(rules.filter((r) => r.userAgent === "*")).toHaveLength(1);
   });
 
-  // The load-bearing test. Per spec, a crawler that finds a record naming its own
+  // The test guarding against silent exposure. Per spec, a crawler that finds a record naming its own
   // user-agent ignores the `*` record entirely — so a named rule that omits the
   // disallow list silently GRANTS that agent everything `*` blocks. Without this
   // assertion, adding an agent later is a one-line way to expose /api/.

@@ -30,7 +30,7 @@ Not a lot. This is a five-minute artifact, and the discipline is in what you lea
 
 **The choice.** What you're doing, stated so a stranger could tell whether it happened.
 
-**The alternatives you rejected.** This is the load-bearing part and the part everyone skips. "We chose A" is barely information. "We chose A over B and C, and B was close" is the actual decision, because it tells a future reader which door to reopen when conditions change.
+**The alternatives you rejected.** This is the part that matters most later, and the part everyone skips. "We chose A" is barely information. "We chose A over B and C, and B was close" is the actual decision, because it tells a future reader which door to reopen when conditions change.
 
 **The reasoning, in one or two sentences.** Not the full debate. The compressed version that survived it: *SSO ranks third because it affects roughly 12% of accounts and the effort estimate is the highest on the board. If enterprise pipeline grows, reach changes and so does the rank.*
 
