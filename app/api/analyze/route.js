@@ -21,9 +21,9 @@ const AnalysisSchema = z.object({
 });
 
 // Authenticated: this endpoint bills the Anthropic API per call, so it must
-// never run for an anonymous caller. Identity only — no database needed.
+// never run for an anonymous caller or an unbounded number of times per caller.
 export async function POST(request) {
-  return withUser(() => handlePost(request));
+  return withUser("analyze", () => handlePost(request));
 }
 
 async function handlePost(request) {
