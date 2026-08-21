@@ -292,9 +292,15 @@ Sequencing assumes one person and the plan should not be read as achievable
 faster with more hands, since the binding constraint is customer evidence rather
 than build capacity.
 
-**R5 — Unbounded API cost.** Authenticated users currently have no per-user
-quota on LLM calls. This is a cost exposure that scales directly with any
-marketing success. Should be closed before traffic acquisition begins.
+**R5 — Unbounded API cost. Resolved 2026-08-20, before outreach began.** A
+50-call/day/user quota now gates both AI endpoints, enforced server-side via
+`ai_call_log` (`supabase/migrations/20260820210000_ai_call_quota.sql`), fails
+closed if usage can't be verified. Left in as the record of why this mattered:
+authenticated users had no volume limit on LLM calls, a cost exposure that
+would have scaled directly with any marketing success, and the two tables
+that looked like they already covered this (`ai_score_events`,
+`ai_analysis_events`) didn't — both are written client-side, after the fact,
+not server-side at call time.
 
 ### Open questions
 
