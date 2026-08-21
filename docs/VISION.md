@@ -67,7 +67,7 @@ column.
 | A competitor occupies this positioning | IdeaLift markets "decision intelligence," captures from 13+ chat channels, publishes to Jira/Linear/GitHub | High |
 | Paid acquisition is not viable at our price | B2B SaaS non-brand CPC $8.50–14.00; PPC averages $341/customer. At $39/mo and 12-month retention, LTV:CAC ≈ 1.4:1 against a 3:1 threshold | High |
 | PMs feel this as a top-three pain | **None. Zero customer conversations have occurred.** | **Unvalidated** |
-| Teams want prioritization to be defensible rather than fast | **None. This is the load-bearing assumption of the entire plan.** | **Unvalidated** |
+| Teams want prioritization to be defensible rather than fast | **None. Every stage in §8 depends on this being true.** | **Unvalidated** |
 
 The last two rows are the risk. Everything downstream depends on them and
 neither has been tested. §5 covers how they get tested.
