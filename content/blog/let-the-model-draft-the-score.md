@@ -11,15 +11,21 @@ Ask a language model to score a backlog and it will. Every item, all four RICE d
 
 That resemblance is the problem worth thinking about carefully, because the two artifacts aren't interchangeable and the difference is invisible on the page.
 
-## What the model is actually good at
+## What the model is good at
 
-Three things, genuinely:
+Three things.
 
-**First-pass estimates that break the blank page.** Scoring twenty items from zero is tedious enough that teams either skip it or rush it. A draft to react to is easier than a draft to originate, and reacting is where the useful thinking happens — "no, effort is way higher than that, because it touches billing" is a real contribution that the blank page wouldn't have produced.
+### First-pass estimates that break the blank page
 
-**Surfacing what you left out.** Models are good at the move where you describe a feature and something asks about the migration path, the permissions model, the support burden. Not because it knows your system, but because those questions recur across every system and you were thinking about the happy path.
+Scoring twenty items from zero is tedious enough that teams either skip it or rush it. A draft to react to is easier than a draft to originate, and reacting is where the useful thinking happens — "no, effort is way higher than that, because it touches billing" is a real contribution that the blank page wouldn't have produced.
 
-**Arguing the other side.** Ask for the strongest case against your top-ranked item and you'll usually get something worth answering. This is the least-used and most valuable mode, because it's the one where being unattached to your roadmap is an advantage rather than a limitation.
+### Surfacing what you left out
+
+Models are good at the move where you describe a feature and something asks about the migration path, the permissions model, the support burden. Not because it knows your system, but because those questions recur across every system and you were thinking about the happy path.
+
+### Arguing the other side
+
+Ask for the strongest case against your top-ranked item and you'll usually get something worth answering. This is the least-used and most valuable mode, because it's the one where being unattached to your roadmap is an advantage rather than a limitation.
 
 Notice that all three produce *input to a judgement*. None produces the judgement.
 
@@ -29,27 +35,25 @@ The model doesn't know your reach. It cannot: the number lives in your analytics
 
 More subtly, it doesn't know your strategy — not the sentence in the deck, the real one. The one that says this quarter you're willing to underinvest in retention because the enterprise motion has to land first. That constraint is what makes half of prioritization decisions non-obvious, and it's exactly the sort of thing that lives in a founder's head rather than a document.
 
-A confident score computed from inputs the model invented isn't analysis. It's a guess with the visual signature of rigour, which is worse than a guess with the visual signature of a guess.
+A confident score computed from inputs the model invented is a guess wearing the visual signature of rigour — worse than a guess that plainly looks like one.
 
 ## The line that matters
 
-The useful division isn't "AI for the easy parts, humans for the hard parts." It's:
+Forget "AI for the easy parts, humans for the hard parts." The real line is simpler:
 
 > The model can produce anything you would be willing to argue with. It should not produce anything you would be tempted to accept without arguing.
 
 A drafted score with visible reasoning invites argument — you read the reasoning, disagree with the effort estimate, and change it. A final ranking with no reasoning invites acceptance, because there's nothing to push against and the number already looks decided.
 
-This is why reasoning attached to output isn't a nice-to-have. It's the mechanism by which the output stays a draft.
+Reasoning attached to the output is what keeps it a draft instead of a decision — remove it and there's nothing left to push against.
 
 ## Accountability is the real constraint
 
-The strongest argument for keeping a person in the loop isn't accuracy. Models will keep getting better at estimation, and some of the objections above will weaken.
+Models will keep getting better at estimation, so accuracy won't hold up for long as the reason to keep a person in the loop. The reason that does hold up: **prioritization decisions get defended, and you cannot hold a model accountable.**
 
-It's that **prioritization decisions get defended, and you cannot hold a model accountable.**
+When someone asks why their feature was cut, the answer has to come from somebody who chose it, can explain the tradeoff, and will still be there when it turns out wrong. "The scoring model ranked it fourth" dodges that question rather than answering it. Teams notice when a decision has no author, and the ones who lost the decision notice fastest.
 
-When someone asks why their feature was cut, the answer has to come from somebody who chose it, can explain the tradeoff, and will still be there when it turns out wrong. "The scoring model ranked it fourth" isn't an answer to that question — it's a way of avoiding it. Teams notice when a decision has no author, and the ones who lost the decision notice fastest.
-
-A prioritization system that removes the accountable human hasn't automated the hard part. It has relocated it, from a person who can be argued with to a process that cannot.
+A prioritization system that removes the accountable human just relocates the hard part, from a person who can be argued with to a process that can't.
 
 ## What this looks like in practice
 

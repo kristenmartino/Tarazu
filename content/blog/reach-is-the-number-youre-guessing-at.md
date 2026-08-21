@@ -17,7 +17,7 @@ Here is how a reach estimate usually gets made. Someone proposes a feature. Some
 
 Nothing about that process is wrong on its face. The problem is what the number now claims to be. It entered the conversation as a guess and left it as data — same font, same column, same arithmetic as the numbers that came from analytics. A month later nobody can tell which was which.
 
-A reach estimate produced in the same meeting as the score, by the same person advocating for the item, isn't really an input. It's the conclusion wearing a number.
+A reach estimate produced in the same meeting as the score, by the same person advocating for the item, is the conclusion wearing a number, not a real input.
 
 ## Bound it instead of guessing it
 
@@ -56,9 +56,9 @@ The failure mode to avoid is inflating reach to make the number come out right. 
 
 Next to every reach estimate, record where the number came from, in a few words. `analytics, Q2 exports` or `≤12% of accounts, seats>5` or `guess, unvalidated`.
 
-The value isn't documentation. It's that "guess, unvalidated" is uncomfortable to type, and that discomfort is doing exactly the work it should. Half the time you'll go find the real number rather than write it down. The other half you'll have flagged, honestly and cheaply, that this particular rank is standing on nothing.
+Typing "guess, unvalidated" is uncomfortable, and that discomfort is doing exactly the work it should. Half the time you'll go find the real number rather than write it down. The other half you'll have flagged, honestly and cheaply, that this particular rank is standing on nothing.
 
-Tarazu keeps that provenance attached to the candidate rather than in a comment on a cell, which is the same idea with better plumbing — but the discipline works in a spreadsheet too. The tool isn't the point. Knowing which of your numbers are measurements is.
+Tarazu keeps that provenance attached to the candidate rather than in a comment on a cell, which is the same idea with better plumbing — but the discipline works in a spreadsheet too. Knowing which of your numbers are measurements is the point, not the tool.
 
 ---
 
