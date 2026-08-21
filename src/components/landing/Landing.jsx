@@ -344,11 +344,14 @@ export function Landing() {
                 <h4>Product</h4>
                 <a href="#lifecycle">Lifecycle</a>
                 <a href="#features">Features</a>
+                <Link href="/how-it-works">How it works</Link>
                 <Link href="/sign-up">Start prioritizing</Link>
               </div>
               <div className="foot-col">
                 <h4>More</h4>
                 <a href="#why">Why Tarazu</a>
+                <Link href="/faq">FAQ</Link>
+                <Link href="/about">About</Link>
                 <Link href="/sign-in">Open the app</Link>
               </div>
             </div>
