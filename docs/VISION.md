@@ -199,9 +199,13 @@ which addresses the maintenance failure identified in §2.
 
 Per-person attribution is required, not optional. A record that cannot identify
 who supplied a given estimate and who revised it does not support the review use
-case that justifies the feature. Clerk already provides identity, and the
-`feature_timestamps_and_revision_snapshots` migration already captures
-revisions; the gap is surfacing this history, not storing it.
+case that justifies the feature. This is a bigger lift than earlier drafts of
+this document assumed: `feature_revisions` has no author column, `decisions.owner`
+is free text with no link to a real identity, and no table anywhere joins a
+second Clerk user to someone else's workspace — `workspaces.user_id` is a single
+owner, full stop. Attribution is not "surfacing existing history"; it requires a
+real multi-user workspace model first (§11, open question 5), since attribution
+has no meaning until more than one identity can act inside the same workspace.
 
 **Output:** a corpus of decisions paired with their stated reasoning.
 
@@ -312,3 +316,8 @@ not server-side at call time.
    either is removed.
 4. What is the minimum viable outcome-capture mechanism for Stage 3, and can it
    be instrumented without asking users to report outcomes manually?
+5. How does a workspace go from single-owner to multi-user — a new
+   `workspace_members` table with email invites, or should `workspace_id` map
+   directly onto a Clerk Organization and let Clerk own membership/roles?
+   Blocks per-person attribution (§8 Stage 2) and any real team pilot, since
+   nothing today lets a second identity act inside someone else's workspace.
