@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useC, useTheme } from "../ThemeProvider";
 import { Pill } from "./Pill";
+import { OrgScopeRow } from "./OrgScopeRow";
 
 export const SettingsScreen = ({
   activeWs, onRenameWorkspace, onClear, onDeleteWorkspace,
@@ -143,6 +144,7 @@ export const SettingsScreen = ({
                 )}
               </div>
             ))}
+            <OrgScopeRow isSignedIn={isSignedIn} />
           </div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 12 }}>
             {[
