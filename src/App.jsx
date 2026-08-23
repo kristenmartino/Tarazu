@@ -18,6 +18,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { StatusToast } from "./components/StatusToast";
 import { OfflineBanner } from "./components/OfflineBanner";
 import { ThemeMenu } from "./components/ThemeMenu";
+import { OrgSwitcher } from "./components/OrgSwitcher";
 import { dialog, DialogHost } from "./components/dialog";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import * as feedbackLocal from "../lib/feedback-storage";
@@ -756,6 +757,7 @@ export default function App() {
               RICE Guide
             </a>
           )}
+          {!isMobile && <OrgSwitcher />}
           <ThemeMenu compact={isMobile} />
           {isMobile && (
           <div ref={mobileWsRef} style={{ position: "relative" }}>

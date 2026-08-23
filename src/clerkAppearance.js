@@ -39,6 +39,25 @@ export const clerkAppearance = (C) => ({
     },
     footerActionText: { color: C.textMuted },
     footerActionLink: { color: C.blue },
+    // In-app <OrganizationSwitcher/> in the top bar (used at /app). Its trigger
+    // sits beside the Pricing / RICE Guide links, so it borrows their muted
+    // mono treatment instead of Clerk's default button styling.
+    organizationSwitcherTrigger: {
+      color: C.textMuted,
+      fontFamily: "var(--mono)",
+      fontSize: "11px",
+      padding: "4px 8px",
+      borderRadius: "6px",
+      "&:hover": { backgroundColor: C.surfaceSunken, color: C.text },
+    },
+    organizationSwitcherPopoverCard: { backgroundColor: C.surface, borderColor: C.border },
+    organizationSwitcherPopoverActionButton: { color: C.text },
+    organizationSwitcherPopoverActionButtonText: { color: C.text },
+    organizationSwitcherPopoverActionButtonIcon: { color: C.textMuted },
+    organizationSwitcherPopoverFooter: { display: "none" },
+    organizationPreviewMainIdentifier: { color: C.text },
+    organizationPreviewSecondaryIdentifier: { color: C.textMuted },
+
     // In-app <UserButton/> popover (used at /app)
     userButtonPopoverCard: { backgroundColor: C.surface, borderColor: C.border },
     userButtonPopoverActionButton: { color: C.text },
