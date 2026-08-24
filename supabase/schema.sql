@@ -118,11 +118,14 @@ create table public.feature_revisions (
   changed_fields jsonb not null default '[]'::jsonb,
   change_summary text not null default '',
   reverted_to_revision int,
+  created_by text,
+  created_by_name text,
   created_at timestamptz not null default now()
 );
 create unique index idx_revisions_feature_number on public.feature_revisions(feature_id, revision_number);
 create index idx_revisions_feature_created on public.feature_revisions(feature_id, created_at desc);
 create index idx_revisions_workspace on public.feature_revisions(workspace_id);
+create index idx_revisions_created_by on public.feature_revisions(created_by, created_at desc);
 
 -- ─── Decisions ────────────────────────────────────────────────────────
 
@@ -145,6 +148,8 @@ create table public.decisions (
   decision_date timestamptz not null default now(),
   review_date timestamptz,
   position int not null default 0,
+  created_by text,
+  created_by_name text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
