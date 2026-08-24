@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // The workspaces collection endpoint had no tests at all before the
 // shared-workspace migration, which mattered once it stopped being a plain
 // `.eq("user_id", ...)` lookup: it now scopes rows by EITHER the caller's
-// active org or their legacy ownership, and that carries the same
+// active org or their personal ownership, and that carries the same
 // null-equality trap as verifyWorkspaceOwner. These tests pin the scoping
 // rules rather than the response shapes.
 
@@ -78,7 +78,7 @@ describe("GET /api/workspaces", () => {
     expect(calls.or).toEqual([]);
   });
 
-  it("matches the caller's org OR their legacy ownership when an org is active", async () => {
+  it("matches the caller's org OR their personal ownership when an org is active", async () => {
     mockGetOrgId.mockResolvedValue("org_acme");
     const calls = fakeDb({ selectResult: { data: [], error: null } });
 
@@ -129,7 +129,7 @@ describe("POST /api/workspaces", () => {
 
   it("stores a null org when the caller has no active org", async () => {
     // Pre-migration behavior preserved: the workspace is still reachable via
-    // verifyWorkspaceOwner's legacy path.
+    // verifyWorkspaceOwner's personal path.
     mockGetOrgId.mockResolvedValue(null);
     const calls = fakeDb({ selectResult: { data: [], error: null } });
 

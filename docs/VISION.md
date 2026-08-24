@@ -18,6 +18,7 @@ Current state:
 | | |
 |---|---|
 | Users | Fewer than 5, all personal contacts |
+| Cloud data | **None.** Measured 2026-08-23: every table in the production database holds 0 rows — workspaces, features, decisions, signals, scenarios, feature_revisions, ai_call_log. Cloud rows only appear when a signed-in user saves; guest mode writes to localStorage and never touches Supabase. So the accounts above have produced no persisted data, and any plan premised on migrating existing rows has nothing to migrate |
 | Revenue | $0. No payment integration exists |
 | Pricing page | One tier available (Free, $0). Pro, Team, Enterprise marked "Planned" |
 | Stack | Next.js 14, Clerk, Supabase, Anthropic API, Vercel |
@@ -199,13 +200,21 @@ which addresses the maintenance failure identified in §2.
 
 Per-person attribution is required, not optional. A record that cannot identify
 who supplied a given estimate and who revised it does not support the review use
-case that justifies the feature. This is a bigger lift than earlier drafts of
-this document assumed: `feature_revisions` has no author column, `decisions.owner`
-is free text with no link to a real identity, and no table anywhere joins a
-second Clerk user to someone else's workspace — `workspaces.user_id` is a single
-owner, full stop. Attribution is not "surfacing existing history"; it requires a
-real multi-user workspace model first (§11, open question 5), since attribution
-has no meaning until more than one identity can act inside the same workspace.
+case that justifies the feature.
+
+The blocking half of this shipped on 2026-08-23. A workspace can now belong to a
+Clerk organization: `workspaces.org_id` exists (#113), `verifyWorkspaceOwner`
+authorizes by active org **or** personal ownership (#114), and the switcher and
+invite surface are in the product (#115). More than one identity can act inside
+the same workspace, which is what attribution needed to mean anything.
+
+What remains is the attribution columns themselves, and they are still real work
+rather than a view over existing data: `feature_revisions` has no author column,
+and `decisions.owner` is free text with no link to a real identity. The shape is
+a `created_by` on `feature_revisions`, written where `change_summary` already is,
+plus an `owner_user_id` on `decisions` kept **alongside** the free-text `owner`
+rather than replacing it — crediting someone who has no account is still worth
+supporting.
 
 **Output:** a corpus of decisions paired with their stated reasoning.
 
@@ -316,8 +325,24 @@ not server-side at call time.
    either is removed.
 4. What is the minimum viable outcome-capture mechanism for Stage 3, and can it
    be instrumented without asking users to report outcomes manually?
-5. How does a workspace go from single-owner to multi-user — a new
-   `workspace_members` table with email invites, or should `workspace_id` map
-   directly onto a Clerk Organization and let Clerk own membership/roles?
-   Blocks per-person attribution (§8 Stage 2) and any real team pilot, since
-   nothing today lets a second identity act inside someone else's workspace.
+5. ~~How does a workspace go from single-owner to multi-user?~~ **Answered
+   2026-08-23: Clerk Organizations**, not a custom `workspace_members` table.
+   Clerk already owns invites, roles, and membership UI, which is the wrong
+   thing for a one-person team to rebuild. Shipped as #113 (column), #114
+   (dual-path authorization), #115 (switcher + invite surface).
+
+   What replaced it: **should every workspace be required to belong to an
+   organization?** The staged plan assumed a final step that deletes the
+   personal-ownership branch in `verifyWorkspaceOwner` once existing rows were
+   backfilled. That step is now understood to be wrong as framed. There were
+   never any rows to backfill (§1), so that branch is not migration debt — it
+   is the **personal-workspace path**, and Clerk's Personal Account mode is an
+   ongoing state rather than a transitional one. Deleting it would permanently
+   break working outside an org, not clean up history.
+
+   So the real question is a product one: force org membership (hide personal
+   mode, require org selection) and gain a single uniform ownership model, or
+   keep both paths permanently. Current lean is **keep both** — trying the
+   product alone before inviting anyone is a reasonable path in, and the
+   dual-path check costs one comparison. Revisit if the two paths start
+   accumulating divergent behavior rather than just divergent scope.
