@@ -127,6 +127,13 @@ beforeEach(() => {
   auth.isLoaded = true;
 });
 
+// Vitest's default 5s per-test budget is tuned for unit tests. These render a
+// 955-line component three times under coverage instrumentation, which fits
+// comfortably on a dev machine (~1s) but timed out on a CI runner. The work is
+// bounded and completes — the budget was the wrong size for it, so it is raised
+// here rather than left to flake by hardware speed.
+const INTEGRATION_TIMEOUT = 30_000;
+
 describe("App — organization switching", () => {
   it("refetches workspaces when the active org changes, and not when it doesn't", async () => {
     const { rerender } = render(<App />);
@@ -145,7 +152,7 @@ describe("App — organization switching", () => {
     auth.orgId = "org_b";
     rerender(<App />);
     await waitFor(() => expect(cloudMock.fetchWorkspaces).toHaveBeenCalledTimes(2));
-  });
+  }, INTEGRATION_TIMEOUT);
 
   it("does not fetch from the cloud at all for a signed-out visitor", async () => {
     // Guests read localStorage; reaching the API here would mean the effect
@@ -157,5 +164,5 @@ describe("App — organization switching", () => {
     await new Promise((r) => setTimeout(r, 20));
 
     expect(cloudMock.fetchWorkspaces).not.toHaveBeenCalled();
-  });
+  }, INTEGRATION_TIMEOUT);
 });
