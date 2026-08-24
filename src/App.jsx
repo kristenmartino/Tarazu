@@ -84,7 +84,7 @@ export default function App() {
   const isMobile = useMedia("(max-width: 800px)");
   const isTablet = useMedia("(max-width: 1024px)") && !isMobile;
   const isOnline = useOnlineStatus();
-  const { isSignedIn, isLoaded: authLoaded } = useAuth();
+  const { isSignedIn, isLoaded: authLoaded, orgId } = useAuth();
   const { scored, sorted, maxScore } = useScored(features);
   const displayOrder = useMemo(() => {
     if (sortMode === "rice" || manualOrder.length === 0) return sorted;
@@ -191,7 +191,14 @@ export default function App() {
     }
     init();
     return () => { cancelled = true; };
-  }, [authLoaded, isSignedIn]);
+    // orgId is a real dependency, not defensive padding: /api/workspaces scopes
+    // its result to the caller's active org, so switching orgs in the top-bar
+    // switcher changes the answer. Without it the effect never re-runs and the
+    // user keeps seeing the previous org's backlog. The switcher's
+    // afterSelect*Url props alone don't cover this — they navigate to /app,
+    // which is the route already mounted, so Next soft-navigates and the
+    // component never remounts.
+  }, [authLoaded, isSignedIn, orgId]);
 
   const showToast = useCallback((message, type = "info") => {
     setToast({ message, type });
