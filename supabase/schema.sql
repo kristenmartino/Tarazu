@@ -213,3 +213,19 @@ alter table public.decisions           enable row level security;
 alter table public.signals             enable row level security;
 alter table public.scenarios           enable row level security;
 alter table public.ai_call_log         enable row level security;
+
+-- ─── Grants ─────────────────────────────────────────────────────────────
+-- RLS above closes the door to anon/authenticated; these grants open it for
+-- the server's service_role, which bypasses RLS and is the only writer.
+-- Required for a database built from migrations alone: tables created by raw
+-- SQL inherit no grant, so without this every request fails with 42501
+-- "permission denied". Production predates the migration system and already
+-- had these, which is why the gap only surfaced on a fresh local stack.
+-- See migrations/20260823120000_grant_service_role.sql.
+grant usage on schema public to anon, authenticated, service_role;
+grant all privileges on all tables in schema public to service_role;
+grant all privileges on all sequences in schema public to service_role;
+grant all privileges on all functions in schema public to service_role;
+alter default privileges in schema public grant all on tables to service_role;
+alter default privileges in schema public grant all on sequences to service_role;
+alter default privileges in schema public grant all on functions to service_role;

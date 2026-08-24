@@ -8,7 +8,11 @@ dist
 
 # Secrets
 .env
-.env.local
+# Trailing * so per-env variants and backups (.env.local.prod-backup,
+# .env.local.staging) are covered too — the bare name left those committable,
+# which matters because a backup of .env.local holds the same live keys.
+# .env.example stays tracked; it carries placeholders, not real values.
+.env.local*
 
 # Test + quality artifacts
 playwright-report
