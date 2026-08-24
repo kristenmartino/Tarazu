@@ -201,6 +201,14 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
                   {d.framework_used && <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>{d.framework_used}</span>}
                   {d.owner && <span style={{ fontSize: 10, color: C.textDim }}>{d.owner}</span>}
+                  {/* Distinct from owner above: owner is who is accountable
+                      (free text, may not be a user); this is who entered the
+                      record, and is backed by a real account. */}
+                  {d.created_by_name && (
+                    <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>
+                      recorded by {d.created_by_name}
+                    </span>
+                  )}
                 </div>
               </div>
 

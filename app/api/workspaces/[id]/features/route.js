@@ -1,62 +1,9 @@
 import { NextResponse } from "next/server";
 import { withAuth, verifyWorkspaceOwner } from "../../../../../lib/api-auth";
+import { createRevision, resolveActor } from "../../../../../lib/revisions";
 
 const TRACKED_FIELDS = ["name", "description", "reach", "impact", "confidence", "effort", "owner", "theme", "status"];
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-function generateChangeSummary(changedFields) {
-  if (changedFields.length === 0) return "";
-  const parts = changedFields.map(({ field, old: oldVal, new: newVal }) => {
-    if (field === "name") return `Renamed "${oldVal}" to "${newVal}"`;
-    if (field === "description") {
-      if (!oldVal && newVal) return "Added description";
-      if (oldVal && !newVal) return "Removed description";
-      return "Updated description";
-    }
-    return `${field.charAt(0).toUpperCase() + field.slice(1)} ${oldVal} \u2192 ${newVal}`;
-  });
-  return parts.join(", ");
-}
-
-async function createRevision(supabase, { featureId, workspaceId, snapshot, changeType, changedFields, revertedTo }) {
-  const { data: lastRev } = await supabase
-    .from("feature_revisions")
-    .select("revision_number")
-    .eq("feature_id", featureId)
-    .order("revision_number", { ascending: false })
-    .limit(1)
-    .single();
-  const nextRevNum = (lastRev?.revision_number ?? 0) + 1;
-  const summary = changeType === "created"
-    ? "Created feature"
-    : changeType === "reverted"
-      ? `Reverted to revision #${revertedTo}`
-      : generateChangeSummary(changedFields);
-
-  // Retry on unique constraint collision
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const { error } = await supabase.from("feature_revisions").insert({
-      feature_id: featureId,
-      workspace_id: workspaceId,
-      revision_number: nextRevNum + attempt,
-      snapshot_name: snapshot.name,
-      snapshot_description: snapshot.description || "",
-      snapshot_reach: snapshot.reach,
-      snapshot_impact: snapshot.impact,
-      snapshot_confidence: snapshot.confidence,
-      snapshot_effort: snapshot.effort,
-      snapshot_owner: snapshot.owner ?? null,
-      snapshot_theme: snapshot.theme ?? null,
-      snapshot_status: snapshot.status ?? null,
-      change_type: changeType,
-      changed_fields: changedFields || [],
-      change_summary: summary,
-      reverted_to_revision: revertedTo || null,
-    });
-    if (!error) return;
-    if (error.code !== "23505") break; // only retry on unique violation
-  }
-}
 
 // GET /api/workspaces/[id]/features — list features
 export async function GET(request, { params }) {
@@ -96,6 +43,14 @@ export async function POST(request, { params }) {
     if (!(await verifyWorkspaceOwner(supabase, id, userId)))
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     const feature = await request.json();
+
+    // Attribution costs a Clerk lookup, so resolve it lazily and at most once:
+    // a request that changes nothing writes no revision and pays nothing, and
+    // a request that writes one still makes a single lookup rather than one
+    // per revision.
+    let actorPromise;
+    const actor = () => (actorPromise ??= resolveActor(userId));
+
     const { data: existing } = await supabase
       .from("features")
       .select("position")
@@ -142,6 +97,7 @@ export async function POST(request, { params }) {
             snapshot: incoming,
             changeType: "updated",
             changedFields,
+            actor: await actor(),
           });
         }
 
@@ -191,6 +147,7 @@ export async function POST(request, { params }) {
       },
       changeType: "created",
       changedFields: [],
+      actor: await actor(),
     });
 
     return NextResponse.json({ id: data.id }, { status: 201 });

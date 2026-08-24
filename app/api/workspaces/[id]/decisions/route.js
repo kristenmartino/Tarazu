@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { resolveActor } from "../../../../../lib/revisions";
 import { withAuth, verifyWorkspaceOwner } from "../../../../../lib/api-auth";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -42,6 +43,7 @@ export async function POST(request, { params }) {
       .order("position", { ascending: false })
       .limit(1);
     const nextPos = existing?.[0] ? existing[0].position + 1 : 0;
+    const actor = await resolveActor(userId);
 
     const { data, error } = await supabase
       .from("decisions")
@@ -63,6 +65,11 @@ export async function POST(request, { params }) {
         decision_date: body.decision_date || new Date().toISOString(),
         review_date: body.review_date || null,
         position: nextPos,
+        // Who RECORDED this, distinct from `owner` above — that stays free
+        // text because the person accountable for an outcome may not have an
+        // account here at all.
+        created_by: actor.id,
+        created_by_name: actor.name,
       })
       .select("*")
       .single();

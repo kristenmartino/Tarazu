@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { withAuth, verifyWorkspaceOwner } from "../../../../../../../lib/api-auth";
+import { createRevision, resolveActor } from "../../../../../../../lib/revisions";
 
 const TRACKED_FIELDS = ["name", "description", "reach", "impact", "confidence", "effort", "owner", "theme", "status"];
 
@@ -72,38 +73,23 @@ export async function POST(request, { params }) {
     if (updateError)
       return NextResponse.json({ error: updateError.message }, { status: 500 });
 
-    // Create a new revision recording the revert
-    const { data: lastRev } = await supabase
-      .from("feature_revisions")
-      .select("revision_number")
-      .eq("feature_id", featureId)
-      .order("revision_number", { ascending: false })
-      .limit(1)
-      .single();
-    const nextRevNum = (lastRev?.revision_number ?? 0) + 1;
-
-    await supabase.from("feature_revisions").insert({
-      feature_id: featureId,
-      workspace_id: id,
-      revision_number: nextRevNum,
-      snapshot_name: restored.name,
-      snapshot_description: restored.description,
-      snapshot_reach: restored.reach,
-      snapshot_impact: restored.impact,
-      snapshot_confidence: restored.confidence,
-      snapshot_effort: restored.effort,
-      snapshot_owner: restored.owner,
-      snapshot_theme: restored.theme,
-      snapshot_status: restored.status,
-      change_type: "reverted",
-      changed_fields: changedFields,
-      change_summary: `Reverted to revision #${revision_number}`,
-      reverted_to_revision: revision_number,
+    // Shared writer — see lib/revisions.js. This was a hand-rolled copy of
+    // createRevision that had already drifted: it lacked the retry on unique
+    // collision, so two concurrent reverts could race on revision_number and
+    // one would silently fail to record.
+    const newRevisionNumber = await createRevision(supabase, {
+      featureId,
+      workspaceId: id,
+      snapshot: restored,
+      changeType: "reverted",
+      changedFields,
+      revertedTo: revision_number,
+      actor: await resolveActor(userId),
     });
 
     return NextResponse.json({
       id: featureId,
-      revision_number: nextRevNum,
+      revision_number: newRevisionNumber,
       ...restored,
     });
   });

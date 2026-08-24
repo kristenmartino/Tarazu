@@ -89,6 +89,14 @@ const RevisionRow = ({ revision, isExpanded, onToggle, onRevert, isReverting, is
         <span style={{ flex: 1, fontSize: 10, color: C.textMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {revision.change_summary}
         </span>
+        {revision.created_by_name && (
+          <span
+            style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", flexShrink: 0, maxWidth: 90, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+            title={revision.created_by_name}
+          >
+            {revision.created_by_name}
+          </span>
+        )}
         <span style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", flexShrink: 0 }}>
           {formatRelativeTime(revision.created_at)}
         </span>
