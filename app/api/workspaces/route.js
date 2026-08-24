@@ -54,9 +54,9 @@ export async function POST(request) {
     const nextPos = existing?.[0] ? existing[0].position + 1 : 0;
     const { data, error } = await supabase
       .from("workspaces")
-      // org_id is null for a caller with no active org, which is exactly the
-      // the personal-workspace case; the personal path in verifyWorkspaceOwner still
-      // authorizes them by user_id.
+      // org_id is null for a caller with no active org — the personal-workspace
+      // case; the personal path in verifyWorkspaceOwner still authorizes them
+      // by user_id.
       .insert({ user_id: userId, org_id: orgId, name: name || "My Backlog", position: nextPos })
       .select("id, name, position")
       .single();
