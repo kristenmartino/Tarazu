@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { buildScoringContext, contextReferences, CONTEXT_RULES } from "../../../lib/scoring-context";
 import { requestJson, AiError } from "../../../lib/ai";
 import { withUser } from "../../../lib/api-auth";
 
 const VALID_DIMS = ["reach", "impact", "confidence", "effort"];
 
-const DimResult = z.object({
-  score: z.number(),
-  justification: z.string().optional(),
-});
-
-function buildSchema(dims) {
-  return z.object(Object.fromEntries(dims.map((d) => [d, DimResult]))).passthrough();
+function buildSchema(dims, refs) {
+  const dimension = z.object({
+    score: z.number().int().min(1).max(100).nullable(),
+    justification: z.string().min(1).max(1000),
+    evidence: z.array(z.string()).max(20).refine(values => values.every(v => refs.includes(v)), "Unknown evidence reference"),
+    assumptions: z.array(z.string().max(500)).max(8),
+    gaps: z.array(z.string().max(500)).max(8),
+    nextAction: z.string().min(1).max(500),
+  });
+  return z.object(Object.fromEntries(dims.map(d => [d, dimension])));
 }
 
 // Authenticated: this endpoint bills the Anthropic API per call, so it must
@@ -34,54 +38,28 @@ async function handlePost(request) {
     if (dims.length === 0)
       return NextResponse.json({ error: "No valid dimensions requested" }, { status: 400 });
 
-    const truncate = (s, n = 500) => (s && s.length > n ? s.slice(0, n) + "..." : s || "");
-    const contextBlock = productContext?.productSummary ? `
-Product Context:
-- Product: ${truncate(productContext.productSummary)}
-- Target Users: ${truncate(productContext.targetUsers)}
-- Strategic Priorities: ${truncate(productContext.strategicPriorities)}
-
-` : "";
-
-    const calibrationBlock = feedbackContext?.scoreCalibration ? `
-${truncate(feedbackContext.scoreCalibration, 2000)}
-
-` : "";
-
-    const prompt = `You are a senior product strategist scoring a feature using the RICE framework. Each dimension is scored 1-100.
-
-${contextBlock}${calibrationBlock}Feature to score:
-Name: "${truncate(featureName, 200)}"
-Description: "${truncate(featureDescription, 500) || "No description provided"}"
-
-Score these dimensions: ${dims.join(", ")}
-
-Guidelines:
-- Reach: How many users will this affect in a given time period? (1=very few, 100=nearly all users)
-- Impact: How much will this move the needle for each user reached? (1=minimal, 100=transformative)
-- Confidence: How sure are you about reach and impact estimates? (1=pure guess, 100=data-backed)
-- Effort: How much work is this? (1=trivial, 100=massive multi-quarter project)
-
-Respond ONLY with a JSON object (no markdown, no backticks):
-{${dims.map((d) => `\n  "${d}": { "score": <number 1-100>, "justification": "one-line reason" }`).join(",")}
-}`;
+    const context = buildScoringContext(body);
+    const refs = contextReferences(context);
+    const prompt = `You are assessing a candidate using RICE on relative integer scales 1–100.
+${CONTEXT_RULES}
+Reach = affected audience in a stated timeframe; impact = benefit per reached user; effort = estimated work (higher means more work).
+For any dimension that cannot reasonably be estimated, return score:null and explain the insufficient information. Never replace unknowns with default scores. State assumptions explicitly. Confidence is evidence strength, not certainty of your answer.
+Respond ONLY with JSON with these keys: ${dims.join(', ')}.
+Each value must have {"score": number or null, "justification": "concise rationale", "evidence": ["supplied reference ID"], "assumptions": ["explicit assumption"], "gaps": ["missing information"], "nextAction": "next validation question or action"}.
+Allowed references: ${JSON.stringify(refs)}
+Supplied context JSON:
+${JSON.stringify(context)}`;
 
     const result = await requestJson({
       apiKey: process.env.ANTHROPIC_API_KEY,
       model: process.env.ANTHROPIC_MODEL_SUGGESTIONS || "claude-sonnet-4-6",
-      maxTokens: 600,
+      maxTokens: 2400,
       prompt,
-      schema: buildSchema(dims),
+      schema: buildSchema(dims, refs),
       timeoutMs: 20000,
     });
 
-    // Clamp scores to 1-100
-    for (const dim of dims) {
-      if (result[dim]) {
-        result[dim].score = Math.max(1, Math.min(100, Math.round(result[dim].score)));
-      }
-    }
-
+    result.context = context;
     return NextResponse.json(result);
   } catch (err) {
     if (err instanceof AiError)

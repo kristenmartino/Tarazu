@@ -22,10 +22,11 @@ const fakeSupabase = (count = 0) => ({
 });
 
 const makeRequest = (body) => ({ json: () => Promise.resolve(body) });
+const assessment = score => ({ score, justification: "reason", evidence: [], assumptions: [], gaps: [], nextAction: "Validate audience" });
 const okText = (obj) => ({
   ok: true,
   status: 200,
-  json: () => Promise.resolve({ content: [{ type: "text", text: JSON.stringify(obj) }] }),
+  json: () => Promise.resolve({ content: [{ type: "text", text: JSON.stringify(Object.fromEntries(Object.entries(obj).map(([k,v]) => [k, { ...assessment(v.score), ...v }]))) }] }),
 });
 
 beforeEach(() => {
@@ -54,15 +55,22 @@ describe("POST /api/suggest-scores", () => {
     expect(data.impact.justification).toBe("meaningful");
   });
 
-  it("clamps out-of-range scores to 1-100", async () => {
-    fetch.mockResolvedValueOnce(okText({
-      reach: { score: 250, justification: "too high" },
-      impact: { score: -5, justification: "too low" },
-    }));
-    const res = await POST(makeRequest({ featureName: "X", dimensions: ["reach", "impact"] }));
-    const data = await res.json();
-    expect(data.reach.score).toBe(100);
-    expect(data.impact.score).toBe(1);
+  it("rejects out-of-range scores rather than silently clamping", async () => {
+    fetch.mockResolvedValue(okText({ reach: assessment(250) }));
+    const res = await POST(makeRequest({ featureName: "X", dimensions: ["reach"] }));
+    expect(res.status).toBe(502);
+  });
+  it("supports insufficient information without a default score", async () => {
+    fetch.mockResolvedValue(okText({ reach: assessment(null) }));
+    const res = await POST(makeRequest({ featureName: "X", dimensions: ["reach"], productContext: { constraints: "No engineers", successMetrics: "Retention" } }));
+    expect((await res.json()).reach.score).toBeNull();
+    const prompt = JSON.parse(fetch.mock.calls[0][1].body).messages[0].content;
+    expect(prompt).toContain('No engineers'); expect(prompt).toContain('Retention');
+  });
+  it("rejects invented evidence references", async () => {
+    fetch.mockResolvedValue(okText({ reach: { ...assessment(50), evidence: ['signal:invented'] } }));
+    const res = await POST(makeRequest({ featureName: "X", dimensions: ["reach"] }));
+    expect(res.status).toBe(502);
   });
 
   it("requires a feature name", async () => {

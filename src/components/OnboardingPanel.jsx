@@ -6,7 +6,7 @@ export const OnboardingPanel = ({ onAddCandidate, onLoadSamples }) => {
     {
       num: 1,
       title: "Start with your own decision",
-      desc: "Each candidate is scored with RICE: Reach, Impact, Confidence, and Effort. The framework ranks them automatically.",
+      desc: "Add your Strategy Brief in the candidate form before requesting AI suggestions. Manual scoring is always available. Each candidate is scored with RICE: Reach, Impact, Confidence, and Effort. The framework ranks them automatically.",
       color: C.accent,
       action: "add",
       actionLabel: "+ Add Candidate",

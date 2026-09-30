@@ -1,7 +1,11 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { useC } from "../ThemeProvider";
 import { rice } from "../utils";
 import { Slider } from "./Slider";
+
+import { buildScoringContext, BRIEF_FIELDS } from "../../lib/scoring-context";
+import { ProductContext } from "./ProductContext";
+import { AIContextDetails } from "./AIContextDetails";
 
 // Reference bands for each RICE dimension's slider. Positioned on the same
 // 1-100 scale everything already scores on — these don't change the value
@@ -28,7 +32,7 @@ const EFFORT_ANCHORS = [
   { pos: 75, label: "L" }, { pos: 95, label: "XL" },
 ];
 
-export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEvent, onResolveScores, feedbackContext, scored = [] }) => {
+export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEvent, onResolveScores, feedbackContext, scored = [], features = [], signals = [], decisions = [], workspaceId, onProductContextChange }) => {
   const C = useC();
   const [name, setName] = useState(editFeature?.name || ""); const [desc, setDesc] = useState(editFeature?.description || "");
   const [owner, setOwner] = useState(editFeature?.owner || ""); const [theme, setTheme] = useState(editFeature?.theme || ""); const [status, setStatus] = useState(editFeature?.status || "");
@@ -59,55 +63,46 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   };
 
   const setters = { reach: setR, impact: setI, confidence: setC, effort: setE };
-
+  const context = buildScoringContext({ productContext, features, signals, decisions, workspaceId, candidateId: editFeature?.id, featureName: name, featureDescription: desc });
+  const signature = JSON.stringify(context);
+  const current = useRef(signature); current.current = signature;
+  const sequence = useRef(0);
+  const [resultSignature, setResultSignature] = useState(null);
+  const [usedContext, setUsedContext] = useState(null);
+  const stale = resultSignature !== null && resultSignature !== signature;
+  useEffect(() => () => { sequence.current += 1; }, []);
   const requestAiScores = useCallback(async (dimensions) => {
     if (!name.trim() || dimensions.length === 0) return;
-    setAiLoading(true);
-    setAiError(null);
+    const requestId = ++sequence.current;
+    const requestedSignature = signature;
+    setAiLoading(true); setAiError(null);
     try {
       const res = await fetch("/api/suggest-scores", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ featureName: name.trim(), featureDescription: desc.trim(), productContext, dimensions, feedbackContext: feedbackContext || undefined }),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ featureName: name.trim(), featureDescription: desc.trim(), candidateId: editFeature?.id, productContext, dimensions, features, signals, decisions, workspaceId }),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `API returned ${res.status}`);
-      }
       const data = await res.json();
-      setAiResults(prev => ({ ...prev, ...data }));
-      for (const dim of dimensions) {
-        if (data[dim]?.score) setters[dim](data[dim].score);
-      }
-      // Record score events for the feedback loop
-      if (onScoreEvent) {
-        const events = dimensions
-          .filter(dim => data[dim]?.score)
-          .map(dim => ({ feature_id: pendingFeatureId, feature_name: name.trim(), dimension: dim, ai_score: data[dim].score }));
-        if (events.length > 0) onScoreEvent(events);
-      }
+      if (requestId !== sequence.current || current.current !== requestedSignature) return;
+      if (!res.ok) throw new Error(data.error || "AI scoring failed");
+      setAiResults(prev => ({ ...(resultSignature === requestedSignature ? prev : {}), ...data }));
+      setResultSignature(requestedSignature); setUsedContext(data.context);
     } catch (err) {
-      setAiError(err.message || "AI scoring failed");
-      setAiModes(prev => {
-        const next = { ...prev };
-        for (const dim of dimensions) next[dim] = false;
-        return next;
-      });
-    }
-    setAiLoading(false);
-  }, [name, desc, productContext, feedbackContext, onScoreEvent, pendingFeatureId]);
+      if (requestId === sequence.current && current.current === requestedSignature) setAiError(err.message || "AI scoring failed");
+    } finally { if (requestId === sequence.current) setAiLoading(false); }
+  }, [name, desc, signature, resultSignature, editFeature?.id, productContext, features, signals, decisions, workspaceId]);
+  const acceptSuggestion = dim => {
+    const value = aiResults[dim]?.score;
+    if (stale || !Number.isInteger(value) || value < 1 || value > 100) return;
+    setters[dim](value);
+    onScoreEvent?.([{ feature_id: pendingFeatureId, feature_name: name.trim(), dimension: dim, ai_score: value }]);
+  };
 
-  const toggleDimension = useCallback((dim) => {
-    if (!name.trim()) return;
-    setAiModes(prev => {
-      const next = { ...prev, [dim]: !prev[dim] };
-      if (next[dim]) {
-        // Toggling to AI — request score
-        requestAiScores([dim]);
-      }
-      return next;
-    });
-  }, [name, requestAiScores]);
+  const toggleDimension = dim => {
+    if (!name.trim() || aiLoading) return;
+    const enabled = !aiModes[dim];
+    setAiModes(prev => ({ ...prev, [dim]: enabled }));
+    if (enabled) requestAiScores([dim]);
+  };
 
   const suggestAll = useCallback(() => {
     if (!name.trim()) return;
@@ -143,12 +138,28 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
             </select>
           </div>
         </div>
+        {onProductContextChange && <ProductContext context={productContext} onChange={onProductContextChange} />}
+        <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0 }}>AI context: {6 - context.missing.length}/6 brief fields, {context.evidence.length} linked signals. Missing: {context.missing.map(k => BRIEF_FIELDS[k]).join(", ") || "no brief fields"}. You can proceed with limited context or score manually. Running AI sends the brief, candidate, competing options, linked signals, and related decisions to Tarazu and Anthropic.</p>
         <button onClick={suggestAll} disabled={!name.trim() || aiLoading}
           style={{ padding: "7px 14px", border: `1px solid ${C.purple}30`, borderRadius: 6, background: C.purpleDim, color: C.purple, fontSize: 11, fontWeight: 600, cursor: !name.trim() || aiLoading ? "not-allowed" : "pointer", fontFamily: "var(--mono)", opacity: !name.trim() || aiLoading ? 0.4 : 1, transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
           onMouseEnter={ev => { if (name.trim() && !aiLoading) ev.target.style.background = `${C.purple}20`; }}
           onMouseLeave={ev => ev.target.style.background = C.purpleDim}>
           {aiLoading ? "Suggesting..." : "✦ AI Suggest Scores"}
         </button>
+        {stale && <p role="status">Context changed. Previous suggestions are stale; request new suggestions before accepting.</p>}
+        <AIContextDetails context={usedContext} />
+        {["reach", "impact", "confidence", "effort"].filter(dim => aiResults[dim]).map(dim => {
+          const result = aiResults[dim];
+          return <details key={dim} style={{ fontSize: 12, lineHeight: 1.6 }}>
+            <summary>{dim}: {result.score == null ? "Insufficient information" : `Suggested ${result.score}/100`}</summary>
+            <p>{result.justification}</p>
+            <p>References: {result.evidence?.join(", ") || "No supplied evidence cited"}</p>
+            <p>Assumptions: {result.assumptions?.join("; ") || "None stated"}</p>
+            <p>Gaps: {result.gaps?.join("; ") || "None stated"}</p>
+            <p>Next: {result.nextAction}</p>
+            {Number.isInteger(result.score) && <button disabled={stale} onClick={() => acceptSuggestion(dim)}>Accept {dim} suggestion</button>}
+          </details>;
+        })}
         {aiError && <p style={{ fontSize: 10, color: C.danger, margin: 0, fontFamily: "var(--mono)" }}>{aiError}</p>}
         <details style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6 }}>
           <summary style={{ cursor: "pointer", fontWeight: 600 }}>How to interpret these scores</summary>

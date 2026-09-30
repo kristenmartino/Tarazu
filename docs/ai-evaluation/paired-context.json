@@ -1,0 +1,8 @@
+{
+  "candidate": {"featureName":"Bulk invite","featureDescription":"Allow workspace admins to invite multiple colleagues at once.","candidateId":"bulk-invite"},
+  "pairs": [
+    {"name":"strategy","a":{"productContext":{"targetUsers":"Workspace administrators","strategicPriorities":"Improve activation for large teams","successMetrics":"Activated teammates per new workspace"}},"b":{"productContext":{"targetUsers":"Solo professionals","strategicPriorities":"Improve solo onboarding completion","successMetrics":"First task completed"}}},
+    {"name":"capacity","a":{"productContext":{"constraints":"Existing tested bulk-invite service; one engineer available"}},"b":{"productContext":{"constraints":"No invite service; security review required; no engineers available this quarter"}}},
+    {"name":"evidence","a":{"signals":[]},"b":{"signals":[{"id":"research-example","linked_candidate_id":"bulk-invite","title":"FICTIONAL evaluation evidence","body":"In this synthetic scenario, 8 of 10 observed admins needed to invite 20+ colleagues, abandoned repetitive invites, and requested bulk entry.","confidence_impact":"increases"},{"id":"conflict-example","linked_candidate_id":"bulk-invite","title":"FICTIONAL conflicting evidence","body":"In this synthetic scenario, two smaller teams said bulk entry would add no value.","confidence_impact":"decreases"}]}}
+  ]
+}

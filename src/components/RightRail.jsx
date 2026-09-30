@@ -12,7 +12,7 @@ export const RightRail = ({
   feedbackContext, feedbackSummary,
   isSignedIn, activeWsId,
   isMobile, isTablet,
-  signals, onScreenChange,
+  signals, decisions, onScreenChange,
   onAddDecision,
 }) => {
   const C = useC();
@@ -64,6 +64,7 @@ export const RightRail = ({
     />
   ) : (
     <AdvisorPanel
+      signals={signals} decisions={decisions} workspaceId={activeWsId}
       scored={scored}
       productContext={productContext}
       onProductContextChange={onProductContextChange}

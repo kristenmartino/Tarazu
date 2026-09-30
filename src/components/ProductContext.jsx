@@ -32,7 +32,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
         <span style={{ fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.08em", fontFamily: "var(--mono)", flex: 1 }}>
           STRATEGY BRIEF
         </span>
-        {hasContent && <Pill color={C.purple} dimColor={C.purpleDim} small>SET</Pill>}
+        {hasContent && <Pill color={C.purple} dimColor={C.purpleDim} small>{Object.values(context).filter(v => typeof v === "string" && v.trim()).length}/6 FIELDS</Pill>}
         <span style={{ fontSize: 10, color: C.textDim, transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
       </button>
       {open && (

@@ -372,27 +372,34 @@ export default function App() {
     setImportData(null);
   };
 
+  const workspaceLoadSequence = useRef(0);
   const switchWorkspace = useCallback(async (wsId) => {
+    const loadId = ++workspaceLoadSequence.current;
     if (isSignedIn) {
       try {
-        const data = await cloud.fetchFeatures(wsId);
+        const [data, ctx, d, signalsData, settings] = await Promise.all([
+          cloud.fetchFeatures(wsId),
+          cloud.fetchProductContext(wsId).catch(() => ({})),
+          cloud.fetchDecisions(wsId).catch(() => ({ decisions: [] })),
+          cloud.fetchSignals(wsId).catch(() => ({ signals: [] })),
+          cloud.fetchWorkspaceSettings(wsId).catch(() => ({})),
+        ]);
+        if (loadId !== workspaceLoadSequence.current) return;
+        // Commit one workspace snapshot together; never expose mixed AI context.
         setFeatures(data.features || []);
         setManualOrder(data.manualOrder || []);
-        try { const ctx = await cloud.fetchProductContext(wsId); setProductContext(ctx); } catch { setProductContext({ productSummary: "", targetUsers: "", strategicPriorities: "", constraints: "", assumptions: "", successMetrics: "" }); }
-        try { const d = await cloud.fetchDecisions(wsId); setDecisions(d.decisions || []); } catch { setDecisions([]); }
-        try { const s = await cloud.fetchSignals(wsId); setSignals(s.signals || []); } catch { setSignals([]); }
-        try {
-          const settings = await cloud.fetchWorkspaceSettings(wsId);
-          setSortMode(settings?.sortMode || "rice");
-          setViewMode(settings?.viewMode || "list");
-          setMapColorBy(settings?.mapColorBy || "tier");
-          setMapSizeBy(settings?.mapSizeBy || "uniform");
-          setMapLabelMode(settings?.mapLabelMode || "hover");
-        } catch {
-          setSortMode("rice"); setViewMode("list"); setMapColorBy("tier"); setMapSizeBy("uniform"); setMapLabelMode("hover");
-        }
+        setProductContext(ctx || {});
+        setDecisions(d.decisions || []);
+        setSignals(signalsData.signals || []);
+        setSortMode(settings?.sortMode || "rice");
+        setViewMode(settings?.viewMode || "list");
+        setMapColorBy(settings?.mapColorBy || "tier");
+        setMapSizeBy(settings?.mapSizeBy || "uniform");
+        setMapLabelMode(settings?.mapLabelMode || "hover");
       } catch (err) {
+        if (loadId !== workspaceLoadSequence.current) return;
         console.error("Failed to load workspace:", err);
+        setProductContext({});
         setFeatures([]);
         setManualOrder([]);
         setDecisions([]);
@@ -842,6 +849,7 @@ export default function App() {
               <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: 0 }}>Advisor</h2>
             </div>
             <AdvisorPanel
+              signals={signals} decisions={decisions} workspaceId={activeWsId}
               scored={scored}
               productContext={productContext} onProductContextChange={setProductContext}
               onAnalysisEvent={handleAnalysisEvent} onAnalysisFeedback={handleAnalysisFeedback}
@@ -865,7 +873,7 @@ export default function App() {
           importData={importData} onConfirmImport={confirmImport} onCancelImport={() => setImportData(null)}
           onImportFile={() => fileInputRef.current?.click()}
           onExportCSV={() => exportCSV(displayOrder, activeWs?.name, C)}
-          productContext={productContext} onScoreEvent={handleScoreEvent}
+          productContext={productContext} onProductContextChange={setProductContext} onScoreEvent={handleScoreEvent}
           onResolveScores={handleResolveScores} feedbackContext={feedbackContext}
           isMobile={isMobile}
           mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode}
@@ -898,7 +906,7 @@ export default function App() {
             feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
             isSignedIn={isSignedIn} activeWsId={activeWsId}
             isMobile={false} isTablet={false}
-            signals={signals} onScreenChange={handleScreenChange} onAddDecision={handleAddDecision}
+            signals={signals} decisions={decisions} onScreenChange={handleScreenChange} onAddDecision={handleAddDecision}
           />
           </ErrorBoundary>
         )}
@@ -918,7 +926,7 @@ export default function App() {
           feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
           isSignedIn={isSignedIn} activeWsId={activeWsId}
           isMobile={false} isTablet={true}
-          signals={signals} onScreenChange={handleScreenChange}
+          signals={signals} decisions={decisions} onScreenChange={handleScreenChange}
         />
         </ErrorBoundary>
       )}
@@ -937,7 +945,7 @@ export default function App() {
           feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
           isSignedIn={isSignedIn} activeWsId={activeWsId}
           isMobile={true} isTablet={false}
-          signals={signals} onScreenChange={handleScreenChange}
+          signals={signals} decisions={decisions} onScreenChange={handleScreenChange}
         />
         </ErrorBoundary>
       )}

@@ -36,7 +36,7 @@ export const CenterCanvas = ({
   undoSnapshot, onUndo, onLoadSamples, onClear,
   importData, onConfirmImport, onCancelImport,
   onImportFile, onExportCSV,
-  productContext, onScoreEvent, onResolveScores, feedbackContext,
+  productContext, onProductContextChange, onScoreEvent, onResolveScores, feedbackContext,
   isMobile,
   mapColorBy, mapSizeBy, mapLabelMode,
   onMapColorByChange, onMapSizeByChange, onMapLabelModeChange,
@@ -332,7 +332,7 @@ export const CenterCanvas = ({
         )}
 
         {unifiedFilters}
-        {showForm && <Form key={editingFeature?.id || "new"} onAdd={onAddFeature} onCancel={() => { onShowForm(false); onEditingFeature(null); }} editFeature={editingFeature} productContext={productContext} onScoreEvent={onScoreEvent} onResolveScores={onResolveScores} feedbackContext={feedbackContext} scored={scored} />}
+        {showForm && <Form key={editingFeature?.id || "new"} onAdd={onAddFeature} onCancel={() => { onShowForm(false); onEditingFeature(null); }} editFeature={editingFeature} scored={scored} features={features} signals={signals} decisions={decisions} workspaceId={activeWsId} onProductContextChange={onProductContextChange} productContext={productContext} onScoreEvent={onScoreEvent} onResolveScores={onResolveScores} feedbackContext={feedbackContext} />}
         {importData && <ImportPanel importData={importData} onConfirm={onConfirmImport} onCancel={onCancelImport} />}
 
         {/* List + tradeoff map. The map is skipped entirely until there are
