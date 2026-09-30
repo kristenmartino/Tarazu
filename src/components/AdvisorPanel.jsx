@@ -28,7 +28,7 @@ export const AdvisorPanel = ({
         <Pill color={C.purple} dimColor={C.purpleDim} small>AI</Pill>
       </div>
       <p style={{ fontSize: 10, color: C.textDim, margin: "0 0 12px", lineHeight: 1.5, fontFamily: "var(--mono)" }}>
-        Recommendation generated from current candidate scores, strategy context, and available signals.
+        Uses candidate scores, product context, and summaries of prior recommendation ratings. Running AI sends this content to Tarazu and Anthropic; linked signals and shipped outcomes are not included.
       </p>
       <AIPanel
         scored={scored}

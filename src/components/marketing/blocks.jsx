@@ -116,7 +116,7 @@ export function CardGrid({ items }) {
 }
 
 /** Closing call to action. */
-export function CtaBand({ title, body, primaryLabel = "Start prioritizing", primaryHref = "/sign-up" }) {
+export function CtaBand({ title, body, primaryLabel = "Start prioritizing", primaryHref = "/app" }) {
   return (
     <section className="band cta">
       <div className="wrap cta-inner">

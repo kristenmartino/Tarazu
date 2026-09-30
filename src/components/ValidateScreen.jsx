@@ -7,7 +7,7 @@ import {
   scoreValidation,
 } from "../validate/validationScore";
 
-const defaultScores = () => Object.fromEntries(VALIDATE_DIMENSIONS.map((d) => [d.key, 3]));
+const defaultScores = () => Object.fromEntries(VALIDATE_DIMENSIONS.map((d) => [d.key, null]));
 
 export const ValidateScreen = ({ scored = [], signals = [], productContext, onAddDecision, onScreenChange }) => {
   const C = useC();
@@ -16,10 +16,12 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
   const sectionLabel = { fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.1em", fontFamily: "var(--mono)", textTransform: "uppercase" };
 
   const REC = {
-    "Build": { color: C.accent, blurb: "Strong evidence and opportunity — worth building now." },
-    "Validate Further": { color: C.blue, blurb: "Promising, but key assumptions still need evidence." },
-    "Pivot": { color: C.warn, blurb: "Reframe the problem, audience, or approach before committing." },
-    "Park": { color: C.danger, blurb: "Not worth pursuing now — revisit if conditions change." },
+    "Not assessed": { color: C.textMuted },
+    "Assessment incomplete": { color: C.blue },
+    "Build": { color: C.accent },
+    "Validate Further": { color: C.blue },
+    "Pivot": { color: C.warn },
+    "Park": { color: C.danger },
   };
 
   const [mode, setMode] = useState(scored.length > 0 ? "candidate" : "manual");
@@ -29,6 +31,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
   const [assumptions, setAssumptions] = useState({});
   const [attached, setAttached] = useState([]); // signal ids
   const [scores, setScores] = useState(defaultScores);
+  const [evidenceReviewed, setEvidenceReviewed] = useState(false);
   const [risks, setRisks] = useState("");
   const [nextActions, setNextActions] = useState("");
   const [saving, setSaving] = useState(false);
@@ -37,24 +40,25 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
   const ideaName = mode === "candidate" ? (candidate?.name || "") : manualName.trim();
   const ideaDesc = mode === "candidate" ? (candidate?.description || "") : manualDesc.trim();
 
-  const { average, recommendation } = useMemo(() => scoreValidation(scores), [scores]);
-  const rec = REC[recommendation];
   const attachedSignals = useMemo(() => signals.filter((s) => attached.includes(s.id)), [signals, attached]);
+  const { average, recommendation, assessedCount, reason } = useMemo(() => scoreValidation(scores, { assumptions, evidenceCount: attachedSignals.length, evidenceReviewed }), [scores, assumptions, attachedSignals.length, evidenceReviewed]);
+  const rec = REC[recommendation];
+  const averageLabel = average === null ? "Not assessed" : `${average.toFixed(1)}/5`;
   const canSave = ideaName.length > 0;
 
   const setScore = (key, val) => setScores((s) => ({ ...s, [key]: val }));
-  const toggleSignal = (id) => setAttached((a) => (a.includes(id) ? a.filter((x) => x !== id) : [...a, id]));
+  const toggleSignal = (id) => { setEvidenceReviewed(false); setAttached((a) => (a.includes(id) ? a.filter((x) => x !== id) : [...a, id])); };
 
-  const scoreSummary = `${recommendation} — ${average.toFixed(1)}/5 across ${VALIDATE_DIMENSIONS.length} opportunity dimensions.`;
+  const scoreSummary = `${recommendation} — ${assessedCount}/${VALIDATE_DIMENSIONS.length} dimensions assessed${average === null ? "" : `; average ${averageLabel}`}. ${reason}`;
 
   const briefText = useMemo(() => {
     const lines = [];
     lines.push(`Idea: ${ideaName || "(unnamed)"}`);
     if (ideaDesc) lines.push(`Description: ${ideaDesc}`);
-    lines.push(`Recommendation: ${recommendation} (avg ${average.toFixed(1)}/5)`);
+    lines.push(`Assessment: ${scoreSummary}`);
     lines.push("");
     lines.push("Opportunity scores:");
-    VALIDATE_DIMENSIONS.forEach((d) => lines.push(`  - ${d.label}: ${scores[d.key]}/5`));
+    VALIDATE_DIMENSIONS.forEach((d) => lines.push(`  - ${d.label}: ${scores[d.key] == null ? "Not assessed" : `${scores[d.key]}/5`}`));
     const filledAssumptions = ASSUMPTION_CATEGORIES.filter((c) => (assumptions[c.key] || "").trim());
     if (filledAssumptions.length) {
       lines.push("");
@@ -63,13 +67,13 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
     }
     if (attachedSignals.length) {
       lines.push("");
-      lines.push(`Supporting evidence (${attachedSignals.length}):`);
-      attachedSignals.forEach((s) => lines.push(`  - ${s.title}${s.source ? ` (${s.source})` : ""}`));
+      lines.push(`Attached evidence (${attachedSignals.length}; review ${evidenceReviewed ? "completed" : "pending"}):`);
+      attachedSignals.forEach((s) => lines.push(`  - ${s.title}${s.source ? ` (${s.source})` : ""}${s.confidence_impact ? ` — ${s.confidence_impact}` : ""}`));
     }
     if (risks.trim()) { lines.push(""); lines.push(`Risks / unknowns: ${risks.trim()}`); }
     if (nextActions.trim()) { lines.push(""); lines.push(`Next validation actions: ${nextActions.trim()}`); }
     return lines.join("\n");
-  }, [ideaName, ideaDesc, recommendation, average, scores, assumptions, attachedSignals, risks, nextActions]);
+  }, [ideaName, ideaDesc, scoreSummary, scores, assumptions, attachedSignals, evidenceReviewed, risks, nextActions]);
 
   const handleSave = async () => {
     if (!canSave || saving) return;
@@ -90,9 +94,13 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
         framework: "Tarazu Validate",
         recommendation,
         average,
+        assessment_version: 2,
+        assessedCount,
+        evidenceReviewed,
+        reason,
         scores,
         assumptions,
-        attachedSignals: attachedSignals.map((s) => ({ id: s.id, title: s.title })),
+        attachedSignals: attachedSignals.map((s) => ({ id: s.id, title: s.title, confidence_impact: s.confidence_impact })),
       },
     };
     try {
@@ -113,7 +121,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
           <Pill color={C.purple} dimColor={C.purpleDim} small>BETA</Pill>
         </div>
         <p style={{ fontSize: 12, color: C.textDim, margin: 0 }}>
-          Turn product ideas into evidence-backed build / pivot / park recommendations.
+          Assess your assumptions and evidence before deciding whether to build, pivot, or park.
         </p>
       </div>
 
@@ -122,14 +130,14 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
         <section style={{ border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, padding: 16 }}>
           <div style={sectionLabel}>Idea</div>
           <div style={{ display: "flex", gap: 8, margin: "10px 0 12px" }}>
-            <button onClick={() => setMode("candidate")} disabled={scored.length === 0} style={{
+            <button onClick={() => { setMode("candidate"); setEvidenceReviewed(false); }} disabled={scored.length === 0} style={{
               padding: "6px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600, fontFamily: "var(--mono)",
               border: `1px solid ${mode === "candidate" ? C.accent : C.border}`,
               background: mode === "candidate" ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent",
               color: scored.length === 0 ? C.textDim : mode === "candidate" ? C.accent : C.textMuted,
               cursor: scored.length === 0 ? "not-allowed" : "pointer", opacity: scored.length === 0 ? 0.5 : 1,
             }}>Existing candidate</button>
-            <button onClick={() => setMode("manual")} style={{
+            <button onClick={() => { setMode("manual"); setEvidenceReviewed(false); }} style={{
               padding: "6px 12px", borderRadius: 6, fontSize: 11, fontWeight: 600, fontFamily: "var(--mono)",
               border: `1px solid ${mode === "manual" ? C.accent : C.border}`,
               background: mode === "manual" ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent",
@@ -141,7 +149,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
             scored.length > 0 ? (
               <div>
                 <label htmlFor="validate-candidate" style={labelStyle}>CANDIDATE</label>
-                <select id="validate-candidate" value={candidateId} onChange={(e) => setCandidateId(e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
+                <select id="validate-candidate" value={candidateId} onChange={(e) => { setCandidateId(e.target.value); setEvidenceReviewed(false); }} style={{ ...inputStyle, cursor: "pointer" }}>
                   {scored.map((f) => <option key={f.id} value={f.id}>{f.name} ({f.score})</option>)}
                 </select>
                 {ideaDesc && <p style={{ fontSize: 11, color: C.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>{ideaDesc}</p>}
@@ -153,11 +161,11 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div>
                 <label htmlFor="validate-idea-name" style={labelStyle}>IDEA NAME</label>
-                <input id="validate-idea-name" value={manualName} onChange={(e) => setManualName(e.target.value)} placeholder="e.g. Slack weekly digest" style={inputStyle} />
+                <input id="validate-idea-name" value={manualName} onChange={(e) => { setManualName(e.target.value); setEvidenceReviewed(false); }} placeholder="e.g. Slack weekly digest" style={inputStyle} />
               </div>
               <div>
                 <label htmlFor="validate-idea-desc" style={labelStyle}>DESCRIPTION (OPTIONAL)</label>
-                <textarea id="validate-idea-desc" value={manualDesc} onChange={(e) => setManualDesc(e.target.value)} rows={2} placeholder="What is it, in one or two sentences?" style={{ ...inputStyle, resize: "vertical" }} />
+                <textarea id="validate-idea-desc" value={manualDesc} onChange={(e) => { setManualDesc(e.target.value); setEvidenceReviewed(false); }} rows={2} placeholder="What is it, in one or two sentences?" style={{ ...inputStyle, resize: "vertical" }} />
               </div>
             </div>
           )}
@@ -185,7 +193,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
         {/* 3. Evidence */}
         <section style={{ border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, padding: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={sectionLabel}>Supporting evidence</div>
+            <div style={sectionLabel}>Attached evidence</div>
             <Pill color={C.blue} dimColor={C.blueDim} small>{attachedSignals.length} attached</Pill>
           </div>
           {signals.length === 0 ? (
@@ -215,19 +223,24 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
           )}
         </section>
 
+        {attachedSignals.length > 0 && <label style={{ display: "flex", gap: 10, fontSize: 12, color: C.textMuted, lineHeight: 1.5 }}>
+          <input type="checkbox" checked={evidenceReviewed} onChange={(e) => setEvidenceReviewed(e.target.checked)} />
+          I have reviewed the sources, limitations, and conflicting signals and reflected them in my ratings. Attachment alone is not validation.
+        </label>}
+
         {/* 4. Scorecard */}
         <section style={{ border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, padding: 16 }}>
           <div style={sectionLabel}>Opportunity scorecard</div>
-          <p style={{ fontSize: 11, color: C.textDim, margin: "6px 0 12px", lineHeight: 1.5 }}>Rate each dimension 1 (weak) to 5 (strong).</p>
+          <p style={{ fontSize: 11, color: C.textDim, margin: "6px 0 12px", lineHeight: 1.5 }}>Rate each assessed dimension 1 (weak) to 5 (strong). Leave unknown dimensions unassessed; select a rating again to clear it. Evidence strength is your judgment of quality, not the number of attached signals.</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {VALIDATE_DIMENSIONS.map((d) => (
-              <div key={d.key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ flex: 1, fontSize: 12, color: C.text }}>{d.label}</span>
+              <div key={d.key} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+                <span style={{ flex: 1, fontSize: 12, color: C.text }}>{d.label}{scores[d.key] == null && <span style={{ display: "block", fontSize: 11, color: C.textMuted }}>Not assessed</span>}</span>
                 <div role="group" aria-label={d.label} style={{ display: "flex", gap: 4 }}>
                   {[1, 2, 3, 4, 5].map((n) => {
                     const active = scores[d.key] === n;
                     return (
-                      <button key={n} onClick={() => setScore(d.key, n)} aria-label={`${d.label}: ${n} of 5`} aria-pressed={active} style={{
+                      <button key={n} onClick={() => setScore(d.key, active ? null : n)} aria-label={`${d.label}: ${n} of 5`} aria-pressed={active} style={{
                         width: 28, height: 28, borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "var(--mono)",
                         border: `1px solid ${active ? C.accent : C.border}`,
                         background: active ? C.accent : "transparent",
@@ -245,9 +258,9 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
         <section style={{ border: `1px solid ${rec.color}40`, borderRadius: 12, background: rec.color + "0E", padding: 16 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <span style={{ fontSize: 20, fontWeight: 800, color: rec.color }}>{recommendation}</span>
-            <Pill color={rec.color} dimColor={rec.color + "20"}>{average.toFixed(1)} / 5</Pill>
+            <Pill color={rec.color} dimColor={rec.color + "20"}>{average === null ? `${assessedCount}/7 assessed` : averageLabel}</Pill>
           </div>
-          <p style={{ fontSize: 12, color: C.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>{rec.blurb}</p>
+          <p style={{ fontSize: 12, color: C.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>{reason}</p>
         </section>
 
         {/* 6. Risks + next actions */}

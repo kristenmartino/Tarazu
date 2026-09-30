@@ -1,21 +1,23 @@
+import "./ui/ui.css";
 import { useState } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
+import { dateOnly, localToday, serializeDateOnly, formatDateOnly } from "../dateOnly";
 
 const STATUS_OPTIONS = ["draft", "approved", "archived"];
-const EMPTY_FORM = { title: "", chosen_candidate_id: null, chosen_candidate_name: "", summary_rationale: "", final_rationale: "", framework_used: "RICE", tradeoffs_considered: "", risks_accepted: "", expected_outcome: "", owner: "", status: "draft", decision_date: new Date().toISOString().split("T")[0], review_date: "" };
+const emptyForm = () => ({ title: "", chosen_candidate_id: null, chosen_candidate_name: "", summary_rationale: "", final_rationale: "", framework_used: "RICE", tradeoffs_considered: "", risks_accepted: "", expected_outcome: "", owner: "", status: "draft", decision_date: localToday(), review_date: "" });
 
 export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }) => {
   const C = useC();
   const STATUS_COLORS = { draft: C.warn, approved: C.accent, archived: C.textDim };
   const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "var(--mono)", outline: "none", boxSizing: "border-box" };
-  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4 };
+  const labelStyle = { fontSize: 11, fontWeight: 600, color: C.textMuted, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4 };
   const selectStyle = { ...inputStyle, cursor: "pointer" };
   const [showForm, setShowForm] = useState(false);
   const [editingDecision, setEditingDecision] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm] = useState(emptyForm);
 
   const filtered = filterStatus === "all" ? decisions : decisions.filter(d => d.status === filterStatus);
 
@@ -28,12 +30,12 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
         tradeoffs_considered: decision.tradeoffs_considered || "", risks_accepted: decision.risks_accepted || "",
         expected_outcome: decision.expected_outcome || "", owner: decision.owner || "",
         status: decision.status || "draft",
-        decision_date: decision.decision_date ? decision.decision_date.split("T")[0] : new Date().toISOString().split("T")[0],
-        review_date: decision.review_date ? decision.review_date.split("T")[0] : "",
+        decision_date: dateOnly(decision.decision_date) || localToday(),
+        review_date: dateOnly(decision.review_date),
       });
       setEditingDecision(decision);
     } else {
-      setForm(EMPTY_FORM);
+      setForm(emptyForm());
       setEditingDecision(null);
     }
     setShowForm(true);
@@ -44,8 +46,8 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
     const payload = {
       ...form,
       chosen_candidate_id: form.chosen_candidate_id || null,
-      decision_date: form.decision_date ? new Date(form.decision_date).toISOString() : new Date().toISOString(),
-      review_date: form.review_date ? new Date(form.review_date).toISOString() : null,
+      decision_date: serializeDateOnly(form.decision_date || localToday()),
+      review_date: serializeDateOnly(form.review_date),
     };
     try {
       if (editingDecision) {
@@ -55,7 +57,7 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
       }
       setShowForm(false);
       setEditingDecision(null);
-      setForm(EMPTY_FORM);
+      setForm(emptyForm());
     } catch (err) {
       console.error("Decision save failed:", err);
     }
@@ -69,14 +71,14 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
   };
 
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "0 24px 24px" }}>
+    <div className="tz-decisions" style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "0 24px 24px" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 0", flexWrap: "wrap", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: 0 }}>Decisions</h2>
           <Pill color={C.textMuted} dimColor={C.border}>{filtered.length}</Pill>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
           {["all", ...STATUS_OPTIONS].map(s => (
             <button key={s} onClick={() => setFilterStatus(s)} style={{
               padding: "4px 10px", borderRadius: 6, border: `1px solid ${filterStatus === s ? C.accent : C.border}`,
@@ -98,9 +100,9 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <div>
               <div style={labelStyle}>TITLE</div>
-              <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="What was decided?" style={inputStyle} />
+              <input aria-label="Decision title" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="What was decided?" style={inputStyle} />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 12 }}>
               <div>
                 <div style={labelStyle}>CHOSEN CANDIDATE</div>
                 <select value={form.chosen_candidate_id || ""} onChange={handleCandidateSelect} style={selectStyle}>
@@ -121,7 +123,7 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
               <div style={labelStyle}>TRADEOFFS CONSIDERED</div>
               <textarea value={form.tradeoffs_considered} onChange={e => setForm(f => ({ ...f, tradeoffs_considered: e.target.value }))} placeholder="What alternatives were weighed?" rows={2} style={{ ...inputStyle, resize: "vertical" }} />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 12 }}>
               <div>
                 <div style={labelStyle}>RISKS ACCEPTED</div>
                 <textarea value={form.risks_accepted} onChange={e => setForm(f => ({ ...f, risks_accepted: e.target.value }))} rows={2} style={{ ...inputStyle, resize: "vertical" }} />
@@ -131,7 +133,7 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
                 <textarea value={form.expected_outcome} onChange={e => setForm(f => ({ ...f, expected_outcome: e.target.value }))} rows={2} style={{ ...inputStyle, resize: "vertical" }} />
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 160px), 1fr))", gap: 12 }}>
               <div>
                 <div style={labelStyle}>OWNER</div>
                 <input value={form.owner} onChange={e => setForm(f => ({ ...f, owner: e.target.value }))} style={inputStyle} />
@@ -144,11 +146,11 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
               </div>
               <div>
                 <div style={labelStyle}>DECISION DATE</div>
-                <input type="date" value={form.decision_date} onChange={e => setForm(f => ({ ...f, decision_date: e.target.value }))} style={inputStyle} />
+                <input aria-label="Decision date" type="date" value={form.decision_date} onChange={e => setForm(f => ({ ...f, decision_date: e.target.value }))} style={inputStyle} />
               </div>
               <div>
                 <div style={labelStyle}>REVIEW DATE</div>
-                <input type="date" value={form.review_date} onChange={e => setForm(f => ({ ...f, review_date: e.target.value }))} style={inputStyle} />
+                <input aria-label="Review date" type="date" value={form.review_date} onChange={e => setForm(f => ({ ...f, review_date: e.target.value }))} style={inputStyle} />
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
@@ -184,8 +186,8 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
                     <span style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{d.title}</span>
                     <Pill color={statusColor} dimColor={statusColor + "20"} small>{d.status?.toUpperCase()}</Pill>
                   </div>
-                  <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>
-                    {d.decision_date ? new Date(d.decision_date).toLocaleDateString() : ""}
+                  <span style={{ fontSize: 12, color: C.textMuted, fontFamily: "var(--mono)" }}>
+                    {d.decision_date ? formatDateOnly(d.decision_date) : ""}
                   </span>
                 </div>
                 {d.chosen_candidate_name && (
@@ -199,13 +201,13 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
                   </div>
                 )}
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
-                  {d.framework_used && <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>{d.framework_used}</span>}
-                  {d.owner && <span style={{ fontSize: 10, color: C.textDim }}>{d.owner}</span>}
+                  {d.framework_used && <span style={{ fontSize: 12, color: C.textMuted, fontFamily: "var(--mono)" }}>{d.framework_used}</span>}
+                  {d.owner && <span style={{ fontSize: 12, color: C.textMuted }}>{d.owner}</span>}
                   {/* Distinct from owner above: owner is who is accountable
                       (free text, may not be a user); this is who entered the
                       record, and is backed by a real account. */}
                   {d.created_by_name && (
-                    <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>
+                    <span style={{ fontSize: 12, color: C.textMuted, fontFamily: "var(--mono)" }}>
                       recorded by {d.created_by_name}
                     </span>
                   )}
@@ -243,7 +245,7 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
                     {d.review_date && (
                       <div>
                         <div style={labelStyle}>REVIEW DATE</div>
-                        <div style={{ fontSize: 12, color: C.text }}>{new Date(d.review_date).toLocaleDateString()}</div>
+                        <div style={{ fontSize: 12, color: C.text }}>{formatDateOnly(d.review_date)}</div>
                       </div>
                     )}
                     <div style={{ display: "flex", gap: 8, marginTop: 4 }}>

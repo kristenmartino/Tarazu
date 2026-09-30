@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { SAMPLES } from "./theme";
+import { sampleBacklogFor } from "./sample-backlog";
 import { useC } from "./ThemeProvider";
 import { exportCSV, parseCSV, mapCSVToFeatures } from "./utils";
 import { load, saveWsIndex, loadWsIndex, saveWsFeatures, loadWsFeatures, removeWsFeatures, saveWsContext, loadWsContext, removeWsContext, getActiveWsId, setActiveWsId as storeActiveWsId, STORAGE_KEY, saveWsDecisions, loadWsDecisions, removeWsDecisions, saveWsSignals, loadWsSignals, removeWsSignals, saveWsSettings, loadWsSettings, removeWsSettings } from "../lib/local-storage";
@@ -678,12 +678,18 @@ export default function App() {
   }, []);
 
   const handleLoadSamples = useCallback(() => {
+    const examples = sampleBacklogFor(features);
+    if (!examples) {
+      showToast("Your candidates are unchanged. Create an empty workspace to try examples.");
+      return;
+    }
     setUndoSnapshot({ features, selectedId, manualOrder, sortMode });
-    setFeatures(SAMPLES);
+    setFeatures(examples);
+    setActiveScreen("priorities");
     setSelectedId(null);
     setManualOrder([]);
     setSortMode("rice");
-  }, [features, selectedId, manualOrder, sortMode]);
+  }, [features, selectedId, manualOrder, sortMode, showToast]);
 
   const handleClear = useCallback(() => {
     setUndoSnapshot({ features, selectedId, manualOrder, sortMode });

@@ -150,6 +150,11 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           {aiLoading ? "Suggesting..." : "✦ AI Suggest Scores"}
         </button>
         {aiError && <p style={{ fontSize: 10, color: C.danger, margin: 0, fontFamily: "var(--mono)" }}>{aiError}</p>}
+        <details style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6 }}>
+          <summary style={{ cursor: "pointer", fontWeight: 600 }}>How to interpret these scores</summary>
+          <p>These are relative 1–100 estimates. Reach describes the size of the affected audience, impact the benefit per user, confidence the strength of your evidence, and effort the work required. Agree on the same audience, time horizon, and scale anchors when comparing candidates; a shared scale alone does not align different teams’ estimates.</p>
+          <p>Record the audience, timeframe, and key assumptions in the description, and capture supporting or conflicting evidence in Signals. The initial 50s are placeholders to review. AI suggestions are editable estimates; inspect their justification before accepting them.</p>
+        </details>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           <Slider label="Reach" value={r} onChange={setR} color={C.reach} icon="📡" anchors={REACH_ANCHORS}
             aiMode={aiModes.reach} aiScore={aiResults.reach?.score} aiJustification={aiResults.reach?.justification}
@@ -165,11 +170,12 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
             aiLoading={aiLoading && aiModes.effort && !aiResults.effort} onToggleAi={() => toggleDimension("effort")} />
         </div>
         <div style={{ padding: 12, borderRadius: 8, background: C.accentGlow, border: `1px solid ${C.accent}20`, textAlign: "center" }}>
-          <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "var(--mono)" }}>RICE SCORE</span>
+          <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "var(--mono)" }}>RELATIVE RICE SCORE</span>
           <p style={{ fontSize: 28, fontWeight: 800, color: C.accent, margin: "4px 0 0", fontFamily: "var(--mono)" }}>{preview.toLocaleString()}</p>
           {previewTotal > 1 && (
             <p style={{ fontSize: 11, color: C.textMuted, margin: "2px 0 0", fontFamily: "var(--mono)" }}>#{previewRank} of {previewTotal}</p>
           )}
+          <p style={{ fontSize: 12, color: C.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>Reach × Impact × Confidence ÷ Effort. A ranking aid based on estimates, not measured return or a probability. Use evidence and judgment alongside the number.</p>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={submit} disabled={!name.trim()} style={{ flex: 1, padding: "10px 16px", border: "none", borderRadius: 8, background: name.trim() ? C.accent : C.border, color: name.trim() ? C.bg : C.textDim, fontSize: 13, fontWeight: 700, cursor: name.trim() ? "pointer" : "not-allowed", fontFamily: "var(--mono)" }}>{editFeature ? "Save Changes" : "Add Candidate"}</button>

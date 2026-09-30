@@ -26,7 +26,8 @@ const TIERS = [
       "Unlimited candidates in your workspace",
       "RICE scoring on a 1–100 scale",
       "Effort × impact tradeoff map",
-      "AI score suggestions and backlog analysis",
+      "AI suggestions and analysis — content sent to Anthropic on request",
+      "Saved scenarios",
       "CSV import and CSV/PDF export",
       "Guest mode — no account required",
       "Cloud sync when you do sign in",
@@ -37,7 +38,7 @@ const TIERS = [
     available: false,
     status: "Planned",
     for: "Serious individual use.",
-    features: ["Saved scenarios", "Richer AI analysis", "Extended decision history"],
+    features: ["Additional individual workflows (scope to be confirmed)", "Extended decision history"],
   },
   {
     name: "Team",
@@ -79,9 +80,9 @@ export default function PricingPage() {
         <Prose>
           <KeyFact label="What it costs">
             <p>
-              <strong>$0.</strong> There&apos;s no paid tier to buy right now, so nothing on
-              this page is gated. You don&apos;t even need an account — guest mode runs
-              entirely in your browser.
+              <strong>$0.</strong> There is no paid tier to buy right now, so nothing on
+              this page requires payment. No account is needed to try guest mode.
+              Signing in enables cloud sync and score history; AI requires an online request.
             </p>
           </KeyFact>
           <p>
@@ -132,9 +133,9 @@ export default function PricingPage() {
 
           <h3>What happens to your data</h3>
           <p>
-            In guest mode, nothing leaves your browser. If you sign in, workspaces sync
+            Guest workspaces are saved in your browser. If you sign in, workspaces sync
             to a Postgres database with row-level security. Workspace content is sent to
-            Anthropic&apos;s API only when you run an AI feature, and the API key stays
+            Anthropic&apos;s API when you run an AI feature, including in guest mode. The API key stays
             server-side. The full detail is in the <Link href="/faq">FAQ</Link>.
           </p>
 

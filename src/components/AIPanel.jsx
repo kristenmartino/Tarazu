@@ -1,3 +1,4 @@
+import { localToday } from "../dateOnly";
 import { useState } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
@@ -212,7 +213,7 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
             risks_accepted: analysis.riskFlag?.reason || "",
             expected_outcome: analysis.insight || "",
             status: "draft",
-            decision_date: new Date().toISOString().split("T")[0],
+            decision_date: localToday(),
           };
           // Find the candidate id if possible
           const topCandidate = scored.find(f => f.name === analysis.topPick?.name);

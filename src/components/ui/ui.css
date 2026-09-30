@@ -126,3 +126,17 @@
 .tzui-empty { text-align: center; padding: 40px 24px; border: 1px dashed var(--border); border-radius: var(--radius-lg); background: var(--surface-sunken); }
 .tzui-empty h4 { font-family: var(--display); font-weight: 700; color: var(--text-primary); margin: 0 0 6px; }
 .tzui-empty p { color: var(--text-secondary); font-size: 13.5px; margin: 0 0 16px; }
+
+/* Decision forms and scoring controls are also used outside UI primitives. */
+.tz-decisions :is(input, textarea, select, button):focus-visible,
+.tz-score-slider :is(input, button):focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 3px;
+}
+.tz-score-slider input[type="range"] { margin-block: 16px; }
+.tz-decisions button { min-height: 36px; }
+@media (max-width: 600px) {
+  .tz-decisions { padding-inline: 12px !important; padding-bottom: 32px !important; }
+  .tz-decisions :is(input, textarea, select) { font-size: 16px !important; min-width: 0; }
+  .tz-decisions button, .tz-score-slider button { min-height: 44px; }
+}

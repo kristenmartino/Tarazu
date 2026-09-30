@@ -127,7 +127,7 @@ export const CenterCanvas = ({
   });
 
   // Non-priorities screens
-  if (activeScreen === "home") return <WorkspaceHome scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} onScreenChange={onScreenChange} />;
+  if (activeScreen === "home") return <WorkspaceHome scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
   if (activeScreen === "decisions") return <DecisionsScreen decisions={decisions} scored={scored} onAdd={onAddDecision} onUpdate={onUpdateDecision} onDelete={onDeleteDecision} />;
   if (activeScreen === "signals") return <SignalsScreen signals={signals} scored={scored} onAdd={onAddSignal} onUpdate={onUpdateSignal} onDelete={onDeleteSignal} onImport={onImportSignals} />;
   if (activeScreen === "validate") return <ValidateScreen scored={scored} signals={signals} productContext={productContext} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
@@ -314,6 +314,22 @@ export const CenterCanvas = ({
           <button onClick={onClear} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.danger, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Clear workspace">✕ Clear Workspace</button>
           {undoSnapshot && <button onClick={onUndo} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.warn, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Undo last action">↩ Undo</button>}
         </div>
+
+        {features.some(f => f.description?.startsWith("Fictional example")) && (
+          <section aria-label="Example walkthrough" style={{ padding: 16, border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface }}>
+            <h3 style={{ margin: "0 0 8px", fontSize: 15 }}>Try a decision: editing or collaboration?</h3>
+            <p style={{ margin: "0 0 10px", fontSize: 13, color: C.textMuted, lineHeight: 1.6 }}>
+              Fictional example: Feature Editing starts ahead because its assumed reach and confidence are higher and its effort is lower than Team Collaboration.
+              That is a starting hypothesis, not customer validation. Edit an estimate, save it, and see whether the ranking still supports your choice.
+              Then attach evidence in Signals and record your rationale, alternatives, and expected outcome in Decisions.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <button style={headerBtnStyle} onClick={() => { const example = features.find(f => f.id === "r20"); if (example) onEditFeature(example); }}>Inspect editing assumptions</button>
+              <button style={headerBtnStyle} onClick={() => onScreenChange("signals")}>Explore evidence</button>
+              <button style={headerBtnStyle} onClick={() => onScreenChange("decisions")}>Record a decision</button>
+            </div>
+          </section>
+        )}
 
         {unifiedFilters}
         {showForm && <Form key={editingFeature?.id || "new"} onAdd={onAddFeature} onCancel={() => { onShowForm(false); onEditingFeature(null); }} editFeature={editingFeature} productContext={productContext} onScoreEvent={onScoreEvent} onResolveScores={onResolveScores} feedbackContext={feedbackContext} scored={scored} />}

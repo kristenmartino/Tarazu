@@ -52,12 +52,22 @@ export const recommendationFor = (avg) => {
   return "Park";
 };
 
-/**
- * Convenience: average + recommendation for a set of dimension scores.
- * @param {Record<string, number>} scores
- * @returns {{ average: number, recommendation: ReturnType<typeof recommendationFor> }}
+/** New assessments require explicit ratings and an evidence review.
+ * Existing saved snapshots are not recalculated or migrated.
+ * The original average and recommendation thresholds remain unchanged.
  */
-export const scoreValidation = (scores) => {
+export const scoreValidation = (scores = {}, { assumptions = {}, evidenceCount = 0, evidenceReviewed = false } = {}) => {
+  const assessedCount = VALIDATE_DIMENSIONS.filter(({ key }) =>
+    typeof scores[key] === "number" && Number.isInteger(scores[key]) && scores[key] >= 1 && scores[key] <= 5
+  ).length;
+  if (assessedCount === 0) return { average: null, assessedCount, recommendation: "Not assessed", reason: "Rate the dimensions you have assessed. Unknown is different from weak." };
+  if (assessedCount < VALIDATE_DIMENSIONS.length) return { average: null, assessedCount, recommendation: "Assessment incomplete", reason: "Assess the remaining dimensions before comparing the overall opportunity." };
   const average = averageScore(scores);
-  return { average, recommendation: recommendationFor(average) };
+  let reason;
+  if (!assumptions.problem?.trim() || !assumptions.audience?.trim()) reason = "Describe the problem and audience assumptions before drawing a conclusion.";
+  else if (evidenceCount < 1) reason = "Attach relevant evidence and review its quality, including evidence against the idea.";
+  else if (!evidenceReviewed) reason = "Review the attached evidence and its limitations. Attaching a signal does not establish that a claim is credible.";
+  else if (scores.evidenceStrength < 3) reason = "Evidence is rated weak. Gather or test evidence before choosing whether to build, pivot, or park.";
+  if (reason) return { average, assessedCount, recommendation: "Validate Further", reason };
+  return { average, assessedCount, recommendation: recommendationFor(average), reason: "A score-based suggestion using your ratings and evidence review, not an independent validation. Consider conflicting signals and record your judgment." };
 };

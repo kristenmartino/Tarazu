@@ -1,20 +1,21 @@
+import "./ui/ui.css";
 import { useC } from "../ThemeProvider";
 
 export const Slider = ({ label, value, onChange, color, icon, aiMode, aiScore, aiJustification, aiLoading, onToggleAi, anchors }) => {
   const C = useC();
   const toggleStyle = (active) => ({
-    flex: 1, padding: "3px 6px", borderRadius: 3, border: "none", fontSize: 8, fontWeight: 600,
+    flex: 1, padding: "8px 10px", minHeight: 36, borderRadius: 3, border: "none", fontSize: 12, fontWeight: 600,
     cursor: "pointer", fontFamily: "var(--mono)", transition: "all 0.15s",
     background: active ? C.surface : "transparent",
     color: active ? C.purple : C.textMuted, // inactive label: --text-soft (chip rule, AA)
   });
   return (
-  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+  <div className="tz-score-slider" style={{ display: "flex", flexDirection: "column", gap: 6 }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <span style={{ fontSize: 11, fontWeight: 600, color: C.textMuted, letterSpacing: "0.06em", textTransform: "uppercase" }}>{icon} {label}</span>
+      <span style={{ fontSize: 12, fontWeight: 600, color: C.textMuted, letterSpacing: "0.06em", textTransform: "uppercase" }}>{icon} {label}</span>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         {aiLoading ? (
-          <span style={{ fontSize: 11, color: C.purple, fontFamily: "var(--mono)" }}>
+          <span style={{ fontSize: 12, color: C.purple, fontFamily: "var(--mono)" }}>
             <span style={{ display: "inline-block", width: 10, height: 10, border: `1.5px solid ${C.border}`, borderTopColor: C.purple, borderRadius: "50%", animation: "spin 0.6s linear infinite", verticalAlign: "middle" }} />
           </span>
         ) : (
@@ -24,11 +25,11 @@ export const Slider = ({ label, value, onChange, color, icon, aiMode, aiScore, a
     </div>
     {onToggleAi && (
       <div style={{ display: "flex", gap: 1, background: C.border, borderRadius: 4, padding: 1 }}>
-        <button onClick={() => aiMode && onToggleAi()} style={toggleStyle(!aiMode)}>Manual</button>
-        <button onClick={() => !aiMode && onToggleAi()} style={toggleStyle(aiMode)}>AI</button>
+        <button type="button" aria-pressed={!aiMode} onClick={() => aiMode && onToggleAi()} style={toggleStyle(!aiMode)}>Manual</button>
+        <button type="button" aria-pressed={!!aiMode} onClick={() => !aiMode && onToggleAi()} style={toggleStyle(aiMode)}>AI</button>
       </div>
     )}
-    <input type="range" min={1} max={100} value={value} onChange={(e) => onChange(parseInt(e.target.value))}
+    <input aria-label={label} type="range" min={1} max={100} value={value} onChange={(e) => onChange(parseInt(e.target.value))}
       style={{ width: "100%", height: 6, appearance: "none", background: `linear-gradient(to right, ${aiMode ? C.purple : color} ${value}%, ${C.border} ${value}%)`, borderRadius: 3, outline: "none", cursor: "pointer", accentColor: aiMode ? C.purple : color }} />
     {/* Reference labels, not snap points — the value stays a free 1-100 drag.
         Purely a shared vocabulary so "62" means roughly the same thing across
@@ -45,7 +46,7 @@ export const Slider = ({ label, value, onChange, color, icon, aiMode, aiScore, a
       </div>
     )}
     {aiMode && aiJustification && (
-      <p style={{ fontSize: 10, color: C.textMuted, fontStyle: "italic", margin: 0, lineHeight: 1.4 }}>{aiJustification}</p>
+      <p style={{ fontSize: 12, color: C.textMuted, fontStyle: "italic", margin: 0, lineHeight: 1.4 }}>{aiJustification}</p>
     )}
     <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
   </div>

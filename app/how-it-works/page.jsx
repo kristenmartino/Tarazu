@@ -29,7 +29,7 @@ export default function HowItWorksPage() {
 
       <PageHero
         eyebrow="How it works"
-        title={<>From signal to shipped, <span className="br">in one loop.</span></>}
+        title={<>From signal to decision, <span className="br">with the reasoning visible.</span></>}
         lede="Tarazu runs the whole arc of a product decision. Each step produces something the next one needs — and the last step feeds the first, so the system gets sharper with every call you make."
       />
 
@@ -143,14 +143,17 @@ export default function HowItWorksPage() {
 
       <Section id="learn">
         <Prose>
-          <h2>05 · Learn — feed the outcome back</h2>
+          <h2>05 · Review — feedback informs later requests</h2>
           <p>
-            Once something ships, record what actually happened. That outcome becomes
-            context for the next round of scoring: the estimates your team habitually
-            inflates become visible, and later AI suggestions are grounded in your own
-            track record rather than in generic priors.
+            Tarazu summarizes how you accept or adjust AI scores and how you rate
+            recommendations. After enough feedback, those summaries are included in
+            later AI prompts for this workspace.
           </p>
-          <p>Then step 05 feeds step 01, and the loop runs again.</p>
+          <p>
+            This is feedback on suggestions, not measured product performance or model
+            training. Decision records capture expected outcomes and review dates;
+            actual shipped outcomes are not currently fed into recommendations.
+          </p>
         </Prose>
       </Section>
 
@@ -192,8 +195,9 @@ export default function HowItWorksPage() {
           <KeyFact label="Requirements">
             <p>
               Nothing. Tarazu runs in guest mode with no account: your workspace is stored
-              in your browser&apos;s local storage and never leaves the device. Sign in only
-              when you want it synced across machines.
+              in your browser&apos;s local storage. Sign in for cloud sync and score history.
+              Running AI sends relevant candidate content, product context, and feedback
+              summaries through Tarazu to Anthropic, including in guest mode.
             </p>
           </KeyFact>
           <p>

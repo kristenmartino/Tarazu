@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useC } from "../ThemeProvider";
 import { getTier } from "../utils";
 import { Pill } from "./Pill";
+import { OnboardingPanel } from "./OnboardingPanel";
 
 const StatCard = ({ label, value, color }) => {
   const C = useC();
@@ -27,7 +28,7 @@ const ShortcutButton = ({ label, icon, color, onClick }) => (
   </button>
 );
 
-export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange }) => {
+export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate }) => {
   const C = useC();
   const avgScore = useMemo(() => {
     if (scored.length === 0) return 0;
@@ -72,14 +73,17 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
+        {scored.length === 0 && (
+          <OnboardingPanel onAddCandidate={onAddCandidate} onLoadSamples={onLoadSamples} />
+        )}
         {/* Stats strip */}
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        {scored.length > 0 && <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <StatCard label="CANDIDATES" value={scored.length} color={C.accent} />
           <StatCard label="AVG RICE" value={avgScore.toLocaleString()} color={C.blue} />
           <StatCard label="AVG CONFIDENCE" value={avgConfidence} color={avgConfidence >= 70 ? C.accent : avgConfidence >= 50 ? C.blue : C.warn} />
           <StatCard label="DECISIONS" value={decisions.length} color={C.purple} />
           <StatCard label="SIGNALS" value={signals.length} color={C.blue} />
-        </div>
+        </div>}
 
         {/* Top candidate */}
         {topCandidate && (
