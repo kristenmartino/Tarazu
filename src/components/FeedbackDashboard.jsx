@@ -47,7 +47,7 @@ export const FeedbackDashboard = ({ summary }) => {
 
       {expanded && (
         <div style={{ padding: "0 16px 16px", display: "flex", flexDirection: "column", gap: 16 }}>
-          <p style={{ fontSize: 12, color: C.textMuted, margin: 0 }}>These metrics compare your saved scores with AI suggestions. Agreement does not establish accuracy or product impact.</p>
+          <p style={{ fontSize: 12, color: C.textMuted, margin: 0 }}>These metrics compare your saved scores with AI suggestions. Agreement does not establish accuracy or product impact. These records are for your review; they are not sent to later AI requests.</p>
           {/* Score agreement, not measured accuracy */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>

@@ -75,8 +75,8 @@ export default function HowItWorksPage() {
           <h3>Where the AI fits</h3>
           <p>
             Tarazu can draft scores for you. Per-candidate suggestions come from Claude
-            Sonnet, grounded in the product context you&apos;ve written and any prior
-            feedback in the workspace. Every suggestion arrives as an editable draft with
+            Sonnet, using your Strategy Brief, competing candidates, explicitly linked signals,
+            and related recorded decisions. Every suggestion arrives as an editable draft with
             its reasoning attached.
           </p>
           <p>
@@ -143,11 +143,10 @@ export default function HowItWorksPage() {
 
       <Section id="learn">
         <Prose>
-          <h2>05 · Review — feedback informs later requests</h2>
+          <h2>05 · Review — inspect suggestions and decisions</h2>
           <p>
             Tarazu summarizes how you accept or adjust AI scores and how you rate
-            recommendations. After enough feedback, those summaries are included in
-            later AI prompts for this workspace.
+            recommendations. These summaries are for your review; they are not included in later AI prompts.
           </p>
           <p>
             This is feedback on suggestions, not measured product performance or model
@@ -196,7 +195,7 @@ export default function HowItWorksPage() {
             <p>
               Nothing. Tarazu runs in guest mode with no account: your workspace is stored
               in your browser&apos;s local storage. Sign in for cloud sync and score history.
-              Running AI sends relevant candidate content, product context, and feedback
+              Running AI sends relevant candidate content, Strategy Brief fields, competing candidates, linked signals, and related decision
               summaries through Tarazu to Anthropic, including in guest mode.
             </p>
           </KeyFact>

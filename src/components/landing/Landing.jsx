@@ -200,7 +200,7 @@ export function Landing() {
                   </svg>
                 </div>
                 <div className="step-n">05</div><h3>Review</h3>
-                <p>Use score edits and recommendation feedback to inform later AI requests.</p>
+                <p>Review score edits and recommendation ratings alongside the decisions you recorded.</p>
               </div>
             </div>
             <div className="loop-back" data-reveal>
@@ -264,7 +264,7 @@ export function Landing() {
                     </span>
                     <h3>Review your feedback</h3>
                   </div>
-                  <p>Review your score adjustments and recommendation feedback. Those summaries provide context for later AI requests; they do not measure shipped outcomes.</p>
+                  <p>Review your score adjustments and recommendation feedback. These records are for your review; they are not included in AI requests and do not measure shipped outcomes.</p>
                 </div>
               </div>
 

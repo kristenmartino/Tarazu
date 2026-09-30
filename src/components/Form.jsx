@@ -5,7 +5,7 @@ import { Slider } from "./Slider";
 
 import { buildScoringContext, BRIEF_FIELDS } from "../../lib/scoring-context";
 import { ProductContext } from "./ProductContext";
-import { AIContextDetails } from "./AIContextDetails";
+import { AIContextDetails, referenceLabel } from "./AIContextDetails";
 
 // Reference bands for each RICE dimension's slider. Positioned on the same
 // 1-100 scale everything already scores on — these don't change the value
@@ -153,7 +153,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           return <details key={dim} style={{ fontSize: 12, lineHeight: 1.6 }}>
             <summary>{dim}: {result.score == null ? "Insufficient information" : `Suggested ${result.score}/100`}</summary>
             <p>{result.justification}</p>
-            <p>References: {result.evidence?.join(", ") || "No supplied evidence cited"}</p>
+            <p>References: {result.evidence?.map(ref => referenceLabel(ref, usedContext)).join("; ") || "No supplied evidence cited"}</p>
             <p>Assumptions: {result.assumptions?.join("; ") || "None stated"}</p>
             <p>Gaps: {result.gaps?.join("; ") || "None stated"}</p>
             <p>Next: {result.nextAction}</p>
