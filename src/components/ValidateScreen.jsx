@@ -13,8 +13,8 @@ const defaultScores = () => Object.fromEntries(VALIDATE_DIMENSIONS.map((d) => [d
 
 export const ValidateScreen = ({ scored = [], signals = [], productContext, onAddDecision, onScreenChange, briefs = [], onSaveBrief, storageLabel = "Saved", isMobile = false }) => {
   const C = useC();
-  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "var(--mono)", outline: "none", boxSizing: "border-box" };
-  const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4 };
+  const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 14, fontFamily: "var(--body)", outline: "none", boxSizing: "border-box" };
+  const labelStyle = { fontSize: 12, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4 };
   const sectionLabel = { fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.1em", fontFamily: "var(--mono)", textTransform: "uppercase" };
 
   const REC = {
@@ -190,7 +190,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
           <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: 0 }}>Validate</h2>
           <Pill color={C.purple} dimColor={C.purpleDim} small>BETA</Pill>
         </div>
-        <p style={{ fontSize: 12, color: C.textDim, margin: 0 }}>
+        <p style={{ fontSize: 14, color: C.textMuted, margin: 0 }}>
           Assess your assumptions and evidence before deciding whether to build, pivot, or park.
         </p>
       </div>
@@ -201,6 +201,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
           <button onClick={startNew} disabled={saving} style={{ padding: "6px 10px", border: `1px solid ${C.border}`, borderRadius: 6, background: C.surface, color: C.text, fontSize: 12, cursor: "pointer" }}>New brief</button>
         </div>
         {briefs.length === 0 && <p style={{ fontSize: 12, color: C.textMuted }}>Save an investigation and return to its assumptions and evidence later.</p>}
+        {briefs.length > 0 && <button onClick={() => openBrief([...briefs].sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0))[0])} disabled={saving} style={{ marginTop: 14, padding: "10px 14px", background: C.accentGlow, border: `1px solid ${C.accent}40`, borderRadius: 7, color: C.accent, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Continue latest saved brief</button>}
         <ul style={{ padding: 0, listStyle: "none", maxHeight: 200, overflowY: "auto", marginBottom: 0 }}>
           {briefs.map(b => <li key={b.id} style={{ padding: "8px 0", borderTop: `1px solid ${C.border}` }}>
             <button onClick={() => openBrief(b)} disabled={saving} aria-label={`Open brief: ${b.title}`} style={{ textAlign: "left", color: C.text, border: 0, background: "transparent", cursor: "pointer", width: "100%", padding: 4 }}>
@@ -244,7 +245,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
                 {ideaDesc && <p style={{ fontSize: 11, color: C.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>{ideaDesc}</p>}
               </div>
             ) : (
-              <p style={{ fontSize: 12, color: C.textDim, margin: 0 }}>No scored candidates yet — switch to “New idea”.</p>
+              <p style={{ fontSize: 14, color: C.textMuted, margin: 0 }}>No scored candidates yet — switch to “New idea”.</p>
             )
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

@@ -29,3 +29,12 @@ describe("decision calendar dates", () => {
     expect(screen.getByLabelText("Review date").value).toBe("2026-11-01");
   });
 });
+
+it("keeps archived records available behind an explicit filter while current decisions are the default", () => {
+  render(<DecisionsScreen decisions={[{id:"d",title:"Current draft",status:"draft"},{id:"a",title:"Archived QA record",status:"archived"}]} scored={[]} onAdd={vi.fn()} onUpdate={vi.fn()} onDelete={vi.fn()} />);
+  expect(screen.getByText("Current draft")).toBeTruthy();
+  expect(screen.queryByText("Archived QA record")).toBeNull();
+  fireEvent.click(screen.getByRole("button", {name:"archived"}));
+  expect(screen.getByText("Archived QA record")).toBeTruthy();
+  expect(screen.queryByText("Current draft")).toBeNull();
+});

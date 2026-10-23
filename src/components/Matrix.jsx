@@ -11,7 +11,7 @@ export const Matrix = ({ scored, maxScore, selectedId, onSelect, colorBy = "tier
   const containerRef = useRef(null);
   const [hovered, setHovered] = useState(null);
   const [dims, setDims] = useState({ w: 600, h: 420 });
-  const quadrants = useMemo(() => quadrantLabels(C), [C]);
+  const quadrants = useMemo(() => quadrantLabels(C).map(q => q.label === "Quick Wins" ? { ...q, label: "Potential wins" } : q), [C]);
 
   useEffect(() => {
     const el = containerRef.current;

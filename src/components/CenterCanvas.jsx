@@ -25,7 +25,7 @@ const SIDE_BY_SIDE_MIN_W = 740;
 const MAP_EXPANDED_KEY = "tz-priorities-map-expanded";
 
 export const CenterCanvas = ({
-  activeScreen,
+  activeScreen, saveTarget, savePendingSync,
   features, scored, sorted, displayOrder, maxScore,
   selectedId, onSelect,
   showForm, onShowForm, editingFeature, onEditingFeature,
@@ -127,7 +127,7 @@ export const CenterCanvas = ({
   });
 
   // Non-priorities screens
-  if (activeScreen === "home") return <WorkspaceHome scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} isSignedIn={isSignedIn} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
+  if (activeScreen === "home") return <WorkspaceHome scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} isSignedIn={isSignedIn} onInspectCandidate={() => { onScreenChange("priorities"); const reminder = features.find(f => /Approval reminders/i.test(f.name)); if (reminder) onEditFeature(reminder); }} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
   if (activeScreen === "decisions") return <DecisionsScreen decisions={decisions} scored={scored} onAdd={onAddDecision} onUpdate={onUpdateDecision} onDelete={onDeleteDecision} />;
   if (activeScreen === "signals") return <SignalsScreen signals={signals} scored={scored} onAdd={onAddSignal} onUpdate={onUpdateSignal} onDelete={onDeleteSignal} onImport={onImportSignals} />;
   if (activeScreen === "validate") return <ValidationWorkspace key={`${activeWsId}:${isSignedIn}`} workspaceId={activeWsId} isSignedIn={isSignedIn} isMobile={isMobile} scored={scored} signals={signals} productContext={productContext} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
@@ -230,7 +230,7 @@ export const CenterCanvas = ({
         <p style={{ fontSize: 12, color: C.textMuted, margin: "4px 0 0", fontFamily: "var(--mono)" }}>(Reach × Impact × Confidence) ÷ Effort</p>
       </div>
       <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-        {[{ l: "QUICK WIN", c: C.accent }, { l: "STRATEGIC", c: C.blue }, { l: "FILL-IN", c: C.warn }, { l: "THANKLESS", c: C.danger }].map(t => (
+        {[{ l: "POTENTIAL QUICK WIN", c: C.accent }, { l: "STRATEGIC", c: C.blue }, { l: "FILL-IN", c: C.warn }, { l: "THANKLESS", c: C.danger }].map(t => (
           <div key={t.l} style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <div style={{ width: 8, height: 8, borderRadius: "50%", background: t.c }} />
             <span style={{ fontSize: 10, color: C.textMuted, fontFamily: "var(--mono)" }}>{t.l}</span>
@@ -307,7 +307,7 @@ export const CenterCanvas = ({
           </p>
         </div>
 
-        <div data-no-print style={{ display: "flex", gap: 8 }}>
+        <div data-no-print style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button onClick={() => { onEditingFeature(null); onShowForm(true); }} style={{ flex: 1, padding: "10px 16px", border: `1px dashed color-mix(in srgb, var(--success) 31%, transparent)`, borderRadius: 8, background: C.accentGlow, color: C.accent, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "var(--mono)", transition: "all 0.2s" }}
             onMouseEnter={e => e.target.style.background = C.accentDim} onMouseLeave={e => e.target.style.background = C.accentGlow}>+ Add Candidate</button>
           <button onClick={onLoadSamples} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Load example backlog">↻ Example Backlog</button>
@@ -315,7 +315,12 @@ export const CenterCanvas = ({
           {undoSnapshot && <button onClick={onUndo} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.warn, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Undo last action">↩ Undo</button>}
         </div>
 
-        {features.some(f => f.description?.startsWith("Fictional example")) && (
+        {!showForm && features.some(f => /Approval reminders/i.test(f.name) && /synthetic/i.test(f.name)) && <section aria-label="Fictional decision walkthrough" style={{ padding: 16, borderLeft: `3px solid ${C.brass || C.accent}`, background: C.surface, borderRadius: 8 }}>
+          <h3 style={{ margin: "0 0 8px", fontSize: 18 }}>One engineer, two weeks—what should we test first?</h3>
+          <p style={{ margin: "0 0 12px", color: C.textMuted, fontSize: 14, lineHeight: 1.6 }}>Fictional demo · Reminders are the initial hypothesis. A conflicting source suggests missing request context may matter more. Inspect the assumptions, then compare the next test with the advisor.</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}><button style={headerBtnStyle} onClick={() => onEditFeature(features.find(f => /Approval reminders/i.test(f.name)))}>Inspect reminder assumptions</button><button style={headerBtnStyle} onClick={() => onScreenChange("signals")}>Read conflicting evidence</button><button style={headerBtnStyle} onClick={() => onScreenChange("validate")}>Continue saved validation</button></div>
+        </section>}
+        {!showForm && features.some(f => f.description?.startsWith("Fictional example")) && (
           <section aria-label="Example walkthrough" style={{ padding: 16, border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface }}>
             <h3 style={{ margin: "0 0 8px", fontSize: 15 }}>Try a decision: editing or collaboration?</h3>
             <p style={{ margin: "0 0 10px", fontSize: 13, color: C.textMuted, lineHeight: 1.6 }}>
@@ -331,13 +336,13 @@ export const CenterCanvas = ({
           </section>
         )}
 
-        {unifiedFilters}
-        {showForm && <Form key={editingFeature?.id || "new"} onAdd={onAddFeature} onCancel={() => { onShowForm(false); onEditingFeature(null); }} editFeature={editingFeature} scored={scored} features={features} signals={signals} decisions={decisions} workspaceId={activeWsId} onProductContextChange={onProductContextChange} productContext={productContext} onScoreEvent={onScoreEvent} onResolveScores={onResolveScores} feedbackContext={feedbackContext} />}
+        {!showForm && unifiedFilters}
+        {showForm && <Form saveTarget={saveTarget} savePendingSync={savePendingSync} key={`${activeWsId}:${isSignedIn}:${editingFeature?.id || "new"}`} onAdd={onAddFeature} onCancel={() => { onShowForm(false); onEditingFeature(null); }} editFeature={editingFeature} scored={scored} features={features} signals={signals} decisions={decisions} workspaceId={activeWsId} onProductContextChange={onProductContextChange} productContext={productContext} onScoreEvent={onScoreEvent} onResolveScores={onResolveScores} feedbackContext={feedbackContext} />}
         {importData && <ImportPanel importData={importData} onConfirm={onConfirmImport} onCancel={onCancelImport} />}
 
         {/* List + tradeoff map. The map is skipped entirely until there are
             candidates so the onboarding flow stays clean. */}
-        {!hasCandidates ? (
+        {!showForm && (!hasCandidates ? (
           listCards
         ) : sideBySide ? (
           <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
@@ -353,7 +358,7 @@ export const CenterCanvas = ({
             {sortToggle}
             {listCards}
           </>
-        )}
+        ))}
       </div>
     </div>
   );

@@ -29,8 +29,8 @@ export const AdvisorPanel = ({
         <h2 style={{ fontSize: 15, fontWeight: 700, margin: 0 }}>Decision Advisor</h2>
         <Pill color={C.purple} dimColor={C.purpleDim} small>AI</Pill>
       </div>
-      <p style={{ fontSize: 10, color: C.textDim, margin: "0 0 12px", lineHeight: 1.5, fontFamily: "var(--mono)" }}>
-        Uses all populated Strategy Brief fields, competing candidates, explicitly linked signals, and related recorded decisions. Running AI sends this content to Tarazu and Anthropic. Expected outcomes and score feedback are not customer validation.
+      <p style={{ fontSize: 14, color: C.textMuted, margin: "0 0 12px", lineHeight: 1.5, fontFamily: "var(--mono)" }}>
+        Compare the options and find the next useful test. Running AI shares your workspace context with Tarazu and Anthropic.
       </p>
       <AIContextDetails showAssessments={false} context={buildScoringContext({ features: scored, productContext, signals, decisions, workspaceId })} />
       <AIPanel
@@ -44,7 +44,7 @@ export const AdvisorPanel = ({
         onScreenChange={onScreenChange}
       />
     </div>
-    <FeedbackDashboard summary={feedbackSummary} />
+    <details><summary style={{ cursor: "pointer", color: C.textMuted, fontSize: 14 }}>Recommendation feedback history</summary><FeedbackDashboard summary={feedbackSummary} /></details>
   </div>
   );
 };
