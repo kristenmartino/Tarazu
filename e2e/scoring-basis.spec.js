@@ -44,7 +44,7 @@ test('shared anchors and candidate answers survive reopening and invalidate old 
 test('candidate questions and editable anchors fit on mobile', async ({page}, testInfo) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto('/app');
-  await page.getByRole('button',{name:'Priorities',exact:true}).click();
+  await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Priorities',exact:true}).click();
   await page.getByRole('button',{name:/Add Candidate/i}).first().click();
   const editor = page.getByRole('form',{name:'New candidate'});
   await editor.getByLabel('Candidate name',{exact:true}).fill('Mobile scoring basis');
