@@ -5,23 +5,6 @@ import { useState, useRef, useEffect } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 
-const demoAnalysis = (scored) => {
-  const sorted = [...scored].sort((a, b) => b.score - a.score);
-  const top = sorted[0];
-  const lowest = sorted[sorted.length - 1];
-  const quickWin = sorted.find(f => f.effort <= 40 && f.impact >= 40) || sorted[1];
-  const risky = sorted.find(f => f.confidence <= 60) || lowest;
-
-  return {
-    summary: `This backlog contains ${sorted.length} candidates with RICE scores ranging from ${lowest.score.toLocaleString()} to ${top.score.toLocaleString()}. This demo uses score arithmetic only; it does not assess strategy or customer evidence.`,
-    topPick: { name: top.name, reason: `Highest RICE score (${top.score.toLocaleString()}) based on your estimates. This heuristic does not establish customer value or strategic fit.`, confidence: "low" },
-    quickWin: { name: quickWin.name, reason: `Relatively low effort (${quickWin.effort}/100) with meaningful impact — a possible quick win under these assumptions, requiring validation.`, confidence: "low" },
-    riskFlag: { name: risky.name, reason: `Confidence score of ${risky.confidence}/100 suggests insufficient validation. Consider running user research or a prototype test before committing engineering resources.`, confidence: "low" },
-    sprintPlan: sorted.slice(0, Math.min(3, sorted.length)).map(f => f.name),
-    insight: `The top-ranked candidates share a pattern of high reach but varying confidence. Investing in lightweight validation (surveys, prototypes) for lower-confidence items could significantly improve prioritization accuracy before committing to full builds.`,
-  };
-};
-
 export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, productContext, onAnalysisEvent, onAnalysisFeedback, feedbackContext, onSaveDecisionDraft, onScreenChange }) => {
   const C = useC();
   const CONF_STYLES = {
@@ -48,6 +31,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
     const requestedSignature = signature;
     setLoading(true); setError(null); setAuthRequired(false); setThumbs(null); setEventId(null);
     const startTime = Date.now();
+    let event;
     try {
       const sorted = [...scored].sort((a, b) => b.score - a.score);
       const res = await fetch("/api/analyze", {
@@ -55,41 +39,38 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ features: sorted, productContext, signals, decisions, workspaceId }),
       });
-      const elapsed = Date.now() - startTime;
+      const data = await res.json().catch(() => null);
+      if (requestId !== sequence.current || current.current !== requestedSignature) return;
       if (res.ok) {
-        const data = await res.json();
-        if (requestId !== sequence.current || current.current !== requestedSignature) { if (requestId === sequence.current) setLoading(false); return; }
+        if (!data) throw new Error("The advisor returned an unreadable response. Please try again.");
         setResultSignature(requestedSignature);
         setAnalysis(data);
         setMode("live");
-        if (onAnalysisEvent) {
-          const id = await onAnalysisEvent({ feature_count: sorted.length, mode: "live", response_ms: elapsed, top_pick: data.topPick?.name, quick_win: data.quickWin?.name, risk_flag: data.riskFlag?.name, error: false });
-          setEventId(id);
-        }
+        event = { feature_count: sorted.length, mode: "live", response_ms: Date.now() - startTime, top_pick: data.topPick?.name, quick_win: data.quickWin?.name, risk_flag: data.riskFlag?.name, error: false };
       } else if (res.status === 401) {
-        // Deliberately does NOT fall through to the demo fallback below.
-        // Handing an anonymous visitor a locally-generated recommendation
-        // removes every reason to sign in, which is the entire point of
-        // gating this endpoint. Prompt instead.
+        // Authentication failures must never produce a recommendation.
         setAuthRequired(true);
         setLoading(false);
         return;
       } else {
-        throw new Error("API unavailable");
+        throw new Error(data?.error || "The advisor is unavailable. Please try again.");
       }
-    } catch {
-      if (requestId !== sequence.current || current.current !== requestedSignature) { if (requestId === sequence.current) setLoading(false); return; }
-      setResultSignature(requestedSignature);
-      const elapsed = Date.now() - startTime;
-      const demoResult = demoAnalysis(scored);
-      setAnalysis(demoResult);
-      setMode("demo");
-      if (onAnalysisEvent) {
-        const id = await onAnalysisEvent({ feature_count: scored.length, mode: "demo", response_ms: elapsed, top_pick: demoResult.topPick?.name, quick_win: demoResult.quickWin?.name, risk_flag: demoResult.riskFlag?.name, error: false });
-        setEventId(id);
-      }
+    } catch (err) {
+      if (requestId !== sequence.current || current.current !== requestedSignature) return;
+      setAnalysis(null);
+      setError(err instanceof TypeError ? "Could not reach the advisor. Please try again." : err instanceof Error ? err.message : "The advisor is unavailable. Please try again.");
+      event = { feature_count: scored.length, mode: "live", response_ms: Date.now() - startTime, error: true };
+    } finally {
+      if (requestId === sequence.current) setLoading(false);
     }
-    if (requestId === sequence.current) setLoading(false);
+    // Feedback logging is best effort. It must neither hide a valid response
+    // nor keep the loading indicator running after generation has completed.
+    if (event && onAnalysisEvent) {
+      try {
+        const id = await onAnalysisEvent(event);
+        if (requestId === sequence.current && current.current === requestedSignature) setEventId(id);
+      } catch {}
+    }
   };
 
   const handleThumbs = (isUp) => {
@@ -114,7 +95,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
     );
   }
 
-  if (!analysis && !loading) {
+  if (!analysis && !loading && !error) {
     return (
       <button onClick={runAnalysis} disabled={scored.length < 2}
         style={{ width: "100%", padding: "14px 20px", border: `1px solid ${C.blue}40`, borderRadius: 10, background: C.blueDim, color: C.blue, fontSize: 13, fontWeight: 600, cursor: scored.length < 2 ? "not-allowed" : "pointer", fontFamily: "var(--mono)", letterSpacing: "0.03em", transition: "all 0.2s", opacity: scored.length < 2 ? 0.4 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
@@ -138,7 +119,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
 
   if (error) {
     return (
-      <div style={{ padding: 16, border: `1px solid ${C.danger}30`, borderRadius: 10, background: C.dangerDim }}>
+      <div role="alert" style={{ padding: 16, border: `1px solid ${C.danger}30`, borderRadius: 10, background: C.dangerDim }}>
         <p style={{ fontSize: 12, color: C.danger, margin: 0 }}>{error}</p>
         <button onClick={runAnalysis} style={{ marginTop: 10, padding: "6px 14px", border: `1px solid ${C.danger}40`, borderRadius: 6, background: "transparent", color: C.danger, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }}>Retry</button>
       </div>
@@ -155,11 +136,6 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {resultSignature !== signature && <p role="status">Context changed. This recommendation is stale; regenerate before using it.</p>}
       <AIContextDetails context={analysis.context} />
-      {mode === "demo" && (
-        <div style={{ padding: "8px 12px", borderRadius: 8, background: C.purpleDim, border: `1px solid ${C.purple}30` }}>
-          <span style={{ fontSize: 10, color: C.purple, fontFamily: "var(--mono)" }}>DEMO MODE — Recommendation generated locally. Configure API for live analysis.</span>
-        </div>
-      )}
       <div style={{ padding: 16, border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface }}>
         <p style={{ fontSize: 12, color: C.text, lineHeight: 1.6, margin: 0 }}>{analysis.summary}</p>
       </div>
@@ -202,7 +178,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
         </div>
       )}
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <button onClick={() => { setAnalysis(null); setThumbs(null); setEventId(null); }} style={{ padding: "8px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }}>↻ Regenerate</button>
+        <button onClick={runAnalysis} style={{ padding: "8px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }}>↻ Regenerate</button>
         <div style={{ marginLeft: "auto", display: "flex", gap: 4, alignItems: "center" }}>
           <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)", marginRight: 4 }}>Was this recommendation useful?</span>
           <button onClick={() => handleThumbs(true)}
