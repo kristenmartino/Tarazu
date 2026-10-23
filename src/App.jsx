@@ -467,6 +467,7 @@ export default function App() {
       removeWsDecisions(wsId);
       removeWsSignals(wsId);
       removeWsSettings(wsId);
+      localStorage.removeItem(`prioritize-ws-${wsId}-briefs`);
     }
     const updated = workspaces.filter(w => w.id !== wsId);
     setWorkspaces(updated);

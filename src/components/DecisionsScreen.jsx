@@ -218,6 +218,7 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
               {isExpanded && (
                 <div style={{ padding: "0 14px 14px", borderTop: `1px solid ${C.border}` }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingTop: 14 }}>
+                    {d.recommendation_snapshot?.validation_brief && <p style={{ fontSize: 12, color: C.textMuted, margin: 0 }}>Source brief: {d.recommendation_snapshot.validation_brief.draft?.ideaName} · Revision {d.recommendation_snapshot.validation_brief.revision}. This decision keeps the brief as it was when recorded.</p>}
                     {d.final_rationale && (
                       <div>
                         <div style={labelStyle}>FINAL RATIONALE</div>
