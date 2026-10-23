@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { localToday } from "../dateOnly";
+import { buildScoringContext } from "../../lib/scoring-context";
+import { AIContextDetails } from "./AIContextDetails";
+import { useState, useRef, useEffect } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
-
-const confLevel = (c) => c >= 70 ? "high" : c >= 50 ? "medium" : "low";
 
 const demoAnalysis = (scored) => {
   const sorted = [...scored].sort((a, b) => b.score - a.score);
@@ -12,16 +13,16 @@ const demoAnalysis = (scored) => {
   const risky = sorted.find(f => f.confidence <= 60) || lowest;
 
   return {
-    summary: `This backlog contains ${sorted.length} candidates with RICE scores ranging from ${lowest.score.toLocaleString()} to ${top.score.toLocaleString()}. The distribution suggests a healthy mix of quick wins and strategic investments, though confidence levels on some items warrant validation.`,
-    topPick: { name: top.name, reason: `Highest RICE score (${top.score.toLocaleString()}) with strong reach and impact metrics, making it the highest-leverage investment in the current backlog.`, confidence: confLevel(top.confidence) },
-    quickWin: { name: quickWin.name, reason: `Relatively low effort (${quickWin.effort}/100) with meaningful impact — delivers visible value to users quickly and builds team momentum.`, confidence: confLevel(quickWin.confidence) },
+    summary: `This backlog contains ${sorted.length} candidates with RICE scores ranging from ${lowest.score.toLocaleString()} to ${top.score.toLocaleString()}. This demo uses score arithmetic only; it does not assess strategy or customer evidence.`,
+    topPick: { name: top.name, reason: `Highest RICE score (${top.score.toLocaleString()}) based on your estimates. This heuristic does not establish customer value or strategic fit.`, confidence: "low" },
+    quickWin: { name: quickWin.name, reason: `Relatively low effort (${quickWin.effort}/100) with meaningful impact — a possible quick win under these assumptions, requiring validation.`, confidence: "low" },
     riskFlag: { name: risky.name, reason: `Confidence score of ${risky.confidence}/100 suggests insufficient validation. Consider running user research or a prototype test before committing engineering resources.`, confidence: "low" },
     sprintPlan: sorted.slice(0, Math.min(3, sorted.length)).map(f => f.name),
     insight: `The top-ranked candidates share a pattern of high reach but varying confidence. Investing in lightweight validation (surveys, prototypes) for lower-confidence items could significantly improve prioritization accuracy before committing to full builds.`,
   };
 };
 
-export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFeedback, feedbackContext, onSaveDecisionDraft, onScreenChange }) => {
+export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, productContext, onAnalysisEvent, onAnalysisFeedback, feedbackContext, onSaveDecisionDraft, onScreenChange }) => {
   const C = useC();
   const CONF_STYLES = {
     high: { color: C.accent, label: "HIGH" },    // jade / success
@@ -36,7 +37,15 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
   const [eventId, setEventId] = useState(null);
   const [thumbs, setThumbs] = useState(null);
 
+  const context = buildScoringContext({ features: scored, productContext, signals, decisions, workspaceId });
+  const signature = JSON.stringify(context);
+  const current = useRef(signature); current.current = signature;
+  const sequence = useRef(0);
+  const [resultSignature, setResultSignature] = useState(null);
+  useEffect(() => () => { sequence.current += 1; }, []);
   const runAnalysis = async () => {
+    const requestId = ++sequence.current;
+    const requestedSignature = signature;
     setLoading(true); setError(null); setAuthRequired(false); setThumbs(null); setEventId(null);
     const startTime = Date.now();
     try {
@@ -44,11 +53,13 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ features: sorted, productContext, feedbackContext }),
+        body: JSON.stringify({ features: sorted, productContext, signals, decisions, workspaceId }),
       });
       const elapsed = Date.now() - startTime;
       if (res.ok) {
         const data = await res.json();
+        if (requestId !== sequence.current || current.current !== requestedSignature) { if (requestId === sequence.current) setLoading(false); return; }
+        setResultSignature(requestedSignature);
         setAnalysis(data);
         setMode("live");
         if (onAnalysisEvent) {
@@ -67,6 +78,8 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
         throw new Error("API unavailable");
       }
     } catch {
+      if (requestId !== sequence.current || current.current !== requestedSignature) { if (requestId === sequence.current) setLoading(false); return; }
+      setResultSignature(requestedSignature);
       const elapsed = Date.now() - startTime;
       const demoResult = demoAnalysis(scored);
       setAnalysis(demoResult);
@@ -76,7 +89,7 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
         setEventId(id);
       }
     }
-    setLoading(false);
+    if (requestId === sequence.current) setLoading(false);
   };
 
   const handleThumbs = (isUp) => {
@@ -140,6 +153,8 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {resultSignature !== signature && <p role="status">Context changed. This recommendation is stale; regenerate before using it.</p>}
+      <AIContextDetails context={analysis.context} />
       {mode === "demo" && (
         <div style={{ padding: "8px 12px", borderRadius: 8, background: C.purpleDim, border: `1px solid ${C.purple}30` }}>
           <span style={{ fontSize: 10, color: C.purple, fontFamily: "var(--mono)" }}>DEMO MODE — Recommendation generated locally. Configure API for live analysis.</span>
@@ -201,7 +216,8 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
         </div>
       </div>
       {onSaveDecisionDraft && (
-        <button onClick={async () => {
+        <button disabled={resultSignature !== signature} onClick={async () => {
+          if (resultSignature !== current.current) return;
           const draft = {
             title: `Decision: ${analysis.topPick?.name || "Untitled"}`,
             chosen_candidate_name: analysis.topPick?.name || "",
@@ -212,7 +228,7 @@ export const AIPanel = ({ scored, productContext, onAnalysisEvent, onAnalysisFee
             risks_accepted: analysis.riskFlag?.reason || "",
             expected_outcome: analysis.insight || "",
             status: "draft",
-            decision_date: new Date().toISOString().split("T")[0],
+            decision_date: localToday(),
           };
           // Find the candidate id if possible
           const topCandidate = scored.find(f => f.name === analysis.topPick?.name);

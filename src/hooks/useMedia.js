@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 
 export const useMedia = (q) => {
-  const [m, setM] = useState(() => {
-    if (typeof window === "undefined") return true; // SSR: assume mobile (stacked layout)
-    return window.matchMedia(q).matches;
-  });
+  // Match the server during hydration; apply the actual viewport in the effect.
+  const [m, setM] = useState(true);
   useEffect(() => {
     const mql = window.matchMedia(q);
     const h = (e) => setM(e.matches);

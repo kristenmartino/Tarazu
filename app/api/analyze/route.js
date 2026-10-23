@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { buildScoringContext, contextReferences, CONTEXT_RULES } from "../../../lib/scoring-context";
 import { requestJson, AiError } from "../../../lib/ai";
 import { withUser } from "../../../lib/api-auth";
 
@@ -37,30 +38,17 @@ async function handlePost(request) {
     if (features.length > MAX_FEATURES)
       return NextResponse.json({ error: `Too many features (max ${MAX_FEATURES})` }, { status: 413 });
 
-    const truncate = (s, n = 500) => (s && s.length > n ? s.slice(0, n) + "..." : s || "");
-    const contextBlock = productContext?.productSummary ? `
-Product Context:
-- Product: ${truncate(productContext.productSummary)}
-- Target Users: ${truncate(productContext.targetUsers)}
-- Strategic Priorities: ${truncate(productContext.strategicPriorities)}
-
-Ground your analysis in this product context. Relate recommendations to the stated strategic priorities and target users.
-
-` : "";
-
-    const calibrationBlock = feedbackContext?.analysisContext ? `
-${truncate(feedbackContext.analysisContext, 2000)}
-
-` : "";
-
-    const prompt = `You are a senior product strategist. Analyze this product backlog and provide actionable prioritization insights.
-${contextBlock}${calibrationBlock}
-Features (sorted by RICE score):
-${features.map((f, i) => `${i + 1}. "${truncate(f.name, 200)}" — Reach:${f.reach} Impact:${f.impact} Confidence:${f.confidence} Effort:${f.effort} → RICE:${f.score}
-   Description: ${truncate(f.description, 300) || "No description"}`).join("\n")}
+    const context = buildScoringContext(body);
+    const prompt = `You are a product strategist assessing competing options.
+${CONTEXT_RULES}
+Explain strategy and constraint fit, assumptions, gaps, and next validation action in your reasons. Do not infer evidence strength from existing scores. Use low confidence where linked evidence is absent. Sprint plan is only a proposed sequence.
+Allowed references: ${JSON.stringify(contextReferences(context))}
+Supplied context JSON:
+${JSON.stringify(context)}
 
 Respond ONLY with a JSON object (no markdown, no backticks). Structure:
 {
+  "evidence": ["supplied reference IDs used in this analysis"],
   "summary": "2-sentence executive summary of the backlog health",
   "topPick": { "name": "feature name", "reason": "1-sentence why to build first", "confidence": "high" | "medium" | "low" },
   "riskFlag": { "name": "feature name", "reason": "1-sentence risk concern", "confidence": "high" | "medium" | "low" },
@@ -76,11 +64,11 @@ For confidence: "high" means strong data supports this pick, "medium" means reas
       model: process.env.ANTHROPIC_MODEL_ANALYSIS || "claude-opus-4-8",
       maxTokens: 1000,
       prompt,
-      schema: AnalysisSchema,
+      schema: AnalysisSchema.extend({ evidence: z.array(z.string()).max(30).refine(refs => refs.every(ref => contextReferences(context).includes(ref)), "Unknown evidence reference") }),
       timeoutMs: 30000,
     });
 
-    return NextResponse.json(analysis);
+    return NextResponse.json({ ...analysis, context });
   } catch (err) {
     if (err instanceof AiError)
       return NextResponse.json({ error: err.message, category: err.category }, { status: err.status });

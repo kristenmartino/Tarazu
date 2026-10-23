@@ -1,3 +1,5 @@
+import { buildScoringContext } from "../../lib/scoring-context";
+import { AIContextDetails } from "./AIContextDetails";
 import { useC } from "../ThemeProvider";
 import { ProductContext } from "./ProductContext";
 import { AIPanel } from "./AIPanel";
@@ -8,7 +10,7 @@ import { Pill } from "./Pill";
 // Shown in the desktop right rail (no candidate selected) and as a dedicated
 // full screen on mobile/tablet, where the right rail is overlay-only (#18).
 export const AdvisorPanel = ({
-  scored,
+  scored, signals, decisions, workspaceId,
   productContext,
   onProductContextChange,
   onAnalysisEvent,
@@ -28,9 +30,11 @@ export const AdvisorPanel = ({
         <Pill color={C.purple} dimColor={C.purpleDim} small>AI</Pill>
       </div>
       <p style={{ fontSize: 10, color: C.textDim, margin: "0 0 12px", lineHeight: 1.5, fontFamily: "var(--mono)" }}>
-        Recommendation generated from current candidate scores, strategy context, and available signals.
+        Uses all populated Strategy Brief fields, competing candidates, explicitly linked signals, and related recorded decisions. Running AI sends this content to Tarazu and Anthropic. Expected outcomes and score feedback are not customer validation.
       </p>
+      <AIContextDetails context={buildScoringContext({ features: scored, productContext, signals, decisions, workspaceId })} />
       <AIPanel
+        signals={signals} decisions={decisions} workspaceId={workspaceId}
         scored={scored}
         productContext={productContext}
         onAnalysisEvent={onAnalysisEvent}

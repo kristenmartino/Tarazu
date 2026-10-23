@@ -38,9 +38,30 @@ describe("recommendationFor (threshold boundaries)", () => {
 });
 
 describe("scoreValidation", () => {
-  it("returns average and recommendation together", () => {
-    expect(scoreValidation(allDims(4))).toEqual({ average: 4, recommendation: "Build" });
-    expect(scoreValidation(allDims(3))).toEqual({ average: 3, recommendation: "Pivot" });
+  const reviewed = { assumptions: { problem: "Slow approvals", audience: "Admins" }, evidenceCount: 2, evidenceReviewed: true };
+  it("leaves untouched and invalid assessments unassessed", () => {
+    expect(scoreValidation()).toMatchObject({ average: null, assessedCount: 0, recommendation: "Not assessed" });
+    expect(scoreValidation(allDims(null))).toMatchObject({ average: null, recommendation: "Not assessed" });
+    expect(scoreValidation(allDims(9))).toMatchObject({ average: null, recommendation: "Not assessed" });
+  });
+  it("does not turn partial ratings into a low or high verdict", () => {
+    for (const value of [1, 5]) expect(scoreValidation({ problemSeverity: value }, reviewed)).toMatchObject({ average: null, assessedCount: 1, recommendation: "Assessment incomplete" });
+  });
+  it("requires evidence even for complete high or low ratings", () => {
+    for (const value of [1, 5]) expect(scoreValidation(allDims(value))).toMatchObject({ average: value, recommendation: "Validate Further" });
+    expect(scoreValidation(allDims(5), { ...reviewed, evidenceCount: 0 }).recommendation).toBe("Validate Further");
+  });
+  it("attachment does not substitute for review or a problem and audience", () => {
+    expect(scoreValidation(allDims(5), { ...reviewed, evidenceReviewed: false }).recommendation).toBe("Validate Further");
+    expect(scoreValidation(allDims(5), { ...reviewed, assumptions: { problem: "P", audience: " " } }).recommendation).toBe("Validate Further");
+  });
+  it("keeps weak evidence provisional despite a high average", () => {
+    expect(scoreValidation({ ...allDims(5), evidenceStrength: 2 }, reviewed).recommendation).toBe("Validate Further");
+  });
+  it("preserves existing complete numeric ratings and thresholds after review", () => {
+    expect(scoreValidation(allDims(4), reviewed)).toMatchObject({ average: 4, recommendation: "Build" });
+    expect(scoreValidation(allDims(3), reviewed)).toMatchObject({ average: 3, recommendation: "Pivot" });
+    expect(scoreValidation({ ...allDims(1), evidenceStrength: 3 }, reviewed).recommendation).toBe("Park");
   });
 });
 

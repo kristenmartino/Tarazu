@@ -28,10 +28,11 @@ export function SiteHeader() {
               {route.nav.label}
             </Link>
           ))}
+          <Link href="/sign-in">Sign in</Link>
         </nav>
 
         <div className="nav-cta">
-          <Link href="/sign-up" className="btn btn-solid">
+          <Link href="/app" className="btn btn-solid">
             Start prioritizing <span className="arrow">→</span>
           </Link>
           <details className="nav-mobile">
@@ -42,7 +43,8 @@ export function SiteHeader() {
                   {route.nav.label}
                 </Link>
               ))}
-              <Link href="/sign-up">Start prioritizing</Link>
+              <Link href="/app">Start prioritizing</Link>
+              <Link href="/sign-in">Sign in</Link>
             </nav>
           </details>
         </div>

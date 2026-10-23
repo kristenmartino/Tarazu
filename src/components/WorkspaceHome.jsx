@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useC } from "../ThemeProvider";
 import { getTier } from "../utils";
 import { Pill } from "./Pill";
+import { OnboardingPanel } from "./OnboardingPanel";
 
 const StatCard = ({ label, value, color }) => {
   const C = useC();
@@ -27,7 +28,7 @@ const ShortcutButton = ({ label, icon, color, onClick }) => (
   </button>
 );
 
-export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange }) => {
+export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate }) => {
   const C = useC();
   const avgScore = useMemo(() => {
     if (scored.length === 0) return 0;
@@ -72,14 +73,17 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
+        {scored.length === 0 && (
+          <OnboardingPanel onAddCandidate={onAddCandidate} onLoadSamples={onLoadSamples} />
+        )}
         {/* Stats strip */}
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        {scored.length > 0 && <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <StatCard label="CANDIDATES" value={scored.length} color={C.accent} />
           <StatCard label="AVG RICE" value={avgScore.toLocaleString()} color={C.blue} />
           <StatCard label="AVG CONFIDENCE" value={avgConfidence} color={avgConfidence >= 70 ? C.accent : avgConfidence >= 50 ? C.blue : C.warn} />
           <StatCard label="DECISIONS" value={decisions.length} color={C.purple} />
           <StatCard label="SIGNALS" value={signals.length} color={C.blue} />
-        </div>
+        </div>}
 
         {/* Top candidate */}
         {topCandidate && (
@@ -136,6 +140,9 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <ShortcutButton label="Priorities" color={C.accent} onClick={() => onScreenChange("priorities")} icon={
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          } />
+          <ShortcutButton label="Validate" color={C.purple} onClick={() => onScreenChange("validate")} icon={
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 5H5v16h14V5h-4M9 3h6v4H9zM9 14l2 2 4-4"/></svg>
           } />
           <ShortcutButton label="Signals" color={C.blue} onClick={() => onScreenChange("signals")} icon={
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 20h4V10H4z"/><path d="M10 20h4V4h-4z"/><path d="M16 20h4v-8h-4z"/></svg>

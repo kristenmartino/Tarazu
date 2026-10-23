@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { SAMPLES } from "./theme";
+import { sampleBacklogFor } from "./sample-backlog";
 import { useC } from "./ThemeProvider";
 import { exportCSV, parseCSV, mapCSVToFeatures } from "./utils";
 import { load, saveWsIndex, loadWsIndex, saveWsFeatures, loadWsFeatures, removeWsFeatures, saveWsContext, loadWsContext, removeWsContext, getActiveWsId, setActiveWsId as storeActiveWsId, STORAGE_KEY, saveWsDecisions, loadWsDecisions, removeWsDecisions, saveWsSignals, loadWsSignals, removeWsSignals, saveWsSettings, loadWsSettings, removeWsSettings } from "../lib/local-storage";
@@ -372,27 +372,34 @@ export default function App() {
     setImportData(null);
   };
 
+  const workspaceLoadSequence = useRef(0);
   const switchWorkspace = useCallback(async (wsId) => {
+    const loadId = ++workspaceLoadSequence.current;
     if (isSignedIn) {
       try {
-        const data = await cloud.fetchFeatures(wsId);
+        const [data, ctx, d, signalsData, settings] = await Promise.all([
+          cloud.fetchFeatures(wsId),
+          cloud.fetchProductContext(wsId).catch(() => ({})),
+          cloud.fetchDecisions(wsId).catch(() => ({ decisions: [] })),
+          cloud.fetchSignals(wsId).catch(() => ({ signals: [] })),
+          cloud.fetchWorkspaceSettings(wsId).catch(() => ({})),
+        ]);
+        if (loadId !== workspaceLoadSequence.current) return;
+        // Commit one workspace snapshot together; never expose mixed AI context.
         setFeatures(data.features || []);
         setManualOrder(data.manualOrder || []);
-        try { const ctx = await cloud.fetchProductContext(wsId); setProductContext(ctx); } catch { setProductContext({ productSummary: "", targetUsers: "", strategicPriorities: "", constraints: "", assumptions: "", successMetrics: "" }); }
-        try { const d = await cloud.fetchDecisions(wsId); setDecisions(d.decisions || []); } catch { setDecisions([]); }
-        try { const s = await cloud.fetchSignals(wsId); setSignals(s.signals || []); } catch { setSignals([]); }
-        try {
-          const settings = await cloud.fetchWorkspaceSettings(wsId);
-          setSortMode(settings?.sortMode || "rice");
-          setViewMode(settings?.viewMode || "list");
-          setMapColorBy(settings?.mapColorBy || "tier");
-          setMapSizeBy(settings?.mapSizeBy || "uniform");
-          setMapLabelMode(settings?.mapLabelMode || "hover");
-        } catch {
-          setSortMode("rice"); setViewMode("list"); setMapColorBy("tier"); setMapSizeBy("uniform"); setMapLabelMode("hover");
-        }
+        setProductContext(ctx || {});
+        setDecisions(d.decisions || []);
+        setSignals(signalsData.signals || []);
+        setSortMode(settings?.sortMode || "rice");
+        setViewMode(settings?.viewMode || "list");
+        setMapColorBy(settings?.mapColorBy || "tier");
+        setMapSizeBy(settings?.mapSizeBy || "uniform");
+        setMapLabelMode(settings?.mapLabelMode || "hover");
       } catch (err) {
+        if (loadId !== workspaceLoadSequence.current) return;
         console.error("Failed to load workspace:", err);
+        setProductContext({});
         setFeatures([]);
         setManualOrder([]);
         setDecisions([]);
@@ -460,6 +467,7 @@ export default function App() {
       removeWsDecisions(wsId);
       removeWsSignals(wsId);
       removeWsSettings(wsId);
+      localStorage.removeItem(`prioritize-ws-${wsId}-briefs`);
     }
     const updated = workspaces.filter(w => w.id !== wsId);
     setWorkspaces(updated);
@@ -678,12 +686,18 @@ export default function App() {
   }, []);
 
   const handleLoadSamples = useCallback(() => {
+    const examples = sampleBacklogFor(features);
+    if (!examples) {
+      showToast("Your candidates are unchanged. Create an empty workspace to try examples.");
+      return;
+    }
     setUndoSnapshot({ features, selectedId, manualOrder, sortMode });
-    setFeatures(SAMPLES);
+    setFeatures(examples);
+    setActiveScreen("priorities");
     setSelectedId(null);
     setManualOrder([]);
     setSortMode("rice");
-  }, [features, selectedId, manualOrder, sortMode]);
+  }, [features, selectedId, manualOrder, sortMode, showToast]);
 
   const handleClear = useCallback(() => {
     setUndoSnapshot({ features, selectedId, manualOrder, sortMode });
@@ -836,6 +850,7 @@ export default function App() {
               <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: 0 }}>Advisor</h2>
             </div>
             <AdvisorPanel
+              signals={signals} decisions={decisions} workspaceId={activeWsId}
               scored={scored}
               productContext={productContext} onProductContextChange={setProductContext}
               onAnalysisEvent={handleAnalysisEvent} onAnalysisFeedback={handleAnalysisFeedback}
@@ -859,7 +874,7 @@ export default function App() {
           importData={importData} onConfirmImport={confirmImport} onCancelImport={() => setImportData(null)}
           onImportFile={() => fileInputRef.current?.click()}
           onExportCSV={() => exportCSV(displayOrder, activeWs?.name, C)}
-          productContext={productContext} onScoreEvent={handleScoreEvent}
+          productContext={productContext} onProductContextChange={setProductContext} onScoreEvent={handleScoreEvent}
           onResolveScores={handleResolveScores} feedbackContext={feedbackContext}
           isMobile={isMobile}
           mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode}
@@ -892,7 +907,7 @@ export default function App() {
             feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
             isSignedIn={isSignedIn} activeWsId={activeWsId}
             isMobile={false} isTablet={false}
-            signals={signals} onScreenChange={handleScreenChange} onAddDecision={handleAddDecision}
+            signals={signals} decisions={decisions} onScreenChange={handleScreenChange} onAddDecision={handleAddDecision}
           />
           </ErrorBoundary>
         )}
@@ -912,7 +927,7 @@ export default function App() {
           feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
           isSignedIn={isSignedIn} activeWsId={activeWsId}
           isMobile={false} isTablet={true}
-          signals={signals} onScreenChange={handleScreenChange}
+          signals={signals} decisions={decisions} onScreenChange={handleScreenChange}
         />
         </ErrorBoundary>
       )}
@@ -931,7 +946,7 @@ export default function App() {
           feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
           isSignedIn={isSignedIn} activeWsId={activeWsId}
           isMobile={true} isTablet={false}
-          signals={signals} onScreenChange={handleScreenChange}
+          signals={signals} decisions={decisions} onScreenChange={handleScreenChange}
         />
         </ErrorBoundary>
       )}

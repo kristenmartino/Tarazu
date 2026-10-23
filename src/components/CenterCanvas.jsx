@@ -14,7 +14,7 @@ import { ScenariosScreen } from "./ScenariosScreen";
 import { WorkspaceHome } from "./WorkspaceHome";
 import { SettingsScreen } from "./SettingsScreen";
 import { OnboardingPanel } from "./OnboardingPanel";
-import { ValidateScreen } from "./ValidateScreen";
+import { ValidationWorkspace } from "./ValidationWorkspace";
 
 const PLACEHOLDER_SCREENS = {};
 
@@ -36,7 +36,7 @@ export const CenterCanvas = ({
   undoSnapshot, onUndo, onLoadSamples, onClear,
   importData, onConfirmImport, onCancelImport,
   onImportFile, onExportCSV,
-  productContext, onScoreEvent, onResolveScores, feedbackContext,
+  productContext, onProductContextChange, onScoreEvent, onResolveScores, feedbackContext,
   isMobile,
   mapColorBy, mapSizeBy, mapLabelMode,
   onMapColorByChange, onMapSizeByChange, onMapLabelModeChange,
@@ -127,10 +127,10 @@ export const CenterCanvas = ({
   });
 
   // Non-priorities screens
-  if (activeScreen === "home") return <WorkspaceHome scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} onScreenChange={onScreenChange} />;
+  if (activeScreen === "home") return <WorkspaceHome scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
   if (activeScreen === "decisions") return <DecisionsScreen decisions={decisions} scored={scored} onAdd={onAddDecision} onUpdate={onUpdateDecision} onDelete={onDeleteDecision} />;
   if (activeScreen === "signals") return <SignalsScreen signals={signals} scored={scored} onAdd={onAddSignal} onUpdate={onUpdateSignal} onDelete={onDeleteSignal} onImport={onImportSignals} />;
-  if (activeScreen === "validate") return <ValidateScreen scored={scored} signals={signals} productContext={productContext} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
+  if (activeScreen === "validate") return <ValidationWorkspace key={`${activeWsId}:${isSignedIn}`} workspaceId={activeWsId} isSignedIn={isSignedIn} isMobile={isMobile} scored={scored} signals={signals} productContext={productContext} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
   if (activeScreen === "scenarios") return <ScenariosScreen features={features} scored={scored} sorted={sorted} activeWsId={activeWsId} isSignedIn={isSignedIn} onSelect={onSelect} isMobile={isMobile} />;
   if (activeScreen === "settings") return <SettingsScreen activeWs={activeWs} onRenameWorkspace={onRenameWorkspace} onClear={onClear} onDeleteWorkspace={() => onDeleteWorkspace(activeWs?.id)} sortMode={sortMode} onSortModeChange={onSortModeChange} mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode} onMapColorByChange={onMapColorByChange} onMapSizeByChange={onMapSizeByChange} onMapLabelModeChange={onMapLabelModeChange} isSignedIn={isSignedIn} features={features} />;
   if (activeScreen !== "priorities") {
@@ -315,8 +315,24 @@ export const CenterCanvas = ({
           {undoSnapshot && <button onClick={onUndo} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.warn, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Undo last action">↩ Undo</button>}
         </div>
 
+        {features.some(f => f.description?.startsWith("Fictional example")) && (
+          <section aria-label="Example walkthrough" style={{ padding: 16, border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface }}>
+            <h3 style={{ margin: "0 0 8px", fontSize: 15 }}>Try a decision: editing or collaboration?</h3>
+            <p style={{ margin: "0 0 10px", fontSize: 13, color: C.textMuted, lineHeight: 1.6 }}>
+              Fictional example: Feature Editing starts ahead because its assumed reach and confidence are higher and its effort is lower than Team Collaboration.
+              That is a starting hypothesis, not customer validation. Edit an estimate, save it, and see whether the ranking still supports your choice.
+              Then attach evidence in Signals and record your rationale, alternatives, and expected outcome in Decisions.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <button style={headerBtnStyle} onClick={() => { const example = features.find(f => f.id === "r20"); if (example) onEditFeature(example); }}>Inspect editing assumptions</button>
+              <button style={headerBtnStyle} onClick={() => onScreenChange("signals")}>Explore evidence</button>
+              <button style={headerBtnStyle} onClick={() => onScreenChange("decisions")}>Record a decision</button>
+            </div>
+          </section>
+        )}
+
         {unifiedFilters}
-        {showForm && <Form key={editingFeature?.id || "new"} onAdd={onAddFeature} onCancel={() => { onShowForm(false); onEditingFeature(null); }} editFeature={editingFeature} productContext={productContext} onScoreEvent={onScoreEvent} onResolveScores={onResolveScores} feedbackContext={feedbackContext} scored={scored} />}
+        {showForm && <Form key={editingFeature?.id || "new"} onAdd={onAddFeature} onCancel={() => { onShowForm(false); onEditingFeature(null); }} editFeature={editingFeature} scored={scored} features={features} signals={signals} decisions={decisions} workspaceId={activeWsId} onProductContextChange={onProductContextChange} productContext={productContext} onScoreEvent={onScoreEvent} onResolveScores={onResolveScores} feedbackContext={feedbackContext} />}
         {importData && <ImportPanel importData={importData} onConfirm={onConfirmImport} onCancel={onCancelImport} />}
 
         {/* List + tradeoff map. The map is skipped entirely until there are

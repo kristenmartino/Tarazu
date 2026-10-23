@@ -68,9 +68,10 @@ export function Landing() {
             <Link href="/frameworks/rice" onClick={closeMenu}>RICE Guide</Link>
             <Link href="/vs/spreadsheets" onClick={closeMenu}>vs. spreadsheets</Link>
             <Link href="/blog" onClick={closeMenu}>Blog</Link>
+            <Link href="/sign-in" onClick={closeMenu}>Sign in</Link>
           </nav>
           <div className="nav-cta">
-            <Link href="/sign-up" className="btn btn-solid">
+            <Link href="/app" className="btn btn-solid">
               Start prioritizing <span className="arrow">→</span>
             </Link>
             <button
@@ -95,15 +96,15 @@ export function Landing() {
               <h1>Weigh what to <span className="br">build next.</span></h1>
               <p className="lede">
                 Tarazu turns scattered requests, feedback, and data into ranked, defensible
-                decisions — then learns from what you ship, so every call gets sharper.
+                decisions — with visible assumptions and a record of why you chose.
               </p>
               <div className="hero-actions">
-                <Link href="/sign-up" className="btn btn-solid">
+                <Link href="/app" className="btn btn-solid">
                   Start prioritizing <span className="arrow">→</span>
                 </Link>
                 <a href="#lifecycle" className="btn btn-ghost">See the lifecycle</a>
               </div>
-              <div className="hero-foot"><span className="pip" /> From signal to shipped — in one loop</div>
+              <div className="hero-foot"><span className="pip" /> From signal to a decision you can explain</div>
             </div>
 
             {/* balance scale */}
@@ -189,8 +190,8 @@ export function Landing() {
                     <path d="M9.5 12l2 2 3.5-4" />
                   </svg>
                 </div>
-                <div className="step-n">04</div><h3>Ship</h3>
-                <p>Turn the call into action and track it through to done.</p>
+                <div className="step-n">04</div><h3>Record</h3>
+                <p>Record your choice, expected outcome, and review date.</p>
               </div>
               <div className="stage">
                 <div className="node">
@@ -198,8 +199,8 @@ export function Landing() {
                     <path d="M21 12a9 9 0 1 1-3-6.7M21 4v4h-4" />
                   </svg>
                 </div>
-                <div className="step-n">05</div><h3>Learn</h3>
-                <p>Measure the outcome and feed it back to the next decision.</p>
+                <div className="step-n">05</div><h3>Review</h3>
+                <p>Review score edits and recommendation ratings alongside the decisions you recorded.</p>
               </div>
             </div>
             <div className="loop-back" data-reveal>
@@ -261,9 +262,9 @@ export function Landing() {
                         <path d="M21 12a9 9 0 1 1-3-6.7M21 4v4h-4" />
                       </svg>
                     </span>
-                    <h3>Close the loop</h3>
+                    <h3>Review your feedback</h3>
                   </div>
-                  <p>Track what you ship, measure the outcome, and feed it back — so the next decision is sharper than the last.</p>
+                  <p>Review your score adjustments and recommendation feedback. These records are for your review; they are not included in AI requests and do not measure shipped outcomes.</p>
                 </div>
               </div>
 
@@ -319,7 +320,7 @@ export function Landing() {
             <h2>Bring balance to your <span className="br">roadmap.</span></h2>
             <p>Start weighing what to build next — and stop relitigating the same decisions every quarter.</p>
             <div className="hero-actions">
-              <Link href="/sign-up" className="btn btn-solid">
+              <Link href="/app" className="btn btn-solid">
                 Start prioritizing <span className="arrow">→</span>
               </Link>
               <a href="#lifecycle" className="btn btn-ghost">How it works</a>
@@ -345,14 +346,14 @@ export function Landing() {
                 <a href="#lifecycle">Lifecycle</a>
                 <a href="#features">Features</a>
                 <Link href="/how-it-works">How it works</Link>
-                <Link href="/sign-up">Start prioritizing</Link>
+                <Link href="/app">Start prioritizing</Link>
               </div>
               <div className="foot-col">
                 <h4>More</h4>
                 <a href="#why">Why Tarazu</a>
                 <Link href="/faq">FAQ</Link>
                 <Link href="/about">About</Link>
-                <Link href="/sign-in">Open the app</Link>
+                <Link href="/sign-in">Sign in</Link>
               </div>
             </div>
           </div>

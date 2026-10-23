@@ -24,6 +24,7 @@ const fakeSupabase = (count = 0) => ({
 const makeRequest = (body) => ({ json: () => Promise.resolve(body) });
 
 const validAnalysis = {
+  evidence: [],
   summary: "Healthy backlog.",
   topPick: { name: "A", reason: "highest score", confidence: "high" },
   riskFlag: { name: "B", reason: "low confidence", confidence: "low" },
@@ -67,6 +68,18 @@ describe("POST /api/analyze", () => {
     const data = await res.json();
     expect(data.topPick.name).toBe("A");
     expect(data.sprintPlan).toEqual(["A", "C", "B"]);
+  });
+
+  it("uses populated brief fields without a summary", async () => {
+    fetch.mockResolvedValueOnce(okText(validAnalysis));
+    const res = await POST(makeRequest({ features, productContext: { targetUsers: 'Admins', strategicPriorities: 'Retention', constraints: 'Two engineers', assumptions: 'Self service demand', successMetrics: 'Activation' } }));
+    expect(res.status).toBe(200);
+    const prompt = JSON.parse(fetch.mock.calls[0][1].body).messages[0].content;
+    for (const value of ['Admins', 'Retention', 'Two engineers', 'Self service demand', 'Activation']) expect(prompt).toContain(value);
+  });
+  it("rejects fabricated references", async () => {
+    fetch.mockResolvedValue(okText({ ...validAnalysis, evidence: ['signal:invented'] }));
+    expect((await POST(makeRequest({ features }))).status).toBe(502);
   });
 
   it("rejects fewer than 2 features with 400", async () => {
