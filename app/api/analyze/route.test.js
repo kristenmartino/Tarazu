@@ -82,6 +82,23 @@ describe("POST /api/analyze", () => {
     expect((await POST(makeRequest({ features }))).status).toBe(502);
   });
 
+  it("repairs assessment narration in advisor reasons before returning analysis", async () => {
+    fetch.mockResolvedValueOnce(okText({ ...validAnalysis, topPick: { ...validAnalysis.topPick, reason: '4 of 7 dimensions remain unassessed.' } }))
+      .mockResolvedValueOnce(okText(validAnalysis));
+    const res = await POST(makeRequest({ features }));
+    expect(res.status).toBe(200);
+    expect((await res.json()).topPick.reason).toBe('highest score');
+    expect(JSON.parse(fetch.mock.calls[1][1].body).messages[2].content).toContain('topPick.reason: Do not narrate validation assessment');
+  });
+
+  it("does not return analysis when repeated completion claims fail validation", async () => {
+    fetch.mockResolvedValue(okText({ ...validAnalysis, insight: 'The assessment is complete.' }));
+    const res = await POST(makeRequest({ features }));
+    expect(res.status).toBe(502);
+    expect(await res.json()).toMatchObject({ category: 'invalid_response' });
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
   it("rejects fewer than 2 features with 400", async () => {
     const res = await POST(makeRequest({ features: [features[0]] }));
     expect(res.status).toBe(400);

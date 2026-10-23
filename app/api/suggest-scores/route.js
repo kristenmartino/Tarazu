@@ -3,6 +3,7 @@ import { z } from "zod";
 import { buildScoringContext, contextReferences, CONTEXT_RULES } from "../../../lib/scoring-context";
 import { requestJson, AiError } from "../../../lib/ai";
 import { withUser } from "../../../lib/api-auth";
+import { withAppOwnedAssessments } from "../../../lib/ai-assessment-guard";
 
 const VALID_DIMS = ["reach", "impact", "confidence", "effort"];
 
@@ -19,7 +20,7 @@ function buildSchema(dims, refs) {
     gaps: z.array(z.string().max(500)).max(8),
     nextAction: z.string().min(1).max(500),
   });
-  return z.object(Object.fromEntries(dims.map(d => [d, dimension])));
+  return withAppOwnedAssessments(z.object(Object.fromEntries(dims.map(d => [d, dimension]))));
 }
 
 // Authenticated: this endpoint bills the Anthropic API per call, so it must
