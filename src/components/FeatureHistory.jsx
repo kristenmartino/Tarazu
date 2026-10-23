@@ -22,7 +22,7 @@ const FieldDiff = ({ change }) => {
   const C = useC();
   const SCORE_COLORS = { reach: C.reach, impact: C.impact, confidence: C.confidence, effort: C.danger };
   const { field, old: oldValue, new: newValue } = change;
-  const display = value => value && typeof value === 'object' ? Object.entries(value).filter(([, text]) => text).map(([key, text]) => `${key}: ${text}`).join('; ') : value;
+  const display = value => value && typeof value === 'object' ? Object.entries(value).filter(([, text]) => text).map(([key, text]) => `${key}: ${typeof text === 'object' ? JSON.stringify(text) : text}`).join('; ') : value;
   const oldVal = display(oldValue), newVal = display(newValue);
   const isScore = ["reach", "impact", "confidence", "effort"].includes(field);
   const color = SCORE_COLORS[field] || C.textMuted;

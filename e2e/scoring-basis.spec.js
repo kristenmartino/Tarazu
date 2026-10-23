@@ -12,6 +12,7 @@ test('shared anchors and candidate answers survive reopening and invalidate old 
   await page.locator('#main-content').getByLabel('Target outcome and baseline',{exact:true}).fill('Reduce overdue approvals; baseline unknown');
   await page.locator('#main-content').getByText('Impact and effort anchors · view or customize',{exact:true}).click();
   await page.locator('#main-content').getByLabel('Effort 35 · S',{exact:true}).fill('Over 1 and up to 5 total person-days');
+  await page.getByText('Candidate summary answers',{exact:true}).click();
   await page.getByLabel('Who will this reach?',{exact:true}).fill('30 accounts; planning estimate');
   await page.getByLabel('What should improve per user?',{exact:true}).fill('Less follow-up work; hypothesis');
   await page.getByLabel('What supports these estimates?',{exact:true}).fill('Synthetic planning exercise, no customer measurements');
@@ -32,6 +33,7 @@ test('shared anchors and candidate answers survive reopening and invalidate old 
   await page.reload();
   await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Priorities',exact:true}).click();
   await page.getByRole('button',{name:'Edit Scoring basis test',exact:true}).click();
+  await page.getByText('Candidate summary answers',{exact:true}).click();
   await expect(page.getByLabel('Who will this reach?',{exact:true})).toHaveValue('30 accounts; planning estimate');
   await expect(page.getByLabel('What should improve per user?',{exact:true})).toHaveValue('Benefit still unknown');
   await page.locator('#main-content').getByText('Shared scoring basis',{exact:true}).click();
@@ -53,7 +55,11 @@ test('candidate questions and editable anchors fit on mobile', async ({page}, te
   await editor.getByLabel('Audience unit and size',{exact:true}).fill('100 active accounts');
   await editor.getByText('Impact and effort anchors · view or customize',{exact:true}).click();
   await editor.getByLabel('Impact 75 · High',{exact:true}).fill('Ten percentage-point improvement per account');
+  await editor.getByText('Candidate summary answers',{exact:true}).click();
   await editor.getByLabel('Who will this reach?',{exact:true}).fill('Thirty accounts; assumption');
+  await editor.getByRole('button',{name:'Add scoring claim',exact:true}).click();
+  await editor.getByLabel('Claim 1',{exact:true}).fill('A long source-linked audience forecast that should wrap cleanly within the mobile editor');
+  await editor.getByLabel('Provenance for claim 1',{exact:true}).selectOption('estimate');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({path:testInfo.outputPath('scoring-basis-mobile.png')});
 });

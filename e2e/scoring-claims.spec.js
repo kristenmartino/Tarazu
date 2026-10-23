@@ -1,0 +1,44 @@
+import { test, expect } from '@playwright/test';
+
+test('source-linked claims and targeted answers survive reopening; assumptions remain explicit', async ({ page }) => {
+  await page.goto('/app');
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  await nav.getByRole('button', { name: 'Signals', exact: true }).click();
+  await page.getByRole('button', { name: '+ Add Signal', exact: true }).click();
+  await page.getByPlaceholder('Signal title', { exact: true }).fill('Synthetic pilot note');
+  await page.getByPlaceholder('Details, quotes, or notes...', { exact: true }).fill('Synthetic exercise: thirty accounts eligible. No real customer measurements.');
+  await page.getByRole('button', { name: 'Add Signal', exact: true }).click();
+  await nav.getByRole('button', { name: 'Priorities', exact: true }).click();
+  await page.getByRole('button', { name: /Add Candidate/i }).first().click();
+  await page.getByLabel('Candidate name', { exact: true }).fill('Claim provenance test');
+  await page.getByRole('button', { name: 'Add scoring claim', exact: true }).click();
+  await page.getByLabel('Claim 1', { exact: true }).fill('Thirty of 100 accounts forecast to use the pilot');
+  await page.getByLabel('Provenance for claim 1', { exact: true }).selectOption('estimate');
+  await page.getByLabel('Evidence for claim 1', { exact: true }).selectOption({ label: 'Synthetic pilot note' });
+  await page.getByLabel('Source relationship 1 for claim 1', { exact: true }).selectOption('supports');
+  await page.getByLabel('Excerpt 1 for claim 1', { exact: true }).fill('thirty accounts eligible');
+  await expect(page.getByText(/Excerpt matches source/)).toBeVisible();
+  let requests = 0;
+  await page.route('**/api/suggest-scores', async route => {
+    const body = route.request().postDataJSON();
+    expect(body.scoringBasis.claims[0]).toMatchObject({kind:'estimate',sources:[{relation:'supports',quote:'thirty accounts eligible'}]});
+    if (requests++) expect(body.scoringBasis.claims).toEqual(expect.arrayContaining([expect.objectContaining({question:'Is the pilot population 100 accounts?',kind:'estimate'})]));
+    await route.fulfill({json:{reach:{score:35,justification:'Segment band from a forecast',evidence:[],assumptions:['All eligible accounts adopt'],gaps:[],nextAction:'Verify audience coverage',claimReviews:[],followUp:{question:'Is the pilot population 100 accounts?',whyItChangesScore:'A different denominator changes the reach share and band.',claimIds:[]}}}});
+  });
+  await page.getByRole('button', { name: '✦ AI Suggest Scores', exact: true }).click();
+  await page.getByText('reach: Suggested 35/100', { exact: true }).click();
+  await page.getByLabel('Answer reach follow-up', { exact: true }).fill('100 accounts in this fictional planning cohort; not measured');
+  await page.getByRole('button', { name: 'Add answer to scoring basis', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Accept reach suggestion', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Add as AI assumption', exact: true }).click();
+  await page.getByRole('button', { name: '✦ AI Suggest Scores', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Accept reach suggestion', exact: true })).toBeEnabled();
+  await page.getByRole('button', { name: 'Add Candidate', exact: true }).click();
+  await page.reload();
+  await nav.getByRole('button', { name: 'Priorities', exact: true }).click();
+  await page.getByRole('button', { name: 'Edit Claim provenance test', exact: true }).click();
+  await page.getByText(/reach · User estimate · Thirty of 100 accounts/).click();
+  await expect(page.getByLabel('Excerpt 1 for claim 1', { exact: true })).toHaveValue('thirty accounts eligible');
+  await expect(page.getByText(/reach · AI assumption · All eligible accounts adopt/)).toBeVisible();
+  await expect(page.getByLabel('Reach', { exact: true })).toHaveValue('50');
+});
