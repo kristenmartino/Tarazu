@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor, screen, fireEvent } from "@testing-library/react";
 
 // The one behavior this file exists to pin: switching organizations must
 // refetch the workspace list.
@@ -32,7 +32,8 @@ vi.mock("./ThemeProvider", () => ({
 // Renders to <canvas>, which jsdom does not implement.
 vi.mock("./components/Matrix", () => ({ Matrix: () => null }));
 
-const { cloudMock } = vi.hoisted(() => ({
+const { cloudMock, localWorkspaces } = vi.hoisted(() => ({
+  localWorkspaces: vi.fn(() => null),
   cloudMock: {
     fetchWorkspaces: vi.fn(async () => [{ id: "ws1", name: "Backlog" }]),
     fetchFeatures: vi.fn(async () => ({ features: [], manualOrder: [] })),
@@ -73,7 +74,7 @@ vi.mock("../lib/local-storage", () => ({
   // iterable" crash that exists nowhere in production, i.e. the mock was
   // testing a state the app can't reach.
   load: () => null,
-  loadWsIndex: () => null,
+  loadWsIndex: localWorkspaces,
   // Object-or-null: App reads `.features` off the result, so [] would surface
   // as undefined and crash useScored.
   loadWsFeatures: () => null,
@@ -125,6 +126,10 @@ beforeEach(() => {
   auth.orgId = "org_a";
   auth.isSignedIn = true;
   auth.isLoaded = true;
+  localStorage.clear();
+  sessionStorage.clear();
+  localWorkspaces.mockReturnValue(null);
+  cloudMock.fetchWorkspaces.mockResolvedValue([{ id: "ws1", name: "Backlog" }]);
 });
 
 // Vitest's default 5s per-test budget is tuned for unit tests. These render a
@@ -164,5 +169,36 @@ describe("App — organization switching", () => {
     await new Promise((r) => setTimeout(r, 20));
 
     expect(cloudMock.fetchWorkspaces).not.toHaveBeenCalled();
+  }, INTEGRATION_TIMEOUT);
+
+  it("restores an authorized workspace and ignores a saved workspace from another organization", async () => {
+    cloudMock.fetchWorkspaces.mockResolvedValue([{ id: "ws1", name: "Backlog" }, { id: "ws2", name: "Demo" }]);
+    localStorage.setItem("tarazu-cloud-workspace:user_1:org_a", "ws2");
+    const { rerender } = render(<App />);
+    await waitFor(() => expect(cloudMock.fetchFeatures).toHaveBeenCalledWith("ws2"));
+    auth.orgId = "org_b";
+    rerender(<App />);
+    await waitFor(() => expect(cloudMock.fetchFeatures).toHaveBeenLastCalledWith("ws1"));
+    expect(localStorage.getItem("tarazu-cloud-workspace:user_1:org_a")).toBe("ws2");
+  }, INTEGRATION_TIMEOUT);
+
+  it("falls back when the remembered workspace is no longer accessible", async () => {
+    localStorage.setItem("tarazu-cloud-workspace:user_1:org_a", "removed-workspace");
+    render(<App />);
+    await waitFor(() => expect(cloudMock.fetchFeatures).toHaveBeenCalledWith("ws1"));
+    expect(cloudMock.fetchFeatures).not.toHaveBeenCalledWith("removed-workspace");
+  }, INTEGRATION_TIMEOUT);
+
+  it("keeps a dismissed import prompt hidden after remount without deleting local work", async () => {
+    localWorkspaces.mockReturnValue([{ id: "guest", name: "Guest work" }]);
+    const { unmount } = render(<App />);
+    fireEvent.click(await screen.findByRole("button", { name: "Dismiss" }));
+    unmount();
+    render(<App />);
+    await waitFor(() => expect(cloudMock.fetchWorkspaces).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(screen.getByText("Your workspace saves to your account.", { exact: false })).toBeTruthy());
+    expect(screen.queryByText("Local data found")).toBeNull();
+    expect(localWorkspaces()).toEqual([{ id: "guest", name: "Guest work" }]);
+    expect(cloudMock.createWorkspace).not.toHaveBeenCalled();
   }, INTEGRATION_TIMEOUT);
 });

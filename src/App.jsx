@@ -41,6 +41,11 @@ const printStyles = `@media print {
   header span { color: #666 !important; }
 }`;
 
+// Browser preferences are scoped to the account and active organization.
+// Always validate a remembered workspace against the current authorized list.
+const workspacePreferenceKey = (userId, orgId) => `tarazu-cloud-workspace:${userId}:${orgId || "personal"}`;
+const migrationPreferenceKey = userId => `tarazu-migration-dismissed:${userId}`;
+
 export default function App() {
   const C = useC();
   const [features, setFeatures] = useState([]);
@@ -84,7 +89,7 @@ export default function App() {
   const isMobile = useMedia("(max-width: 800px)");
   const isTablet = useMedia("(max-width: 1024px)") && !isMobile;
   const isOnline = useOnlineStatus();
-  const { isSignedIn, isLoaded: authLoaded, orgId } = useAuth();
+  const { isSignedIn, isLoaded: authLoaded, userId, orgId } = useAuth();
   const { scored, sorted, maxScore } = useScored(features);
   const displayOrder = useMemo(() => {
     if (sortMode === "rice" || manualOrder.length === 0) return sorted;
@@ -120,7 +125,9 @@ export default function App() {
           }
           if (cancelled) return;
           setWorkspaces(ws.map(w => ({ id: w.id, name: w.name })));
-          const activeId = ws[0].id;
+          let rememberedId;
+          try { if (userId) rememberedId = localStorage.getItem(workspacePreferenceKey(userId, orgId)); } catch {}
+          const activeId = ws.find(w => w.id === rememberedId)?.id || ws[0].id;
           setActiveWsId(activeId);
           const data = await cloud.fetchFeatures(activeId);
           if (cancelled) return;
@@ -142,7 +149,9 @@ export default function App() {
           } catch {}
           // Check if localStorage has data to migrate
           const localWs = loadWsIndex();
-          if (localWs && localWs.length > 0) setShowMigration(true);
+          let migrationDismissed = false;
+          try { migrationDismissed = !!userId && sessionStorage.getItem(migrationPreferenceKey(userId)) === "1"; } catch {}
+          setShowMigration(!!localWs?.length && !migrationDismissed);
         } catch (err) {
           console.error("Cloud init failed, falling back to localStorage:", err);
           initLocal();
@@ -198,7 +207,12 @@ export default function App() {
     // afterSelect*Url props alone don't cover this — they navigate to /app,
     // which is the route already mounted, so Next soft-navigates and the
     // component never remounts.
-  }, [authLoaded, isSignedIn, orgId]);
+  }, [authLoaded, isSignedIn, userId, orgId]);
+
+  const dismissMigration = () => {
+    try { if (userId) sessionStorage.setItem(migrationPreferenceKey(userId), "1"); } catch {}
+    setShowMigration(false);
+  };
 
   const showToast = useCallback((message, type = "info") => {
     setToast({ message, type });
@@ -423,10 +437,13 @@ export default function App() {
     }
     setActiveWsId(wsId);
     if (!isSignedIn) storeActiveWsId(wsId);
+    else if (userId) {
+      try { localStorage.setItem(workspacePreferenceKey(userId, orgId), wsId); } catch {}
+    }
     setSelectedId(null);
     setShowForm(false);
     setEditingFeature(null);
-  }, [isSignedIn, loaded, activeWsId, features, manualOrder]);
+  }, [isSignedIn, userId, orgId, loaded, activeWsId, features, manualOrder]);
 
   const addWorkspace = async () => {
     const name = await dialog.prompt({ title: "New workspace", label: "Workspace name", placeholder: "e.g. Q3 Roadmap", confirmText: "Create" });
@@ -748,7 +765,7 @@ export default function App() {
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <input ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={handleImportFile} style={{ display: "none" }} />
 
-      {showMigration && <MigrationBanner onConfirm={handleMigration} onDismiss={() => setShowMigration(false)} />}
+      {showMigration && <MigrationBanner onConfirm={handleMigration} onDismiss={dismissMigration} />}
 
       {/* Top bar */}
       <header role="banner" style={{

@@ -28,7 +28,7 @@ const ShortcutButton = ({ label, icon, color, onClick }) => (
   </button>
 );
 
-export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate }) => {
+export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate, isSignedIn }) => {
   const C = useC();
   const avgScore = useMemo(() => {
     if (scored.length === 0) return 0;
@@ -74,7 +74,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
 
       <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
         {scored.length === 0 && (
-          <OnboardingPanel onAddCandidate={onAddCandidate} onLoadSamples={onLoadSamples} />
+          <OnboardingPanel onAddCandidate={onAddCandidate} onLoadSamples={onLoadSamples} isSignedIn={isSignedIn} />
         )}
         {/* Stats strip */}
         {scored.length > 0 && <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>

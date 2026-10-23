@@ -127,7 +127,7 @@ export const CenterCanvas = ({
   });
 
   // Non-priorities screens
-  if (activeScreen === "home") return <WorkspaceHome scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
+  if (activeScreen === "home") return <WorkspaceHome scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} isSignedIn={isSignedIn} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
   if (activeScreen === "decisions") return <DecisionsScreen decisions={decisions} scored={scored} onAdd={onAddDecision} onUpdate={onUpdateDecision} onDelete={onDeleteDecision} />;
   if (activeScreen === "signals") return <SignalsScreen signals={signals} scored={scored} onAdd={onAddSignal} onUpdate={onUpdateSignal} onDelete={onDeleteSignal} onImport={onImportSignals} />;
   if (activeScreen === "validate") return <ValidationWorkspace key={`${activeWsId}:${isSignedIn}`} workspaceId={activeWsId} isSignedIn={isSignedIn} isMobile={isMobile} scored={scored} signals={signals} productContext={productContext} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
@@ -208,7 +208,7 @@ export const CenterCanvas = ({
     filtersActive ? (
       <div style={{ textAlign: "center", padding: 40 }}><p style={{ fontSize: 13, color: C.textMuted }}>No candidates match the current filters</p></div>
     ) : (
-      <OnboardingPanel onAddCandidate={() => { onEditingFeature(null); onShowForm(true); }} onLoadSamples={onLoadSamples} />
+      !showForm && <OnboardingPanel isSignedIn={isSignedIn} onAddCandidate={() => { onEditingFeature(null); onShowForm(true); }} onLoadSamples={onLoadSamples} />
     )
   ) : filteredDisplayOrder.map((f, i) => (
     <div key={f.id}>
