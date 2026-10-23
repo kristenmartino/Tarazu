@@ -28,12 +28,8 @@ const ShortcutButton = ({ label, icon, color, onClick }) => (
   </button>
 );
 
-export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate, isSignedIn }) => {
+export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate, isSignedIn, onInspectCandidate }) => {
   const C = useC();
-  const avgScore = useMemo(() => {
-    if (scored.length === 0) return 0;
-    return Math.round(scored.reduce((s, f) => s + f.score, 0) / scored.length);
-  }, [scored]);
 
   const avgConfidence = useMemo(() => {
     if (scored.length === 0) return 0;
@@ -51,10 +47,12 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
   [scored]);
 
   const recentDecisions = useMemo(() =>
-    [...decisions].sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 3),
+    decisions.filter(d => d.status !== "archived").sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 3),
   [decisions]);
 
   const topTier = topCandidate ? getTier(topCandidate, C) : null;
+  const isRelayDemo = scored.some(f => /Approval reminders/i.test(f.name) && /synthetic/i.test(f.name)) && scored.some(f => /Request readiness checklist/i.test(f.name) && /synthetic/i.test(f.name));
+  const startReview = () => { if (isRelayDemo && onInspectCandidate) onInspectCandidate(); else onScreenChange("priorities"); };
 
   const statusColor = (s) => {
     switch (s) {
@@ -76,12 +74,23 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
         {scored.length === 0 && (
           <OnboardingPanel onAddCandidate={onAddCandidate} onLoadSamples={onLoadSamples} isSignedIn={isSignedIn} />
         )}
-        {/* Stats strip */}
+        {scored.length > 0 && <section aria-label="Decision walkthrough" style={{ padding: "22px 20px", borderLeft: `3px solid ${C.brass || C.accent}`, background: C.surface, borderRadius: 8 }}>
+          {isRelayDemo && <Pill color={C.warn} dimColor={C.warn + "20"} small>Fictional demo</Pill>}
+          <h3 style={{ fontSize: 25, lineHeight: 1.25, letterSpacing: "-0.025em", margin: "12px 0", maxWidth: 630 }}>{isRelayDemo ? "One engineer, two weeks—which option should we test first?" : "Make your next product decision easier to defend."}</h3>
+          <p style={{ fontSize: 15, lineHeight: 1.6, color: C.textMuted, margin: "0 0 18px", maxWidth: 650 }}>{isRelayDemo ? "Start with the reminder hypothesis. Inspect the evidence that challenges it, compare what to test next, and return to the saved reasoning." : "Compare your options, inspect the evidence behind the scores, and save the reasoning you want to return to."}</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            <button onClick={startReview} style={{ padding: "10px 16px", border: 0, borderRadius: 7, background: C.accent, color: C.bg, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>{isRelayDemo ? "Start the decision walkthrough" : "Review your priorities"}</button>
+            <button onClick={() => onScreenChange("validate")} style={{ padding: "10px 16px", border: `1px solid ${C.border}`, borderRadius: 7, background: "transparent", color: C.text, fontSize: 14, cursor: "pointer" }}>Continue a validation brief</button>
+          </div>
+          <ol style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,180px),1fr))", gap: 12, padding: "18px 0 0", margin: 0, listStyle: "none" }}>
+            {[["1. Inspect the assumption", "priorities"], ["2. Find conflicting evidence", "signals"], ["3. Compare what to test", "priorities"], ["4. Reopen saved reasoning", "decisions"]].map(([label, route]) => <li key={label}><button onClick={() => label.startsWith("1.") ? startReview() : onScreenChange(route)} style={{ background: "transparent", border: 0, borderBottom: `1px solid ${C.border}`, color: C.textMuted, fontSize: 13, lineHeight: 1.5, textAlign: "left", padding: "8px 0", cursor: "pointer", width: "100%" }}>{label}</button></li>)}
+          </ol>
+        </section>}
+        {/* Supporting workspace context */}
         {scored.length > 0 && <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <StatCard label="CANDIDATES" value={scored.length} color={C.accent} />
-          <StatCard label="AVG RICE" value={avgScore.toLocaleString()} color={C.blue} />
-          <StatCard label="AVG CONFIDENCE" value={avgConfidence} color={avgConfidence >= 70 ? C.accent : avgConfidence >= 50 ? C.blue : C.warn} />
-          <StatCard label="DECISIONS" value={decisions.length} color={C.purple} />
+          <StatCard label="AVG CONFIDENCE" value={`${avgConfidence}/100`} color={avgConfidence >= 70 ? C.accent : avgConfidence >= 50 ? C.blue : C.warn} />
+          <StatCard label="DECISIONS" value={decisions.filter(d => d.status !== "archived").length} color={C.purple} />
           <StatCard label="SIGNALS" value={signals.length} color={C.blue} />
         </div>}
 
@@ -89,8 +98,8 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
         {topCandidate && (
           <div style={{ padding: 16, border: `1px solid ${topTier.color}20`, borderRadius: 10, background: `${topTier.color}08` }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 9, fontWeight: 700, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>TOP CANDIDATE</span>
-              <Pill color={topTier.color} dimColor={topTier.color + "20"} small>{topTier.label}</Pill>
+              <span style={{ fontSize: 9, fontWeight: 700, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>HIGHEST RICE SCORE</span>
+              <Pill color={topTier.color} dimColor={topTier.color + "20"} small>{topTier.label === "QUICK WIN" && topCandidate.confidence < 50 ? "POTENTIAL QUICK WIN" : topTier.label}</Pill>
             </div>
             <p style={{ fontSize: 15, fontWeight: 700, color: C.text, margin: "0 0 4px" }}>{topCandidate.name}</p>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -104,7 +113,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
         {needsValidation.length > 0 && (
           <div style={{ padding: 16, border: `1px solid color-mix(in srgb, var(--warning) 13%, transparent)`, borderRadius: 10, background: "color-mix(in srgb, var(--warning) 3%, transparent)" }}>
             <span style={{ fontSize: 9, fontWeight: 700, color: C.warn, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>NEEDS VALIDATION</span>
-            <p style={{ fontSize: 10, color: C.textMuted, margin: "4px 0 8px" }}>Candidates with confidence below 50 — consider gathering more evidence.</p>
+            <p style={{ fontSize: 14, color: C.textMuted, margin: "6px 0 12px", lineHeight: 1.5 }}>Low confidence means the ranking needs more evidence before a build commitment.</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {needsValidation.map(f => (
                 <div key={f.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", background: C.surface, borderRadius: 6, border: `1px solid ${C.border}` }}>

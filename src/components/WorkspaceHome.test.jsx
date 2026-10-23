@@ -18,3 +18,17 @@ describe("workspace first-use entry", () => {
     expect(screen.queryByRole("button", { name: "Load Example Backlog" })).toBeNull();
   });
 });
+
+it("shows the fictional decision story only for the Relay demo and routes its entry to the assumption", () => {
+  const inspect = vi.fn();
+  render(<WorkspaceHome {...props} onInspectCandidate={inspect} scored={[
+    {id:"r",name:"Approval reminders — synthetic",score:1729,reach:55,impact:55,confidence:20,effort:35},
+    {id:"c",name:"Request readiness checklist — synthetic",score:7500,reach:75,impact:75,confidence:20,effort:15},
+  ]} decisions={[{id:"archive",title:"Archived QA test",status:"archived"},{id:"current",title:"Pilot choice",status:"draft"}]} />);
+  fireEvent.click(screen.getByRole("button", { name: "Start the decision walkthrough" }));
+  expect(inspect).toHaveBeenCalledOnce();
+  expect(screen.getByText("One engineer, two weeks—which option should we test first?")).toBeTruthy();
+  expect(screen.queryByText("Archived QA test")).toBeNull();
+  expect(screen.getByText("Pilot choice")).toBeTruthy();
+  expect(screen.getByText("POTENTIAL QUICK WIN")).toBeTruthy();
+});

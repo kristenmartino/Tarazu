@@ -646,3 +646,10 @@ describe("parseCSV / mapCSVToFeatures — trailing-row and trim details", () => 
     expect(result.features[0].description).toBe("padded");
   });
 });
+
+describe('quick win evidence qualification', () => {
+  it('qualifies low confidence candidates without changing their score', () => {
+    expect(getTier({ effort: 30, impact: 70, confidence: 20 }, C).label).toBe('POTENTIAL QUICK WIN');
+    expect(getTier({ effort: 30, impact: 70, confidence: 50 }, C).label).toBe('QUICK WIN');
+  });
+});

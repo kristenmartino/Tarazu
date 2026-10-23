@@ -205,13 +205,27 @@ describe("App — organization switching", () => {
   it("keeps a dismissed import prompt hidden after remount without deleting local work", async () => {
     localWorkspaces.mockReturnValue([{ id: "guest", name: "Guest work" }]);
     const { unmount } = render(<App />);
-    fireEvent.click(await screen.findByRole("button", { name: "Dismiss" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Maybe later" }));
     unmount();
     render(<App />);
     await waitFor(() => expect(cloudMock.fetchWorkspaces).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(screen.getByText("Your workspace saves to your account.", { exact: false })).toBeTruthy());
     expect(screen.queryByText("Local data found")).toBeNull();
+    expect(localStorage.getItem("tarazu-migration-dismissed:user_1")).toBe("1");
     expect(localWorkspaces()).toEqual([{ id: "guest", name: "Guest work" }]);
     expect(cloudMock.createWorkspace).not.toHaveBeenCalled();
   }, INTEGRATION_TIMEOUT);
+});
+
+
+it("honors dismissal from another tab for the same account without importing or deleting browser data", async () => {
+  localWorkspaces.mockReturnValue([{ id: "guest", name: "Guest work" }]);
+  render(<App />);
+  await screen.findByText("Local data found");
+  fireEvent(window, new StorageEvent("storage", { key: "tarazu-migration-dismissed:another-user", newValue: "1" }));
+  expect(screen.getByText("Local data found")).toBeTruthy();
+  fireEvent(window, new StorageEvent("storage", { key: "tarazu-migration-dismissed:user_1", newValue: "1" }));
+  await waitFor(() => expect(screen.queryByText("Local data found")).toBeNull());
+  expect(localWorkspaces()).toEqual([{ id: "guest", name: "Guest work" }]);
+  expect(cloudMock.createWorkspace).not.toHaveBeenCalled();
 });

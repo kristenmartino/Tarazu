@@ -8,9 +8,9 @@ import { Pill } from "./Pill";
 export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, productContext, onAnalysisEvent, onAnalysisFeedback, feedbackContext, onSaveDecisionDraft, onScreenChange }) => {
   const C = useC();
   const CONF_STYLES = {
-    high: { color: C.accent, label: "HIGH" },    // jade / success
-    medium: { color: C.warn, label: "MEDIUM" },  // gold / caution
-    low: { color: C.danger, label: "LOW" },      // coral / risk
+    high: { color: C.accent, label: "High confidence" },    // jade / success
+    medium: { color: C.warn, label: "Medium confidence" },  // gold / caution
+    low: { color: C.danger, label: "Low confidence" },      // coral / risk
   };
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -137,7 +137,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
       {resultSignature !== signature && <p role="status">Context changed. This recommendation is stale; regenerate before using it.</p>}
       <AIContextDetails context={analysis.context} />
       <div style={{ padding: 16, border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface }}>
-        <p style={{ fontSize: 12, color: C.text, lineHeight: 1.6, margin: 0 }}>{analysis.summary}</p>
+        <p style={{ fontSize: 15, color: C.text, lineHeight: 1.6, margin: 0 }}>{analysis.summary}</p>
       </div>
       {cards.map((c, i) => {
         const conf = c.confidence && CONF_STYLES[c.confidence];
@@ -145,15 +145,15 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
           <div key={i} style={{ padding: 14, border: `1px solid ${c.color}20`, borderRadius: 10, background: `${c.color}08`, display: "flex", gap: 12, alignItems: "flex-start" }}>
             <span style={{ fontSize: 18 }}>{c.icon}</span>
             <div style={{ flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                 <span style={{ fontSize: 9, fontWeight: 700, color: c.color, letterSpacing: "0.1em", fontFamily: "var(--mono)" }}>{c.label}</span>
                 {conf && <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
                   <span style={{ width: 6, height: 6, borderRadius: "50%", background: conf.color, display: "inline-block" }} />
-                  <span style={{ fontSize: 8, fontWeight: 700, color: conf.color, fontFamily: "var(--mono)", letterSpacing: "0.05em" }}>{conf.label}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: conf.color, fontFamily: "var(--mono)", letterSpacing: "0.05em" }}>{conf.label}</span>
                 </span>}
               </div>
-              <p style={{ fontSize: 13, fontWeight: 600, color: C.text, margin: "3px 0 2px" }}>{c.value}</p>
-              <p style={{ fontSize: 11, color: C.textMuted, margin: 0, lineHeight: 1.5 }}>{c.detail}</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: C.text, margin: "3px 0 2px" }}>{c.value}</p>
+              <p style={{ fontSize: 14, color: C.textMuted, margin: 0, lineHeight: 1.6 }}>{c.detail}</p>
             </div>
           </div>
         );
@@ -163,7 +163,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
           <span style={{ fontSize: 9, fontWeight: 700, color: C.blue, letterSpacing: "0.1em", fontFamily: "var(--mono)" }}>📋 SUGGESTED SEQUENCE</span>
           <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
             {analysis.sprintPlan.map((name, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                 <span style={{ width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: C.blue, background: C.blueDim, fontFamily: "var(--mono)" }}>{i + 1}</span>
                 <span style={{ fontSize: 12, color: C.text }}>{name}</span>
               </div>
@@ -225,7 +225,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
           { label: "CANDIDATES", value: scored.length },
           { label: "FRAMEWORK", value: "RICE" },
           { label: "CONTEXT", value: productContext?.productSummary ? "Provided" : "Not provided" },
-          { label: "RUBRIC", value: "Shared scoring anchors" },
+          { label: "RUBRIC", value: "Shared score definitions" },
         ].map(m => (
           <div key={m.label} style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <span style={{ fontSize: 8, fontWeight: 700, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>{m.label}</span>

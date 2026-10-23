@@ -252,22 +252,23 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
           const ciColor = s.confidence_impact === "increases" ? C.accent : s.confidence_impact === "decreases" ? C.danger : C.textDim;
           return (
             <div key={s.id} style={{ padding: 14, border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8, minWidth: 0 }}>
                   <Pill color={typeInfo.color} dimColor={typeInfo.color + "20"} small>{typeInfo.label.toUpperCase()}</Pill>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{s.title}</span>
+                  <span style={{ fontSize: 16, fontWeight: 600, color: C.text, overflowWrap: "anywhere" }}>{s.title}</span>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  {ciIcon && <span style={{ fontSize: 12, fontWeight: 700, color: ciColor }}>{ciIcon}</span>}
-                  <button onClick={() => openForm(s)} style={{ background: "none", border: "none", color: C.textMuted, cursor: "pointer", fontSize: 12, padding: 2 }}>&#9998;</button>
-                  <button onClick={() => onDelete(s.id)} style={{ background: "none", border: "none", color: C.textDim, cursor: "pointer", fontSize: 12, padding: 2 }}>&#10005;</button>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                  {ciIcon && <span title={s.confidence_impact === "decreases" ? "Challenges the assumption" : "Supports the assumption"} aria-label={s.confidence_impact === "decreases" ? "Challenges the assumption" : "Supports the assumption"} style={{ fontSize: 16, fontWeight: 700, color: ciColor }}>{ciIcon}</span>}
+                  <button aria-label={`Edit signal: ${s.title}`} onClick={() => openForm(s)} style={{ background: "none", border: "none", color: C.textMuted, cursor: "pointer", fontSize: 12, padding: 2 }}>&#9998;</button>
+                  <button aria-label={`Delete signal: ${s.title}`} onClick={() => onDelete(s.id)} style={{ background: "none", border: "none", color: C.textDim, cursor: "pointer", fontSize: 12, padding: 2 }}>&#10005;</button>
                 </div>
               </div>
               {s.body && (
-                <div style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.5, marginBottom: 6, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                <div style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.6, marginBottom: 8, overflowWrap: "anywhere", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                   {s.body}
                 </div>
               )}
+              {s.body && <details style={{ margin: "6px 0 12px", color: C.textMuted, fontSize: 14 }}><summary style={{ cursor: "pointer", color: C.blue }}>Read full source</summary><p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", lineHeight: 1.6 }}>{s.body}</p></details>}
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                 {s.source && <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>{s.source}</span>}
                 {s.linked_candidate_name && <span style={{ fontSize: 10, color: C.blue, fontFamily: "var(--mono)", padding: "1px 6px", background: C.blueDim, borderRadius: 4 }}>{s.linked_candidate_name}</span>}
@@ -282,10 +283,10 @@ export const SignalsScreen = ({ signals, scored, onAdd, onUpdate, onDelete, onIm
         })}
       </div>
 
-      {/* Confidence calibration summary */}
+      {/* Evidence direction summary */}
       {signals.length > 0 && (
         <div style={{ marginTop: 24, padding: 16, border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface }}>
-          <div style={labelStyle}>CONFIDENCE CALIBRATION</div>
+          <div style={labelStyle}>EVIDENCE DIRECTION</div><p style={{ fontSize: 14, lineHeight: 1.5, color: C.textMuted, margin: "8px 0" }}>How sources are labeled. Counts do not measure evidence quality or change confidence scores.</p>
           <div style={{ display: "flex", gap: 16, marginTop: 8, flexWrap: "wrap" }}>
             {["increases", "decreases", "neutral"].map(ci => {
               const count = signals.filter(s => s.confidence_impact === ci).length;

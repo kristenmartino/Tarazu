@@ -16,10 +16,10 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
   const [showForm, setShowForm] = useState(false);
   const [editingDecision, setEditingDecision] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("current");
   const [form, setForm] = useState(emptyForm);
 
-  const filtered = filterStatus === "all" ? decisions : decisions.filter(d => d.status === filterStatus);
+  const filtered = filterStatus === "current" ? decisions.filter(d => d.status !== "archived") : filterStatus === "all" ? decisions : decisions.filter(d => d.status === filterStatus);
 
   const openForm = (decision = null) => {
     if (decision) {
@@ -79,8 +79,8 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
           <Pill color={C.textMuted} dimColor={C.border}>{filtered.length}</Pill>
         </div>
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          {["all", ...STATUS_OPTIONS].map(s => (
-            <button key={s} onClick={() => setFilterStatus(s)} style={{
+          {["current", ...STATUS_OPTIONS, "all"].map(s => (
+            <button key={s} aria-pressed={filterStatus === s} onClick={() => setFilterStatus(s)} style={{
               padding: "4px 10px", borderRadius: 6, border: `1px solid ${filterStatus === s ? C.accent : C.border}`,
               background: filterStatus === s ? "color-mix(in srgb, var(--success) 8%, transparent)" : "transparent", color: filterStatus === s ? C.accent : C.textMuted,
               fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)", textTransform: "uppercase",

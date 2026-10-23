@@ -12,13 +12,13 @@ it('preserves manual values until explicit acceptance and leaves unknowns unchan
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ok:true,json:async()=>result(70)}));
   render(<Form editFeature={candidate} onAdd={()=>{}} />);
   fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
-  await screen.findByText('reach: Suggested 70/100');
+  await screen.findByText('AI suggests 70/100');
   expect(screen.getByText('Reach value 23')).toBeTruthy();
   fireEvent.click(screen.getByText('Accept reach suggestion'));
   expect(screen.getByText('Reach value 70')).toBeTruthy();
   fetch.mockResolvedValue({ok:true,json:async()=>result(null)});
   fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
-  await screen.findByText('reach: Insufficient information');
+  await screen.findByText('AI needs more information');
   expect(screen.getByText('Reach value 70')).toBeTruthy();
 });
 it('marks suggestions stale after brief edits and blocks acceptance', async () => {
@@ -81,7 +81,7 @@ it('saves individually labeled claims, conflicting sources and checked excerpts'
   fireEvent.click(screen.getByText('Add scoring claim'));
   fireEvent.change(screen.getByLabelText('Claim 1'), {target:{value:'Reminders reduce overdue approvals by five points; forecast'}});
   fireEvent.change(screen.getByLabelText('Scoring input for claim 1'), {target:{value:'impact'}});
-  fireEvent.change(screen.getByLabelText('Provenance for claim 1'), {target:{value:'estimate'}});
+  fireEvent.change(screen.getByLabelText('Claim type for claim 1'), {target:{value:'estimate'}});
   expect(screen.queryByText('Private other workspace')).toBeNull();
   fireEvent.change(screen.getByLabelText('Evidence for claim 1'), {target:{value:'s1'}});
   fireEvent.change(screen.getByLabelText('Source relationship 1 for claim 1'), {target:{value:'conflicts'}});
@@ -100,11 +100,11 @@ it('adds a sourced follow-up answer, blocks stale acceptance, and sends it on re
   fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
   await screen.findByText(reply.reach.followUp.question);
   fireEvent.change(screen.getByLabelText('Answer reach follow-up'), {target:{value:'30 of 100 accounts, first 30 days, current analytics'}});
-  fireEvent.change(screen.getByLabelText('Provenance for reach answer'), {target:{value:'fact'}});
+  fireEvent.change(screen.getByLabelText('Claim type for reach answer'), {target:{value:'fact'}});
   fireEvent.change(screen.getByLabelText('Evidence for reach answer'), {target:{value:'s1'}});
-  fireEvent.click(screen.getByText('Add answer to scoring basis'));
+  fireEvent.click(screen.getByText('Add answer to draft'));
   expect(screen.getByText('Accept reach suggestion').disabled).toBe(true);
-  expect(screen.getByText(/Answer added to the scoring basis/)).toBeTruthy();
+  expect(screen.getAllByText(/Answer recorded; source still needs review/).length).toBeGreaterThan(0);
   expect(screen.getByText('Reach value 23')).toBeTruthy();
   fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
   await waitFor(()=>expect(screen.getByText('Accept reach suggestion').disabled).toBe(false));
@@ -122,6 +122,86 @@ it('only adopts AI assumptions explicitly, retains their origin and invalidates 
   expect(save.mock.calls[0][0].scoringBasis.claims).toEqual([]);
   fireEvent.click(screen.getByText('Add as AI assumption'));
   expect(screen.getByText('Accept reach suggestion').disabled).toBe(true);
+  await waitFor(() => expect(screen.getByText('Save Changes').disabled).toBe(false));
   fireEvent.click(screen.getByText('Save Changes'));
   expect(save.mock.calls[1][0].scoringBasis.claims[0]).toMatchObject({text:'Adoption is untested',kind:'ai_assumption',origin:'ai'});
+});
+
+
+it('waits for durable save, keeps edits on rejection, and distinguishes browser from cloud success', async () => {
+  let resolve;
+  const save = vi.fn().mockRejectedValueOnce(new Error('Cloud save unavailable')).mockImplementationOnce(() => new Promise(r => { resolve = r; }));
+  render(<Form editFeature={candidate} onAdd={save} saveTarget="cloud" />);
+  expect(screen.getByText('Saved to cloud')).toBeTruthy();
+  fireEvent.change(screen.getByLabelText('Candidate name'), {target:{value:'Edited Search'}});
+  expect(screen.getByText('Unsaved changes')).toBeTruthy();
+  fireEvent.click(screen.getByText('Save Changes'));
+  await screen.findByText('Cloud save unavailable');
+  expect(screen.getByLabelText('Candidate name').value).toBe('Edited Search');
+  expect(screen.getByText('Unsaved changes')).toBeTruthy();
+  fireEvent.click(screen.getByText('Save Changes'));
+  expect(screen.getAllByText('Saving…').length).toBeGreaterThan(0);
+  expect(screen.getByLabelText('Candidate name').closest('fieldset').disabled).toBe(true);
+  expect(screen.queryByText('Saved to cloud')).toBeNull();
+  resolve({savedTo:'browser',pendingSync:true});
+  await screen.findByText('Saved in this browser · pending sync');
+  expect(screen.getByText('Save Changes').disabled).toBe(false);
+});
+
+it('makes accepting an equal-value AI suggestion explicit and dirty until saved', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ok:true,json:async()=>result(23)}));
+  render(<Form editFeature={candidate} onAdd={async()=>({savedTo:'cloud'})} saveTarget="cloud" />);
+  fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
+  await screen.findByText('AI suggests 23/100');
+  expect(screen.getByText('Saved to cloud')).toBeTruthy();
+  fireEvent.click(screen.getByText('Accept reach suggestion'));
+  expect(screen.getByText('AI 23/100 · accepted in draft')).toBeTruthy();
+  expect(screen.getByText('Unsaved changes')).toBeTruthy();
+  fireEvent.click(screen.getByText('Save Changes'));
+  await screen.findByText('Saved to cloud');
+});
+
+it('recognizes an estimated answer on a refreshed AI response without reopening the answer editor', async () => {
+  const question = 'How many accounts are eligible?';
+  const followUp = {question,whyItChangesScore:'Changes the audience share.',claimIds:[]};
+  const claim = {id:'answer',dimension:'reach',text:'Thirty accounts, forecast',kind:'estimate',origin:'user',question,sources:[]};
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ok:true,json:async()=>({reach:{...result(35).reach,followUp}})}));
+  render(<Form editFeature={{...candidate,scoringBasis:{claims:[claim]}}} onAdd={()=>{}} />);
+  fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
+  await screen.findByText('AI suggests 35/100');
+  expect(screen.getAllByText(/Answer recorded; measured evidence still needed/).length).toBeGreaterThan(0);
+  expect(screen.queryByLabelText('Answer reach follow-up')).toBeNull();
+});
+
+
+it('starts with four readable score controls and keeps supporting detail collapsed', () => {
+  const {container} = render(<Form editFeature={{...candidate,scoringBasis:{claims:[{id:'long',dimension:'reach',kind:'estimate',text:'An audience estimate '.repeat(30),origin:'user',sources:[]}]}}} onAdd={()=>{}} productContext={{constraints:'One engineer'}} onProductContextChange={()=>{}} />);
+  expect(screen.getAllByRole('region',{name:/ score$/}).length).toBe(4);
+  expect(screen.getByText('STRATEGY BRIEF').closest('button').getAttribute('aria-expanded')).toBe('false');
+  expect(screen.queryByLabelText('CONSTRAINTS')).toBeNull();
+  const claimSummary = container.querySelector('section[aria-label="Scoring claims and sources"] details summary');
+  expect(claimSummary.textContent.length).toBeLessThan(160);
+  expect(claimSummary.closest('details').open).toBe(false);
+  expect(screen.getByText('Background answers').closest('details').open).toBe(false);
+});
+
+
+it('resolves accepted score events with final saved values even after refreshing AI', async () => {
+  const resolveScores = vi.fn();
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ok:true,json:async()=>result(35)}));
+  render(<Form editFeature={candidate} onAdd={async()=>({savedTo:'cloud'})} onResolveScores={resolveScores} />);
+  fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
+  await screen.findByText('Accept reach suggestion');
+  fireEvent.click(screen.getByText('Accept reach suggestion'));
+  fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
+  await screen.findByText('Accept reach suggestion');
+  fireEvent.click(screen.getByText('Save Changes'));
+  await waitFor(() => expect(resolveScores).toHaveBeenCalledWith('a', {reach:35,impact:34,confidence:45,effort:56}));
+});
+
+
+it('shows an existing locally saved candidate as pending cloud sync when reopened', () => {
+  render(<Form editFeature={candidate} onAdd={()=>{}} saveTarget="browser" savePendingSync />);
+  expect(screen.getByText('Saved in this browser · pending sync')).toBeTruthy();
+  expect(screen.queryByText('Saved to cloud')).toBeNull();
 });

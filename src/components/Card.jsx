@@ -21,9 +21,9 @@ export const Card = ({ feature, rank, isSelected, onClick, onDelete, onEdit, max
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: C.textDim, fontFamily: "var(--mono)" }}>#{rank}</span>
-            <span style={{ fontSize: 14, fontWeight: 600, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{feature.name}</span>
+            <span style={{ fontSize: 16, fontWeight: 600, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={feature.name}>{feature.name}</span>
           </div>
-          {feature.description && <p style={{ fontSize: 11, color: C.textMuted, margin: "0 0 8px", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{feature.description}</p>}
+          {feature.description && <p style={{ fontSize: 14, color: C.textMuted, margin: "0 0 10px", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{feature.description}</p>}
           {(feature.owner || feature.theme || (feature.status && feature.status !== "backlog") || signalCount > 0 || updatedAt) && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8, alignItems: "center" }}>
               {feature.owner && <span style={{ fontSize: 9, color: C.textMuted, fontFamily: "var(--mono)", padding: "1px 6px", background: C.border, borderRadius: 4 }}>{feature.owner}</span>}
@@ -41,7 +41,7 @@ export const Card = ({ feature, rank, isSelected, onClick, onDelete, onEdit, max
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6, flexShrink: 0 }}>
-          <Pill color={tier.color} dimColor={tier.color + "20"}>{tier.label}</Pill>
+          <Pill color={tier.color} dimColor={tier.color + "20"}>{tier.label === "QUICK WIN" && feature.confidence < 50 ? "POTENTIAL QUICK WIN" : tier.label}</Pill>
           <span style={{ fontSize: 18, fontWeight: 800, color: tier.color, fontFamily: "var(--mono)" }}>{score.toLocaleString()}</span>
           <div style={{ display: "flex", gap: 4 }}>
             <button aria-label={`Edit ${feature.name}`} onClick={e => { e.stopPropagation(); onEdit(feature); }} style={{ padding: "3px 8px", border: `1px solid color-mix(in srgb, var(--accent) 13%, transparent)`, borderRadius: 6, background: "transparent", color: "color-mix(in srgb, var(--accent) 50%, transparent)", fontSize: 10, cursor: "pointer", fontFamily: "var(--mono)", transition: "all 0.2s" }}

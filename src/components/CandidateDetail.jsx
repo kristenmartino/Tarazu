@@ -20,7 +20,7 @@ export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselec
       <div>
         <span style={{ fontSize: 28, fontWeight: 800, color: tier.color, fontFamily: "var(--mono)" }}>{feature.score.toLocaleString()}</span>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, margin: "8px 0 0" }}>{feature.name}</h3>
-        {feature.description && <p style={{ fontSize: 12, color: C.textMuted, margin: "6px 0 0", lineHeight: 1.6 }}>{feature.description}</p>}
+        {feature.description && <p style={{ fontSize: 14, color: C.textMuted, margin: "6px 0 0", lineHeight: 1.6 }}>{feature.description}</p>}
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>

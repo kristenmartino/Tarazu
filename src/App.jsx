@@ -3,7 +3,7 @@ import Link from "next/link";
 import { sampleBacklogFor } from "./sample-backlog";
 import { useC } from "./ThemeProvider";
 import { exportCSV, parseCSV, mapCSVToFeatures } from "./utils";
-import { load, saveWsIndex, loadWsIndex, saveWsFeatures, loadWsFeatures, removeWsFeatures, saveWsContext, loadWsContext, removeWsContext, getActiveWsId, setActiveWsId as storeActiveWsId, STORAGE_KEY, saveWsDecisions, loadWsDecisions, removeWsDecisions, saveWsSignals, loadWsSignals, removeWsSignals, saveWsSettings, loadWsSettings, removeWsSettings } from "../lib/local-storage";
+import { load, saveWsIndex, loadWsIndex, saveWsFeatures, saveWsFeaturesChecked, loadWsFeatures, removeWsFeatures, saveWsContext, loadWsContext, removeWsContext, getActiveWsId, setActiveWsId as storeActiveWsId, STORAGE_KEY, saveWsDecisions, loadWsDecisions, removeWsDecisions, saveWsSignals, loadWsSignals, removeWsSignals, saveWsSettings, loadWsSettings, removeWsSettings } from "../lib/local-storage";
 import * as cloud from "../lib/cloud-storage";
 import { useMedia } from "./hooks/useMedia";
 import { useScored } from "./hooks/useScored";
@@ -60,6 +60,8 @@ export default function App() {
   const [dragId, setDragId] = useState(null);
   const [importData, setImportData] = useState(null);
   const [showMigration, setShowMigration] = useState(false);
+  const [hasLocalImport, setHasLocalImport] = useState(false);
+  const [browserFallback, setBrowserFallback] = useState(false);
   const [productContext, setProductContext] = useState({ productSummary: "", targetUsers: "", strategicPriorities: "", constraints: "", assumptions: "", successMetrics: "" });
   const [feedbackSummary, setFeedbackSummary] = useState(null);
   const [feedbackContext, setFeedbackContext] = useState(null);
@@ -90,6 +92,19 @@ export default function App() {
   const isTablet = useMedia("(max-width: 1024px)") && !isMobile;
   const isOnline = useOnlineStatus();
   const { isSignedIn, isLoaded: authLoaded, userId, orgId } = useAuth();
+  const currentSaveScope = `${userId || "guest"}:${orgId || "personal"}:${activeWsId}`;
+  const saveScopeRef = useRef(currentSaveScope); saveScopeRef.current = currentSaveScope;
+  const editorKey = `${currentSaveScope}:${activeScreen}:${showForm}:${editingFeature?.id || "new"}`;
+  const editorSession = useRef({ key: editorKey, generation: 0 });
+  if (editorSession.current.key !== editorKey) editorSession.current = { key: editorKey, generation: editorSession.current.generation + 1 };
+  const featureWriteQueue = useRef(Promise.resolve());
+  const featureWriteRevision = useRef(0);
+  const explicitSaving = useRef(false);
+  const enqueueFeatureWrite = operation => {
+    const next = featureWriteQueue.current.catch(() => {}).then(operation);
+    featureWriteQueue.current = next;
+    return next;
+  };
   const { scored, sorted, maxScore } = useScored(features);
   const displayOrder = useMemo(() => {
     if (sortMode === "rice" || manualOrder.length === 0) return sorted;
@@ -131,6 +146,7 @@ export default function App() {
           setActiveWsId(activeId);
           const data = await cloud.fetchFeatures(activeId);
           if (cancelled) return;
+          setBrowserFallback(false);
           setFeatures(data.features);
           setManualOrder(data.manualOrder || []);
           try { const ctx = await cloud.fetchProductContext(activeId); if (!cancelled) setProductContext(ctx); } catch {}
@@ -150,7 +166,8 @@ export default function App() {
           // Check if localStorage has data to migrate
           const localWs = loadWsIndex();
           let migrationDismissed = false;
-          try { migrationDismissed = !!userId && sessionStorage.getItem(migrationPreferenceKey(userId)) === "1"; } catch {}
+          try { migrationDismissed = !!userId && localStorage.getItem(migrationPreferenceKey(userId)) === "1"; } catch {}
+          setHasLocalImport(!!localWs?.length);
           setShowMigration(!!localWs?.length && !migrationDismissed);
         } catch (err) {
           console.error("Cloud init failed, falling back to localStorage:", err);
@@ -163,6 +180,8 @@ export default function App() {
       setLoaded(true);
     }
     function initLocal() {
+      setBrowserFallback(true);
+      setPendingSync(false);
       let ws = loadWsIndex();
       if (!ws || ws.length === 0) {
         ws = [{ id: "default", name: "My Backlog" }];
@@ -210,9 +229,17 @@ export default function App() {
   }, [authLoaded, isSignedIn, userId, orgId]);
 
   const dismissMigration = () => {
-    try { if (userId) sessionStorage.setItem(migrationPreferenceKey(userId), "1"); } catch {}
+    try { if (userId) localStorage.setItem(migrationPreferenceKey(userId), "1"); } catch {}
     setShowMigration(false);
   };
+
+  useEffect(() => {
+    const updateDismissal = event => {
+      if (userId && event.key === migrationPreferenceKey(userId)) setShowMigration(event.newValue !== "1" && !!loadWsIndex()?.length);
+    };
+    window.addEventListener("storage", updateDismissal);
+    return () => window.removeEventListener("storage", updateDismissal);
+  }, [userId]);
 
   const showToast = useCallback((message, type = "info") => {
     setToast({ message, type });
@@ -220,10 +247,13 @@ export default function App() {
 
   // ── Auto-save ──
   useEffect(() => {
-    if (!loadedRef.current || !activeWsId) return;
-    if (isSignedIn) {
+    if (!loadedRef.current || !activeWsId || explicitSaving.current) return;
+    const requestedScope = currentSaveScope;
+    const requestedRevision = featureWriteRevision.current;
+    if (isSignedIn && !browserFallback) {
       clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(async () => {
+        if (saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
         if (!isOnline) {
           saveWsFeatures(activeWsId, features, manualOrder);
           setPendingSync(true);
@@ -231,7 +261,8 @@ export default function App() {
         }
         try {
           const pendingDeletes = [...deletedIdsRef.current];
-          const idMap = await cloud.syncFeatures(activeWsId, features, manualOrder, pendingDeletes);
+          const idMap = await enqueueFeatureWrite(() => saveScopeRef.current === requestedScope && featureWriteRevision.current === requestedRevision ? cloud.syncFeatures(activeWsId, features, manualOrder, pendingDeletes) : null);
+          if (saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
           pendingDeletes.forEach(id => deletedIdsRef.current.delete(id));
           if (idMap && Object.keys(idMap).length > 0) {
             setFeatures(prev => prev.map(f => idMap[f.id] ? { ...f, id: idMap[f.id] } : f));
@@ -239,6 +270,7 @@ export default function App() {
             if (selectedId && idMap[selectedId]) setSelectedId(idMap[selectedId]);
           }
         } catch (err) {
+          if (saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
           console.error("Cloud save failed, falling back to localStorage:", err);
           saveWsFeatures(activeWsId, features, manualOrder);
           setPendingSync(true);
@@ -249,12 +281,12 @@ export default function App() {
     } else {
       saveWsFeatures(activeWsId, features, manualOrder);
     }
-  }, [features, manualOrder, loaded, activeWsId, isSignedIn, isOnline, showToast]);
+  }, [features, manualOrder, loaded, activeWsId, isSignedIn, isOnline, showToast, currentSaveScope, browserFallback]);
 
   // ── Auto-save product context ──
   useEffect(() => {
     if (!loadedRef.current || !activeWsId) return;
-    if (isSignedIn) {
+    if (isSignedIn && !browserFallback) {
       clearTimeout(ctxSaveTimer.current);
       ctxSaveTimer.current = setTimeout(async () => {
         if (!isOnline) {
@@ -272,13 +304,13 @@ export default function App() {
     } else {
       saveWsContext(activeWsId, productContext);
     }
-  }, [productContext, loaded, activeWsId, isSignedIn, isOnline]);
+  }, [productContext, loaded, activeWsId, isSignedIn, isOnline, browserFallback]);
 
   // ── Auto-save settings ──
   useEffect(() => {
     if (!loadedRef.current || !activeWsId) return;
     const settings = { viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode };
-    if (isSignedIn) {
+    if (isSignedIn && !browserFallback) {
       clearTimeout(settingsSaveTimer.current);
       settingsSaveTimer.current = setTimeout(async () => {
         if (!isOnline) {
@@ -296,33 +328,82 @@ export default function App() {
     } else {
       saveWsSettings(activeWsId, settings);
     }
-  }, [viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode, activeWsId, isSignedIn, isOnline]);
+  }, [viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode, activeWsId, isSignedIn, isOnline, browserFallback]);
 
   // ── Reconnect sync: when back online with pending changes ──
   useEffect(() => {
-    if (!isOnline || !pendingSync || !isSignedIn || !activeWsId || !loadedRef.current) return;
+    if (!isOnline || !pendingSync || !isSignedIn || browserFallback || !activeWsId || !loadedRef.current) return;
     let cancelled = false;
+    const requestedScope = currentSaveScope;
+    const requestedRevision = featureWriteRevision.current;
     async function sync() {
       try {
         const pendingDeletes = [...deletedIdsRef.current];
-        await cloud.syncFeatures(activeWsId, features, manualOrder, pendingDeletes);
+        await enqueueFeatureWrite(() => !cancelled && saveScopeRef.current === requestedScope && featureWriteRevision.current === requestedRevision ? cloud.syncFeatures(activeWsId, features, manualOrder, pendingDeletes) : null);
+        if (cancelled || saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
         pendingDeletes.forEach(id => deletedIdsRef.current.delete(id));
         await cloud.saveProductContext(activeWsId, productContext);
+        if (cancelled || saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
         await cloud.saveWorkspaceSettings(activeWsId, { viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode });
-        if (!cancelled) {
+        if (!cancelled && saveScopeRef.current === requestedScope && featureWriteRevision.current === requestedRevision) {
           setPendingSync(false);
           showToast("Changes synced to cloud", "success");
         }
       } catch (err) {
         console.error("Reconnect sync failed:", err);
-        if (!cancelled) showToast("Sync failed — will retry", "error");
+        if (!cancelled && saveScopeRef.current === requestedScope && featureWriteRevision.current === requestedRevision) showToast("Sync failed — will retry", "error");
       }
     }
     sync();
     return () => { cancelled = true; };
-  }, [isOnline, pendingSync, isSignedIn, activeWsId]);
+  }, [isOnline, pendingSync, isSignedIn, activeWsId, features, currentSaveScope, browserFallback]);
 
-  const addFeature = (f) => { setFeatures(prev => prev.some(x => x.id === f.id) ? prev.map(x => x.id === f.id ? f : x) : [...prev, f]); setShowForm(false); setEditingFeature(null); };
+  const addFeature = async (f) => {
+    if (!activeWsId || !loadedRef.current) throw new Error("Wait for this workspace to finish loading before saving.");
+    if (explicitSaving.current) throw new Error("A candidate is already being saved. Please wait.");
+    const scope = currentSaveScope;
+    const editorGeneration = editorSession.current.generation;
+    const wsId = activeWsId;
+    const signedIn = isSignedIn && !browserFallback;
+    const nextFeatures = features.some(x => x.id === f.id) ? features.map(x => x.id === f.id ? f : x) : [...features, f];
+    const localSave = () => saveWsFeaturesChecked(wsId, nextFeatures, manualOrder);
+    let savedFeature = f;
+    let savedTo = "browser";
+    let awaitingSync = signedIn;
+    explicitSaving.current = true;
+    featureWriteRevision.current += 1;
+    clearTimeout(saveTimer.current);
+    try {
+      await enqueueFeatureWrite(async () => {
+        if (saveScopeRef.current !== scope) throw new Error("Workspace changed. Return to the original workspace before saving these edits.");
+        if (signedIn && isOnline) {
+          try {
+            const result = await cloud.upsertFeature(wsId, f);
+            savedFeature = { ...f, id: result.id || f.id };
+            savedTo = "cloud";
+            awaitingSync = false;
+          } catch {
+            localSave();
+          }
+        } else localSave();
+        // Invalidate background snapshots queued while this save was in flight.
+        featureWriteRevision.current += 1;
+      });
+      if (saveScopeRef.current !== scope) return { savedTo, pendingSync: awaitingSync };
+      setFeatures(prev => prev.some(x => x.id === f.id) ? prev.map(x => x.id === f.id ? savedFeature : x) : [...prev, savedFeature]);
+      if (savedFeature.id !== f.id) {
+        setManualOrder(prev => prev.map(id => id === f.id ? savedFeature.id : id));
+        if (selectedId === f.id) setSelectedId(savedFeature.id);
+      }
+      if (awaitingSync) setPendingSync(true);
+      if (editorSession.current.generation === editorGeneration) { setShowForm(false); setEditingFeature(null); }
+      const storageLabel = savedTo === "cloud" ? "Saved to cloud" : awaitingSync ? "Saved in this browser · pending sync" : "Saved in this browser";
+      showToast(storageLabel, awaitingSync ? "warning" : "success");
+      return { savedTo, pendingSync: awaitingSync, storageLabel };
+    } catch (err) {
+      throw new Error(err.message || "Could not save. Your edits are still here.");
+    } finally { explicitSaving.current = false; }
+  };
   const deleteFeature = (id) => {
     setFeatures(prev => prev.filter(f => f.id !== id));
     setManualOrder(prev => prev.filter(x => x !== id));
@@ -400,6 +481,7 @@ export default function App() {
         ]);
         if (loadId !== workspaceLoadSequence.current) return;
         // Commit one workspace snapshot together; never expose mixed AI context.
+        setBrowserFallback(false);
         setFeatures(data.features || []);
         setManualOrder(data.manualOrder || []);
         setProductContext(ctx || {});
@@ -413,6 +495,7 @@ export default function App() {
       } catch (err) {
         if (loadId !== workspaceLoadSequence.current) return;
         console.error("Failed to load workspace:", err);
+        setBrowserFallback(true);
         setProductContext({});
         setFeatures([]);
         setManualOrder([]);
@@ -422,6 +505,7 @@ export default function App() {
     } else {
       if (loaded && activeWsId) saveWsFeatures(activeWsId, features, manualOrder);
       const saved = loadWsFeatures(wsId);
+      setBrowserFallback(true);
       setFeatures(saved?.features || []);
       setManualOrder(saved?.manualOrder || []);
       const ctx = loadWsContext(wsId);
@@ -516,15 +600,14 @@ export default function App() {
           }
         }
       }
-      // Clear localStorage after successful migration
-      for (const lw of localWs) removeWsFeatures(lw.id);
-      try { localStorage.removeItem("prioritize-workspaces"); localStorage.removeItem("prioritize-active-workspace"); localStorage.removeItem(STORAGE_KEY); } catch {}
-      setShowMigration(false);
+      // Keep the browser copy available for offline fallback and review.
+      dismissMigration();
       // Reload cloud data
       const ws = await cloud.fetchWorkspaces();
       setWorkspaces(ws.map(w => ({ id: w.id, name: w.name })));
     } catch (err) {
       console.error("Migration failed:", err);
+      throw new Error("Import could not finish. Your browser data is still available. Please try again.");
     }
   };
 
@@ -771,8 +854,9 @@ export default function App() {
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <input ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={handleImportFile} style={{ display: "none" }} />
 
-      {showMigration && <MigrationBanner onConfirm={handleMigration} onDismiss={dismissMigration} />}
+      {isSignedIn && showMigration && <MigrationBanner onConfirm={handleMigration} onDismiss={dismissMigration} />}
 
+      {isSignedIn && hasLocalImport && !showMigration && activeScreen === "settings" && <div style={{ padding: "10px 20px", borderBottom: `1px solid ${C.border}` }}><button onClick={() => setShowMigration(true)} style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text, borderRadius: 6, padding: "8px 12px", cursor: "pointer", fontSize: 14 }}>Review browser data for import</button></div>}
       {/* Top bar */}
       <header role="banner" style={{
         height: 48, padding: "0 20px", borderBottom: `1px solid ${C.border}`,
@@ -853,7 +937,7 @@ export default function App() {
         flexDirection: isMobile ? "column" : undefined,
         gridTemplateColumns: isMobile ? undefined
           : isTablet ? "64px 1fr"
-          : "64px 1fr 360px",
+          : showForm && activeScreen === "priorities" ? "64px 1fr" : "64px 1fr 360px",
         minHeight: "calc(100vh - 48px)",
       }}>
         {!isMobile && (
@@ -884,6 +968,8 @@ export default function App() {
         ) : (
         <CenterCanvas
           activeScreen={activeScreen}
+          saveTarget={isSignedIn && isOnline && !pendingSync && !browserFallback ? "cloud" : "browser"}
+          savePendingSync={pendingSync && !browserFallback}
           features={features} scored={scored} sorted={sorted} displayOrder={displayOrder}
           maxScore={maxScore} selectedId={selectedId} onSelect={setSelectedId}
           showForm={showForm} onShowForm={setShowForm}
@@ -917,7 +1003,7 @@ export default function App() {
         )}
         </ErrorBoundary>
 
-        {!isMobile && !isTablet && (
+        {!isMobile && !isTablet && !(showForm && activeScreen === "priorities") && (
           <ErrorBoundary name="Detail Panel">
           <RightRail
             selectedFeature={selectedFeature} onDeselect={() => setSelectedId(null)}
@@ -937,7 +1023,7 @@ export default function App() {
       </div>
 
       {/* Tablet: right rail as overlay when candidate selected */}
-      {isTablet && selectedFeature && (
+      {isTablet && selectedFeature && !showForm && (
         <ErrorBoundary name="Detail Panel">
         <RightRail
           selectedFeature={selectedFeature} onDeselect={() => setSelectedId(null)}
@@ -956,7 +1042,7 @@ export default function App() {
       )}
 
       {/* Mobile: right rail as bottom sheet overlay when candidate selected */}
-      {isMobile && selectedFeature && (
+      {isMobile && selectedFeature && !showForm && (
         <ErrorBoundary name="Detail Panel">
         <RightRail
           selectedFeature={selectedFeature} onDeselect={() => setSelectedId(null)}

@@ -13,7 +13,7 @@ test('source-linked claims and targeted answers survive reopening; assumptions r
   await page.getByLabel('Candidate name', { exact: true }).fill('Claim provenance test');
   await page.getByRole('button', { name: 'Add scoring claim', exact: true }).click();
   await page.getByLabel('Claim 1', { exact: true }).fill('Thirty of 100 accounts forecast to use the pilot');
-  await page.getByLabel('Provenance for claim 1', { exact: true }).selectOption('estimate');
+  await page.getByLabel('Claim type for claim 1', { exact: true }).selectOption('estimate');
   await page.getByLabel('Evidence for claim 1', { exact: true }).selectOption({ label: 'Synthetic pilot note' });
   await page.getByLabel('Source relationship 1 for claim 1', { exact: true }).selectOption('supports');
   await page.getByLabel('Excerpt 1 for claim 1', { exact: true }).fill('thirty accounts eligible');
@@ -26,10 +26,11 @@ test('source-linked claims and targeted answers survive reopening; assumptions r
     await route.fulfill({json:{reach:{score:35,justification:'Segment band from a forecast',evidence:[],assumptions:['All eligible accounts adopt'],gaps:[],nextAction:'Verify audience coverage',claimReviews:[],followUp:{question:'Is the pilot population 100 accounts?',whyItChangesScore:'A different denominator changes the reach share and band.',claimIds:[]}}}});
   });
   await page.getByRole('button', { name: '✦ AI Suggest Scores', exact: true }).click();
-  await page.getByText('reach: Suggested 35/100', { exact: true }).click();
+  await page.getByText('Review reasoning & next question', { exact: true }).click();
   await page.getByLabel('Answer reach follow-up', { exact: true }).fill('100 accounts in this fictional planning cohort; not measured');
-  await page.getByRole('button', { name: 'Add answer to scoring basis', exact: true }).click();
+  await page.getByRole('button', { name: 'Add answer to draft', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Accept reach suggestion', exact: true })).toBeDisabled();
+  await page.getByText('AI assumptions · 1 unverified',{exact:true}).click();
   await page.getByRole('button', { name: 'Add as AI assumption', exact: true }).click();
   await page.getByRole('button', { name: '✦ AI Suggest Scores', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Accept reach suggestion', exact: true })).toBeEnabled();
@@ -37,8 +38,8 @@ test('source-linked claims and targeted answers survive reopening; assumptions r
   await page.reload();
   await nav.getByRole('button', { name: 'Priorities', exact: true }).click();
   await page.getByRole('button', { name: 'Edit Claim provenance test', exact: true }).click();
-  await page.getByText(/reach · User estimate · Thirty of 100 accounts/).click();
+  await page.locator('summary').getByText('Thirty of 100 accounts forecast to use the pilot',{exact:true}).click();
   await expect(page.getByLabel('Excerpt 1 for claim 1', { exact: true })).toHaveValue('thirty accounts eligible');
-  await expect(page.getByText(/reach · AI assumption · All eligible accounts adopt/)).toBeVisible();
+  await expect(page.locator('summary').getByText('All eligible accounts adopt',{exact:true})).toBeVisible();
   await expect(page.getByLabel('Reach', { exact: true })).toHaveValue('50');
 });
