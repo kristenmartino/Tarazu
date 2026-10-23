@@ -6,6 +6,7 @@ import { withUser } from "../../../lib/api-auth";
 import { withAppOwnedAssessments } from "../../../lib/ai-assessment-guard";
 
 const MAX_FEATURES = 200;
+export const maxDuration = 180;
 
 const Confidence = z.enum(["high", "medium", "low"]);
 const Pick = z.object({
@@ -43,6 +44,7 @@ async function handlePost(request) {
     const prompt = `You are a product strategist assessing competing options.
 ${CONTEXT_RULES}
 Explain strategy and constraint fit, assumptions, gaps, and next validation action in your reasons. Do not infer evidence strength from existing scores. Use low confidence where linked evidence is absent. Sprint plan is only a proposed sequence.
+Keep the response compact: summary at most 60 words, each pick reason at most 45 words, insight at most 45 words. Cite at most five references, copying their complete allowed IDs only into the evidence array. Use source titles in prose. Copy candidate names exactly in picks and sprintPlan. Do not repeat whole source notes.
 Allowed references: ${JSON.stringify(contextReferences(context))}
 Supplied context JSON:
 ${JSON.stringify(context)}
@@ -63,16 +65,19 @@ For confidence: "high" means strong data supports this pick, "medium" means reas
     const analysis = await requestJson({
       apiKey: process.env.ANTHROPIC_API_KEY,
       model: process.env.ANTHROPIC_MODEL_ANALYSIS || "claude-opus-4-8",
-      maxTokens: 1000,
+      maxTokens: 2400,
       prompt,
       schema: withAppOwnedAssessments(AnalysisSchema.extend({ evidence: z.array(z.string()).max(30).refine(refs => refs.every(ref => contextReferences(context).includes(ref)), "Unknown evidence reference") }), context.candidates.map(candidate => candidate.name)),
-      timeoutMs: 30000,
+      timeoutMs: 60000,
+      onAttempt: event => console.info("Advisor AI attempt", JSON.stringify(event)),
     });
 
     return NextResponse.json({ ...analysis, context });
   } catch (err) {
-    if (err instanceof AiError)
+    if (err instanceof AiError) {
+      console.warn("Advisor AI failed", JSON.stringify({ category: err.category, status: err.status }));
       return NextResponse.json({ error: err.message, category: err.category }, { status: err.status });
+    }
     console.error("Analysis error:", err);
     return NextResponse.json({ error: "Analysis failed" }, { status: 500 });
   }

@@ -150,6 +150,26 @@ describe("POST /api/analyze", () => {
     expect(data.topPick.name).toBe("A");
     expect(data.sprintPlan).toEqual(["A", "C", "B"]);
   });
+
+  it('recovers a cut-off advisor response within the same request', async () => {
+    fetch.mockResolvedValueOnce({ok:true,status:200,json:async()=>({content:[{text:'{"summary":"partial'}],stop_reason:'max_tokens',usage:{output_tokens:2400}})})
+      .mockResolvedValueOnce(okText(validAnalysis));
+    const res = await POST(makeRequest({features}));
+    expect(res.status).toBe(200);
+    expect((await res.json()).summary).toBe('Healthy backlog.');
+    const budgets = fetch.mock.calls.map(([,init])=>JSON.parse(init.body).max_tokens);
+    expect(budgets).toEqual([2400,4800]);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('still rejects wrong assessment narration after recovering from truncation', async () => {
+    fetch.mockResolvedValueOnce({ok:true,status:200,json:async()=>({content:[{text:'{"summary":"partial'}],stop_reason:'max_tokens'})})
+      .mockResolvedValueOnce(okText({...validAnalysis,insight:'Four of seven dimensions remain unassessed.'}));
+    const res = await POST(makeRequest({features}));
+    expect(res.status).toBe(502);
+    expect(await res.json()).toMatchObject({category:'invalid_response'});
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe("POST /api/analyze — auth gate", () => {
