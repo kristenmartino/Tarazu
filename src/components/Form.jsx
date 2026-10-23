@@ -5,7 +5,7 @@ import { Slider } from "./Slider";
 
 import { buildScoringContext, BRIEF_FIELDS } from "../../lib/scoring-context";
 import { ProductContext } from "./ProductContext";
-import { AIContextDetails, referenceLabel } from "./AIContextDetails";
+import { AIContextDetails, EvidenceReferences } from "./AIContextDetails";
 
 import { SCORING_ANCHORS, normalizeCandidateBasis } from "../../lib/scoring-basis";
 import { CandidateScoringBasis } from "./ScoringBasis";
@@ -138,12 +138,12 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           return <details key={dim} style={{ fontSize: 12, lineHeight: 1.6 }}>
             <summary>{dim}: {result.score == null ? "Insufficient information" : `Suggested ${result.score}/100`}</summary>
             <p>{result.justification}</p>
-            <p>References: {result.evidence?.map(ref => referenceLabel(ref, usedContext)).join("; ") || "No supplied evidence cited"}</p>
+            <strong>References</strong><EvidenceReferences references={result.evidence} context={usedContext} />
             <strong>AI assumptions (unverified)</strong>
             {result.assumptions?.length ? <ul>{result.assumptions.map((assumption, index) => <li key={index}>{assumption} <button style={{ ...inputStyle, padding: '4px 8px', fontSize: 11, cursor: 'pointer' }} disabled={scoringBasis.claims.length >= MAX_CLAIMS || scoringBasis.claims.some(c => c.origin === 'ai' && c.text === assumption)} onClick={() => addClaim(newScoringClaim(dim, assumption, 'ai_assumption', { origin: 'ai' }))}>Add as AI assumption</button></li>)}</ul> : <p>None stated</p>}
             {result.claimReviews?.length > 0 && <section aria-label={`${dim} claim review`}><strong>AI review of supplied claims</strong><p>These are AI judgments about source support; provenance labels stay as recorded.</p><ul>{result.claimReviews.map(review => {
               const claim = usedContext?.candidate?.scoringBasis?.claims?.find(c => c.id === review.claimId);
-              return <li key={review.claimId}><strong>{CLAIM_KINDS[claim?.kind] || 'Unclassified'} · {claim?.text || 'Claim unavailable'}</strong><p>{({ supported: 'Appears supported', conflicting: 'Conflicting evidence', source_missing: 'Source missing or unusable', assumption: 'Unverified assumption', needs_review: 'Needs review' })[review.status]}: {review.explanation}</p><p>{review.evidence.map(ref => referenceLabel(ref, usedContext)).join('; ') || 'No Signal cited'}</p></li>;
+              return <li key={review.claimId}><strong>{CLAIM_KINDS[claim?.kind] || 'Unclassified'} · {claim?.text || 'Claim unavailable'}</strong><p>{({ supported: 'Appears supported', conflicting: 'Conflicting evidence', source_missing: 'Source missing or unusable', assumption: 'Unverified assumption', needs_review: 'Needs review' })[review.status]}: {review.explanation}</p><EvidenceReferences references={review.evidence} context={usedContext} /></li>;
             })}</ul></section>}
             <p>Gaps: {result.gaps?.join("; ") || "None stated"}</p>
             <p>Next: {result.nextAction}</p>

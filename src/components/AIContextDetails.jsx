@@ -14,6 +14,14 @@ export function referenceLabel(reference, context) {
   return 'Supplied context';
 }
 
+export function EvidenceReferences({ references = [], context }) {
+  if (!references.length) return <p>No supplied evidence cited</p>;
+  return <ul>{references.map((reference, index) => {
+    const signal = reference.startsWith('signal:') && context?.evidence?.find(s => `signal:${s.id}` === reference);
+    return <li key={`${reference}:${index}`}>{signal ? <details><summary style={{ cursor: 'pointer' }}>{referenceLabel(reference, context)}</summary><p style={{ whiteSpace: 'pre-wrap' }}>{signal.body}</p><p>Source: {signal.source || 'Origin not recorded'}</p></details> : referenceLabel(reference, context)}</li>;
+  })}</ul>;
+}
+
 export function AIContextDetails({ context, showAssessments = true }) {
   if (!context) return null;
   const savedAssessments = context.decisions.filter(decision => decision.validationAssessment);
