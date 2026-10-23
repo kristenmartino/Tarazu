@@ -5,6 +5,7 @@ import { requestJson, AiError } from "../../../lib/ai";
 import { withUser } from "../../../lib/api-auth";
 import { scoringResponseSchema } from "../../../lib/scoring-review-validation";
 import { candidateBasisSchema } from "../../../lib/scoring-basis-validation";
+import { relevantClaims } from "../../../lib/scoring-claims";
 
 const VALID_DIMS = ["reach", "impact", "confidence", "effort"];
 
@@ -36,15 +37,18 @@ async function handlePost(request) {
 
     const context = buildScoringContext(body);
     const refs = contextReferences(context);
+    const reviewPlan = Object.fromEntries(dims.map(d => [d, relevantClaims(context, d).map(c => c.id)]));
     const prompt = `You are assessing a candidate using RICE on relative integer scales 1–100.
 ${CONTEXT_RULES}
 ${SCORING_RULES}
 Reach = affected audience in a stated timeframe; impact = benefit per reached user; effort = estimated work (higher means more work).
 For any dimension that cannot reasonably be estimated, return score:null and explain the insufficient information. Never replace unknowns with default scores. State assumptions explicitly. Confidence is evidence strength, not certainty of your answer.
 Respond ONLY with JSON with these keys: ${dims.join(', ')}.
-Each value must have {"score": number or null, "justification": "concise rationale", "evidence": ["supplied reference ID"], "assumptions": ["explicit assumption"], "gaps": ["missing information"], "nextAction": "next validation question or action"}.
-Also include "claimReviews": [{"claimId":"exact supplied claim ID","status":"supported|conflicting|source_missing|assumption|needs_review","explanation":"why the source does or does not support this specific claim","evidence":["signal:ID"]}] and "followUp": null or {"question":"one targeted question","whyItChangesScore":"how a plausible answer could change the scoring band","claimIds":["relevant supplied claim ID"]}.
+Each value MUST include ALL EIGHT keys in this complete structure, even when a score is unknown: {"score": number or null, "justification": "concise rationale", "evidence": ["supplied reference ID"], "assumptions": ["explicit assumption"], "gaps": ["missing information"], "nextAction": "next validation question or action", "claimReviews": [{"claimId":"exact supplied claim ID","status":"supported|conflicting|source_missing|assumption|needs_review","explanation":"why the source does or does not support this specific claim","evidence":["signal:ID"]}], "followUp": null or {"question":"one targeted question","whyItChangesScore":"how a plausible answer could change the scoring band","claimIds":["relevant supplied claim ID"]}}.
+Never omit claimReviews or followUp. If there are no relevant claims, return claimReviews:[]. If score is null, followUp MUST be an object with a specific question, its score effect, and claimIds (which may be []).
 Review each target claim for the requested input exactly once. For confidence review confidence, reach and impact claims. Other inputs review their own claims. With no relevant claims return claimReviews:[]. Never review competing candidates' claims here. Reviews cite only supplied Signal references. Use supported only when an attached supporting source substantiates this specific claim; its excerpt must match or be absent. Estimates remain estimates even when supported. AI assumptions always have status assumption. Unclassified claims need review. Missing sources and mismatched excerpts cannot prove support; explain the limitation. Use conflicting when supplied evidence contradicts the claim. A user label is not verification.
+Required claimId lists for claimReviews, by response key: ${JSON.stringify(reviewPlan)}
+Copy every ID from each response key's list exactly once, including claims without sources. An empty list requires claimReviews:[]. The confidence list intentionally repeats reach and impact claims: include all of them again in confidence.claimReviews even if you reviewed them under reach or impact. The confidence list is not limited to claims labeled confidence. Do not substitute a claim's text, scoring input, or another ID.
 Ask a follow-up whenever missing context could plausibly change a band, and always for score:null. Ask about a concrete missing denominator, baseline, causal benefit, source/date/sample/segment, delivery scope, or dependency. Explain the effect on the band without invented outcomes or exact probabilities. Do not repeat an answered question unless you identify a remaining ambiguity. Return followUp:null if no material score-changing gap remains. Keep each review to 30 words and the question plus explanation to 65 words. A follow-up can have claimIds:[] when it concerns missing shared context.
 Keep the complete response compact: each justification at most two sentences and 60 words; at most three assumptions and three gaps per dimension, each at most 15 words; nextAction at most 25 words. Cite up to five most relevant references per dimension. Copy complete allowed reference IDs verbatim into evidence arrays; never abbreviate them. In prose use supplied source titles rather than opaque ID fragments. Discuss conflicting evidence without repeating entire source notes.
 Allowed references: ${JSON.stringify(refs)}

@@ -128,6 +128,19 @@ describe("POST /api/suggest-scores", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it('spells out the exact confidence review list so cross-input claims are not omitted', async () => {
+    const claims = ['reach','impact','confidence','effort'].map((dimension,i)=>({id:`c${i}`,dimension,text:'An explicit planning estimate',kind:'estimate',sources:[]}));
+    const review = id => ({claimId:id,status:'source_missing',explanation:'No source supplied',evidence:[]});
+    fetch.mockResolvedValueOnce(okText({confidence:{...assessment(20),claimReviews:[review('c2')]}}))
+      .mockResolvedValueOnce(okText({confidence:{...assessment(20),claimReviews:[review('c0'),review('c1'),review('c2')]}}));
+    const response = await POST(makeRequest({featureName:'Reminders',dimensions:['confidence'],scoringBasis:{claims}}));
+    expect(response.status).toBe(200);
+    const prompt = JSON.parse(fetch.mock.calls[0][1].body).messages[0].content;
+    expect(prompt).toContain('Required claimId lists for claimReviews, by response key: {"confidence":["c0","c1","c2"]}');
+    const repair = JSON.parse(fetch.mock.calls[1][1].body).messages[2].content;
+    expect(repair).toContain('Missing: ["c0","c1"]');
+  });
+
   it("rejects when no valid dimensions are requested", async () => {
     const res = await POST(makeRequest({ featureName: "X", dimensions: ["bogus"] }));
     expect(res.status).toBe(400);
