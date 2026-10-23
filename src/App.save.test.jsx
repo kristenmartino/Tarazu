@@ -22,12 +22,13 @@ vi.mock("./components/LeftRail", () => ({ LeftRail: () => null }));
 vi.mock("./components/RightRail", () => ({ RightRail: () => null }));
 vi.mock("./components/ThemeMenu", () => ({ ThemeMenu: () => null }));
 vi.mock("./components/OrgSwitcher", () => ({ OrgSwitcher: () => null }));
-vi.mock("./components/CenterCanvas", () => ({ CenterCanvas: function SaveHarness({ showForm, onShowForm, onAddFeature, features, onEditingFeature }) {
+vi.mock("./components/CenterCanvas", () => ({ CenterCanvas: function SaveHarness({ showForm, onShowForm, onAddFeature, features, onEditingFeature, saveTarget, savePendingSync }) {
   const [error, setError] = useState("");
   const [name, setName] = useState("Draft candidate");
-  return <main><input aria-label="Draft name" value={name} onChange={e => setName(e.target.value)} /><button onClick={() => onShowForm(true)}>Edit draft</button><button onClick={() => { onEditingFeature({ id: "second", name: "Another candidate" }); onShowForm(true); }}>Edit another candidate</button>{showForm && <><p>Editor draft retained</p><button onClick={() => onAddFeature({ id: "candidate", name, reach: 55, impact: 55, confidence: 20, effort: 35 }).catch(e => setError(e.message))}>Save candidate</button></>}{error && <p role="alert">{error}</p>}<p>{features.length} candidates saved</p></main>;
+  return <main><p>Save target: {saveTarget}{savePendingSync ? " · pending sync" : ""}</p><input aria-label="Draft name" value={name} onChange={e => setName(e.target.value)} /><button onClick={() => onShowForm(true)}>Edit draft</button><button onClick={() => { onEditingFeature({ id: "second", name: "Another candidate" }); onShowForm(true); }}>Edit another candidate</button>{showForm && <><p>Editor draft retained</p><button onClick={() => onAddFeature({ id: "candidate", name, reach: 55, impact: 55, confidence: 20, effort: 35 }).catch(e => setError(e.message))}>Save candidate</button></>}{error && <p role="alert">{error}</p>}<p>{features.length} candidates saved</p></main>;
 } }));
 import App from "./App";
+import { saveWsIndex, saveWsFeatures } from "../lib/local-storage";
 beforeEach(() => {
   vi.clearAllMocks(); localStorage.clear();
   auth.orgId = "org"; auth.isSignedIn = true; network.online = true;
@@ -136,4 +137,24 @@ it("skips a reconnect snapshot queued during an explicit save and retries with t
   expect(api.syncFeatures.mock.calls[1][1][0].name).toBe("Revised candidate");
   expect(api.syncFeatures.mock.calls.slice(1).every(call => call[1][0].name === "Revised candidate")).toBe(true);
   expect(await screen.findByText("Changes synced to cloud")).toBeTruthy();
+});
+
+
+it("labels signed-in cloud-load fallback as browser data without promoting it to a cloud sync", async () => {
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  saveWsIndex([{id:"browser-workspace",name:"Browser fallback"}]);
+  saveWsFeatures("browser-workspace", [{id:"candidate",name:"Browser draft",reach:55,impact:55,confidence:20,effort:35}], []);
+  api.fetchFeatures.mockRejectedValueOnce(new Error("Cloud unavailable"));
+  render(<App />);
+  expect(await screen.findByText("1 candidates saved")).toBeTruthy();
+  expect(screen.getByText("Save target: browser")).toBeTruthy();
+  await new Promise(resolve => setTimeout(resolve, 1100));
+  expect(api.syncFeatures).not.toHaveBeenCalled();
+  expect(api.saveProductContext).not.toHaveBeenCalled();
+  expect(api.saveWorkspaceSettings).not.toHaveBeenCalled();
+  await save();
+  expect(await screen.findByText("Saved in this browser")).toBeTruthy();
+  expect(screen.queryByText("Save target: browser · pending sync")).toBeNull();
+  expect(api.upsertFeature).not.toHaveBeenCalled();
+  log.mockRestore();
 });

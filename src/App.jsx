@@ -61,6 +61,7 @@ export default function App() {
   const [importData, setImportData] = useState(null);
   const [showMigration, setShowMigration] = useState(false);
   const [hasLocalImport, setHasLocalImport] = useState(false);
+  const [browserFallback, setBrowserFallback] = useState(false);
   const [productContext, setProductContext] = useState({ productSummary: "", targetUsers: "", strategicPriorities: "", constraints: "", assumptions: "", successMetrics: "" });
   const [feedbackSummary, setFeedbackSummary] = useState(null);
   const [feedbackContext, setFeedbackContext] = useState(null);
@@ -145,6 +146,7 @@ export default function App() {
           setActiveWsId(activeId);
           const data = await cloud.fetchFeatures(activeId);
           if (cancelled) return;
+          setBrowserFallback(false);
           setFeatures(data.features);
           setManualOrder(data.manualOrder || []);
           try { const ctx = await cloud.fetchProductContext(activeId); if (!cancelled) setProductContext(ctx); } catch {}
@@ -178,6 +180,8 @@ export default function App() {
       setLoaded(true);
     }
     function initLocal() {
+      setBrowserFallback(true);
+      setPendingSync(false);
       let ws = loadWsIndex();
       if (!ws || ws.length === 0) {
         ws = [{ id: "default", name: "My Backlog" }];
@@ -246,7 +250,7 @@ export default function App() {
     if (!loadedRef.current || !activeWsId || explicitSaving.current) return;
     const requestedScope = currentSaveScope;
     const requestedRevision = featureWriteRevision.current;
-    if (isSignedIn) {
+    if (isSignedIn && !browserFallback) {
       clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(async () => {
         if (saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
@@ -277,12 +281,12 @@ export default function App() {
     } else {
       saveWsFeatures(activeWsId, features, manualOrder);
     }
-  }, [features, manualOrder, loaded, activeWsId, isSignedIn, isOnline, showToast, currentSaveScope]);
+  }, [features, manualOrder, loaded, activeWsId, isSignedIn, isOnline, showToast, currentSaveScope, browserFallback]);
 
   // ── Auto-save product context ──
   useEffect(() => {
     if (!loadedRef.current || !activeWsId) return;
-    if (isSignedIn) {
+    if (isSignedIn && !browserFallback) {
       clearTimeout(ctxSaveTimer.current);
       ctxSaveTimer.current = setTimeout(async () => {
         if (!isOnline) {
@@ -300,13 +304,13 @@ export default function App() {
     } else {
       saveWsContext(activeWsId, productContext);
     }
-  }, [productContext, loaded, activeWsId, isSignedIn, isOnline]);
+  }, [productContext, loaded, activeWsId, isSignedIn, isOnline, browserFallback]);
 
   // ── Auto-save settings ──
   useEffect(() => {
     if (!loadedRef.current || !activeWsId) return;
     const settings = { viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode };
-    if (isSignedIn) {
+    if (isSignedIn && !browserFallback) {
       clearTimeout(settingsSaveTimer.current);
       settingsSaveTimer.current = setTimeout(async () => {
         if (!isOnline) {
@@ -324,11 +328,11 @@ export default function App() {
     } else {
       saveWsSettings(activeWsId, settings);
     }
-  }, [viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode, activeWsId, isSignedIn, isOnline]);
+  }, [viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode, activeWsId, isSignedIn, isOnline, browserFallback]);
 
   // ── Reconnect sync: when back online with pending changes ──
   useEffect(() => {
-    if (!isOnline || !pendingSync || !isSignedIn || !activeWsId || !loadedRef.current) return;
+    if (!isOnline || !pendingSync || !isSignedIn || browserFallback || !activeWsId || !loadedRef.current) return;
     let cancelled = false;
     const requestedScope = currentSaveScope;
     const requestedRevision = featureWriteRevision.current;
@@ -352,7 +356,7 @@ export default function App() {
     }
     sync();
     return () => { cancelled = true; };
-  }, [isOnline, pendingSync, isSignedIn, activeWsId, features, currentSaveScope]);
+  }, [isOnline, pendingSync, isSignedIn, activeWsId, features, currentSaveScope, browserFallback]);
 
   const addFeature = async (f) => {
     if (!activeWsId || !loadedRef.current) throw new Error("Wait for this workspace to finish loading before saving.");
@@ -360,7 +364,7 @@ export default function App() {
     const scope = currentSaveScope;
     const editorGeneration = editorSession.current.generation;
     const wsId = activeWsId;
-    const signedIn = isSignedIn;
+    const signedIn = isSignedIn && !browserFallback;
     const nextFeatures = features.some(x => x.id === f.id) ? features.map(x => x.id === f.id ? f : x) : [...features, f];
     const localSave = () => saveWsFeaturesChecked(wsId, nextFeatures, manualOrder);
     let savedFeature = f;
@@ -477,6 +481,7 @@ export default function App() {
         ]);
         if (loadId !== workspaceLoadSequence.current) return;
         // Commit one workspace snapshot together; never expose mixed AI context.
+        setBrowserFallback(false);
         setFeatures(data.features || []);
         setManualOrder(data.manualOrder || []);
         setProductContext(ctx || {});
@@ -490,6 +495,7 @@ export default function App() {
       } catch (err) {
         if (loadId !== workspaceLoadSequence.current) return;
         console.error("Failed to load workspace:", err);
+        setBrowserFallback(true);
         setProductContext({});
         setFeatures([]);
         setManualOrder([]);
@@ -499,6 +505,7 @@ export default function App() {
     } else {
       if (loaded && activeWsId) saveWsFeatures(activeWsId, features, manualOrder);
       const saved = loadWsFeatures(wsId);
+      setBrowserFallback(true);
       setFeatures(saved?.features || []);
       setManualOrder(saved?.manualOrder || []);
       const ctx = loadWsContext(wsId);
@@ -961,8 +968,8 @@ export default function App() {
         ) : (
         <CenterCanvas
           activeScreen={activeScreen}
-          saveTarget={isSignedIn && isOnline && !pendingSync ? "cloud" : "browser"}
-          savePendingSync={pendingSync}
+          saveTarget={isSignedIn && isOnline && !pendingSync && !browserFallback ? "cloud" : "browser"}
+          savePendingSync={pendingSync && !browserFallback}
           features={features} scored={scored} sorted={sorted} displayOrder={displayOrder}
           maxScore={maxScore} selectedId={selectedId} onSelect={setSelectedId}
           showForm={showForm} onShowForm={setShowForm}
