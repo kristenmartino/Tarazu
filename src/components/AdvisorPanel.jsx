@@ -32,7 +32,7 @@ export const AdvisorPanel = ({
       <p style={{ fontSize: 10, color: C.textDim, margin: "0 0 12px", lineHeight: 1.5, fontFamily: "var(--mono)" }}>
         Uses all populated Strategy Brief fields, competing candidates, explicitly linked signals, and related recorded decisions. Running AI sends this content to Tarazu and Anthropic. Expected outcomes and score feedback are not customer validation.
       </p>
-      <AIContextDetails context={buildScoringContext({ features: scored, productContext, signals, decisions, workspaceId })} />
+      <AIContextDetails showAssessments={false} context={buildScoringContext({ features: scored, productContext, signals, decisions, workspaceId })} />
       <AIPanel
         signals={signals} decisions={decisions} workspaceId={workspaceId}
         scored={scored}

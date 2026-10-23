@@ -3,6 +3,7 @@ import { z } from "zod";
 import { buildScoringContext, contextReferences, CONTEXT_RULES } from "../../../lib/scoring-context";
 import { requestJson, AiError } from "../../../lib/ai";
 import { withUser } from "../../../lib/api-auth";
+import { withAppOwnedAssessments } from "../../../lib/ai-assessment-guard";
 
 const MAX_FEATURES = 200;
 
@@ -64,7 +65,7 @@ For confidence: "high" means strong data supports this pick, "medium" means reas
       model: process.env.ANTHROPIC_MODEL_ANALYSIS || "claude-opus-4-8",
       maxTokens: 1000,
       prompt,
-      schema: AnalysisSchema.extend({ evidence: z.array(z.string()).max(30).refine(refs => refs.every(ref => contextReferences(context).includes(ref)), "Unknown evidence reference") }),
+      schema: withAppOwnedAssessments(AnalysisSchema.extend({ evidence: z.array(z.string()).max(30).refine(refs => refs.every(ref => contextReferences(context).includes(ref)), "Unknown evidence reference") })),
       timeoutMs: 30000,
     });
 

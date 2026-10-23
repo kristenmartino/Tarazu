@@ -73,6 +73,25 @@ describe("POST /api/suggest-scores", () => {
     expect(res.status).toBe(502);
   });
 
+  it("repairs assessment narration before returning a score suggestion", async () => {
+    fetch.mockResolvedValueOnce(okText({ confidence: { ...assessment(22), justification: 'The draft decision notes four of seven opportunity dimensions remain unassessed.' } }))
+      .mockResolvedValueOnce(okText({ confidence: { ...assessment(22), justification: 'Synthetic interviews conflict on the cause of delays.' } }));
+    const res = await POST(makeRequest({ featureName: 'Reminders', dimensions: ['confidence'] }));
+    expect(res.status).toBe(200);
+    expect((await res.json()).confidence.justification).toBe('Synthetic interviews conflict on the cause of delays.');
+    expect(fetch).toHaveBeenCalledTimes(2);
+    const messages = JSON.parse(fetch.mock.calls[1][1].body).messages;
+    expect(messages[2].content).toContain('confidence.justification: Do not narrate validation assessment');
+  });
+
+  it("returns no suggestions if the repair still narrates assessment counts", async () => {
+    fetch.mockResolvedValue(okText({ confidence: { ...assessment(22), gaps: ['4 of 7 dimensions unassessed.'] } }));
+    const res = await POST(makeRequest({ featureName: 'Reminders', dimensions: ['confidence'] }));
+    expect(res.status).toBe(502);
+    expect(await res.json()).toMatchObject({ category: 'invalid_response' });
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
   it("requires a feature name", async () => {
     const res = await POST(makeRequest({ featureName: "" }));
     expect(res.status).toBe(400);
