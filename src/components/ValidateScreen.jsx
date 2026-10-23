@@ -198,7 +198,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
       {onSaveBrief && <section aria-label="Saved validation briefs" style={{ maxWidth: 760, border: `1px solid ${C.border}`, borderRadius: 12, padding: 16, marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
           <h3 style={{ margin: 0, fontSize: 14 }}>Saved briefs ({briefs.length})</h3>
-          <button onClick={startNew} disabled={saving}>New brief</button>
+          <button onClick={startNew} disabled={saving} style={{ padding: "6px 10px", border: `1px solid ${C.border}`, borderRadius: 6, background: C.surface, color: C.text, fontSize: 12, cursor: "pointer" }}>New brief</button>
         </div>
         {briefs.length === 0 && <p style={{ fontSize: 12, color: C.textMuted }}>Save an investigation and return to its assumptions and evidence later.</p>}
         <ul style={{ padding: 0, listStyle: "none", maxHeight: 200, overflowY: "auto", marginBottom: 0 }}>
