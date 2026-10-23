@@ -50,6 +50,7 @@ Reach = affected audience in a stated timeframe; impact = benefit per reached us
 For any dimension that cannot reasonably be estimated, return score:null and explain the insufficient information. Never replace unknowns with default scores. State assumptions explicitly. Confidence is evidence strength, not certainty of your answer.
 Respond ONLY with JSON with these keys: ${dims.join(', ')}.
 Each value must have {"score": number or null, "justification": "concise rationale", "evidence": ["supplied reference ID"], "assumptions": ["explicit assumption"], "gaps": ["missing information"], "nextAction": "next validation question or action"}.
+Keep the complete response compact: each justification at most two sentences and 60 words; at most three assumptions and three gaps per dimension, each at most 15 words; nextAction at most 25 words. Cite up to five most relevant references per dimension. Copy complete allowed reference IDs verbatim into evidence arrays; never abbreviate them. In prose use supplied source titles rather than opaque ID fragments. Discuss conflicting evidence without repeating entire source notes.
 Allowed references: ${JSON.stringify(refs)}
 Supplied context JSON:
 ${JSON.stringify(context)}`;

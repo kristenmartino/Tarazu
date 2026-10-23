@@ -1,0 +1,34 @@
+TARAZU PRODUCT FEEDBACK WALKTHROUGH
+Prepared October 23, 2026 • https://tarazu.app/app
+
+Use the workspace “Tarazu demo (synthetic)”. Everything in this example is fictional: the product, users, interviews, case reviews, and estimates. It demonstrates the workflow; it is not customer validation.
+
+Opening sentence
+“Tarazu keeps the evidence, assumptions, and reasoning behind a product decision easy to revisit. Here is a fictional decision where the first-ranked idea is not the next thing we choose to build.”
+
+1. Priorities: compare three options (one minute)
+Open the Strategy Brief. Relay is a fictional approval app for 10 hypothetical small teams. The goal is fewer overdue requests; capacity is one engineer for two weeks, with an existing in-app notification service. The success metric and notification-fatigue guardrail are proposed, not measured.
+Show reminders, a request-readiness checklist, and an approval-status dashboard. Their RICE inputs are illustrative human estimates. Reminders rank first at 8,400, ahead of checklist 3,900 and dashboard 2,068. A ranking is a starting point for judgment, not a build commitment.
+
+2. Signals: inspect support and conflict (one minute)
+The administrator exercise suggests overlooked requests and manual chasing. The approver exercise suggests missing information is a different cause. The requester and dashboard notes support competing options. The small fictional samples overlap or differ: do not combine the counts into independent votes.
+Then show “Round B: four of five cases were incomplete”. The five invented cases challenge a reminder-only approach, without proving checklist effectiveness or population prevalence.
+
+3. Validate: reopen the saved investigation (one minute)
+Open “Approval reminders — synthetic”. Revision 5 includes the new Signal, the changed assumption, the risks, and the next action. Problem severity, evidence, feasibility, and fit have illustrative ratings; market pull, differentiation, and monetization remain unassessed. The assessment is incomplete. Evidence attachments require explicit human review.
+Saving a brief does not approve a decision. A change to sources or context may require reviewing evidence again.
+
+4. Decisions: show why the choice changed (one minute)
+Select DRAFT to hide the archived persistence check.
+“Round A: investigate reminder versus readiness” preserves brief revision 4 and the original two evidence attachments.
+“Round B: test readiness before building reminders” preserves revision 5 and selects a checklist experiment despite reminders ranking first. The next step is to compare a paper checklist against the current workflow, record remaining causes of delay, and review on October 30. Both are proposals, not approved builds or observed outcomes.
+
+5. Optional AI demonstration (one minute)
+Open a candidate’s Edit form and request AI scores. Inspect the rationale, assumptions, gaps, and cited sources. Suggestions do not replace manual values until explicitly accepted. Changing context makes old suggestions stale. The service can take up to a minute per attempt and live responses can vary; do not describe the demonstration as a comprehensive model evaluation.
+
+Close with one question
+“Think of your last difficult product decision: which part of this would have helped, and where would it have added work?”
+
+Before the meeting
+Confirm you are signed in, the synthetic workspace is selected, and the three candidates and five Signals are visible. A browser refresh retains the workspace. Dismissing the local-import banner lasts for the current browser session and preserves the local data.
+Leave the app on Priorities or Home. Do not import the local workspaces, clear the demo, or approve a decision during the walkthrough unless that is deliberately part of the session.
