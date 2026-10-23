@@ -171,6 +171,19 @@ describe("App — organization switching", () => {
     expect(cloudMock.fetchWorkspaces).not.toHaveBeenCalled();
   }, INTEGRATION_TIMEOUT);
 
+  it("shows loading instead of an empty workspace until cloud data is ready", async () => {
+    let finishFeatures;
+    cloudMock.fetchFeatures.mockImplementationOnce(() => new Promise(resolve => { finishFeatures = resolve; }));
+    render(<App />);
+    await waitFor(() => expect(cloudMock.fetchFeatures).toHaveBeenCalled());
+    expect(screen.getByRole("status").textContent).toContain("Loading your workspace");
+    expect(screen.queryByText("Welcome to Tarazu")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Generate Recommendation" })).toBeNull();
+    finishFeatures({ features: [], manualOrder: [] });
+    await screen.findByText("Welcome to Tarazu");
+    expect(screen.queryByText("Loading your workspace…")).toBeNull();
+  }, INTEGRATION_TIMEOUT);
+
   it("restores an authorized workspace and ignores a saved workspace from another organization", async () => {
     cloudMock.fetchWorkspaces.mockResolvedValue([{ id: "ws1", name: "Backlog" }, { id: "ws2", name: "Demo" }]);
     localStorage.setItem("tarazu-cloud-workspace:user_1:org_a", "ws2");

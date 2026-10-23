@@ -15,3 +15,11 @@ it('shows readable context and resolves reference names without raw JSON', () =>
   expect(referenceLabel('signal:signal-internal-123',context)).toBe('Signal: Admin interviews');
   expect(referenceLabel('brief:constraints',context)).toBe('Strategy Brief: Constraints');
 });
+it('shows the recorded counts for checking generated reasoning', () => {
+  const context = buildScoringContext({candidateId:'a',decisions:[{
+    id:'d',chosen_candidate_id:'a',title:'Investigate first',status:'draft',
+    recommendation_snapshot:{validation_brief:{draft:{scores:{problemSeverity:4,evidenceStrength:2,buildFeasibility:4,strategicFit:4}}}},
+  }]});
+  render(<AIContextDetails context={context} />);
+  expect(screen.getByText('Recorded assessment: 4/7 dimensions assessed; 3 not assessed. These counts come from the saved brief, not the generated reasoning.')).toBeTruthy();
+});
