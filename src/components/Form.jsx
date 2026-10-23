@@ -5,10 +5,12 @@ import { Slider } from "./Slider";
 
 import { buildScoringContext, BRIEF_FIELDS } from "../../lib/scoring-context";
 import { ProductContext } from "./ProductContext";
-import { AIContextDetails, referenceLabel } from "./AIContextDetails";
+import { AIContextDetails, EvidenceReferences } from "./AIContextDetails";
 
 import { SCORING_ANCHORS, normalizeCandidateBasis } from "../../lib/scoring-basis";
 import { CandidateScoringBasis } from "./ScoringBasis";
+import { ScoringFollowUp, newScoringClaim, workspaceSignals } from './ScoringClaims';
+import { CLAIM_KINDS, MAX_CLAIMS } from '../../lib/scoring-claims';
 
 export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEvent, onResolveScores, feedbackContext, scored = [], features = [], signals = [], decisions = [], workspaceId, onProductContextChange }) => {
   const C = useC();
@@ -42,6 +44,8 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   };
 
   const setters = { reach: setR, impact: setI, confidence: setC, effort: setE };
+  const availableSignals = workspaceSignals(signals, workspaceId);
+  const addClaim = claim => setScoringBasis(prev => prev.claims.length < MAX_CLAIMS ? { ...prev, claims: [...prev.claims, claim] } : prev);
   const context = buildScoringContext({ productContext, features, signals, decisions, workspaceId, candidateId: editFeature?.id, featureName: name, featureDescription: desc, scoringBasis });
   const signature = JSON.stringify(context);
   const current = useRef(signature); current.current = signature;
@@ -118,7 +122,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           </div>
         </div>
         {onProductContextChange && <ProductContext context={productContext} onChange={onProductContextChange} />}
-        <CandidateScoringBasis basis={scoringBasis} onChange={setScoringBasis} />
+        <CandidateScoringBasis basis={scoringBasis} onChange={setScoringBasis} signals={availableSignals} />
         <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0 }}>AI context: {6 - context.missing.length}/6 brief fields, {context.evidence.length} linked signals. Missing: {context.missing.map(k => BRIEF_FIELDS[k]).join(", ") || "no brief fields"}. Set the audience, period and anchors under Strategy Brief → Shared scoring basis. You can proceed with limited context or score manually. Running AI sends the brief, shared anchors, candidate answers, competing options, linked signals, and related decisions to Tarazu and Anthropic.</p>
         <button onClick={suggestAll} disabled={!name.trim() || aiLoading}
           style={{ padding: "7px 14px", border: `1px solid ${C.purple}30`, borderRadius: 6, background: C.purpleDim, color: C.purple, fontSize: 11, fontWeight: 600, cursor: !name.trim() || aiLoading ? "not-allowed" : "pointer", fontFamily: "var(--mono)", opacity: !name.trim() || aiLoading ? 0.4 : 1, transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
@@ -134,11 +138,17 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           return <details key={dim} style={{ fontSize: 12, lineHeight: 1.6 }}>
             <summary>{dim}: {result.score == null ? "Insufficient information" : `Suggested ${result.score}/100`}</summary>
             <p>{result.justification}</p>
-            <p>References: {result.evidence?.map(ref => referenceLabel(ref, usedContext)).join("; ") || "No supplied evidence cited"}</p>
-            <p>Assumptions: {result.assumptions?.join("; ") || "None stated"}</p>
+            <strong>References</strong><EvidenceReferences references={result.evidence} context={usedContext} />
+            <strong>AI assumptions (unverified)</strong>
+            {result.assumptions?.length ? <ul>{result.assumptions.map((assumption, index) => <li key={index}>{assumption} <button style={{ ...inputStyle, padding: '4px 8px', fontSize: 11, cursor: 'pointer' }} disabled={scoringBasis.claims.length >= MAX_CLAIMS || scoringBasis.claims.some(c => c.origin === 'ai' && c.text === assumption)} onClick={() => addClaim(newScoringClaim(dim, assumption, 'ai_assumption', { origin: 'ai' }))}>Add as AI assumption</button></li>)}</ul> : <p>None stated</p>}
+            {result.claimReviews?.length > 0 && <section aria-label={`${dim} claim review`}><strong>AI review of supplied claims</strong><p>These are AI judgments about source support; provenance labels stay as recorded.</p><ul>{result.claimReviews.map(review => {
+              const claim = usedContext?.candidate?.scoringBasis?.claims?.find(c => c.id === review.claimId);
+              return <li key={review.claimId}><strong>{CLAIM_KINDS[claim?.kind] || 'Unclassified'} · {claim?.text || 'Claim unavailable'}</strong><p>{({ supported: 'Appears supported', conflicting: 'Conflicting evidence', source_missing: 'Source missing or unusable', assumption: 'Unverified assumption', needs_review: 'Needs review' })[review.status]}: {review.explanation}</p><EvidenceReferences references={review.evidence} context={usedContext} /></li>;
+            })}</ul></section>}
             <p>Gaps: {result.gaps?.join("; ") || "None stated"}</p>
             <p>Next: {result.nextAction}</p>
-            {Number.isInteger(result.score) && <button disabled={stale} onClick={() => acceptSuggestion(dim)}>Accept {dim} suggestion</button>}
+            <ScoringFollowUp key={`${dim}:${result.followUp?.question}`} followUp={result.followUp} dimension={dim} claims={scoringBasis.claims} signals={availableSignals} onAdd={addClaim} />
+            {Number.isInteger(result.score) && <button style={{ ...inputStyle, cursor: 'pointer', opacity: stale ? 0.5 : 1 }} disabled={stale} onClick={() => acceptSuggestion(dim)}>Accept {dim} suggestion</button>}
           </details>;
         })}
         {aiError && <p style={{ fontSize: 10, color: C.danger, margin: 0, fontFamily: "var(--mono)" }}>{aiError}</p>}

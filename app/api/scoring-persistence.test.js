@@ -70,3 +70,20 @@ it('rejects malformed or oversized scoring writes before writing to the database
   expect((await saveFeature(request({name:'Bad',scoringBasis:{reach:'a'.repeat(1401)}}),params)).status).toBe(400);
   expect(state.writes).toEqual([]);
 });
+
+it('round-trips claim sources and preserves them when an older client only sends summary answers', async () => {
+  const claim = {id:'c1', dimension:'impact', text:'Five-point improvement; forecast', kind:'estimate', origin:'user', sources:[{signalId:'s1',relation:'conflicts',quote:'Missing context caused delays'}]};
+  const feature = {...state.feature, scoringBasis:{claims:[claim]}};
+  await saveFeature(request(feature),params);
+  expect(state.writes[0].value.scoring_basis.claims).toEqual([claim]);
+  expect(revision.mock.calls[0][1].snapshot.scoring_basis.claims).toEqual([claim]);
+  state.feature.scoring_basis = state.writes[0].value.scoring_basis;
+  expect(await (await getFeatures({},params)).json()).toMatchObject({features:[{scoringBasis:{claims:[claim]}}]});
+  await saveFeature(request({...feature, scoringBasis:{reach:'Legacy update'}}),params);
+  expect(state.writes.at(-1).value.scoring_basis.claims).toEqual([claim]);
+  await saveFeature(request({...feature, scoringBasis:{claims:[]}}),params);
+  expect(state.writes.at(-1).value.scoring_basis.claims).toEqual([]);
+  state.feature.scoring_basis = {claims:[]};
+  state.target.snapshot_scoring_basis = {claims:[claim]};
+  expect(await (await revertFeature(request({revision_number:1}),params)).json()).toMatchObject({scoringBasis:{claims:[claim]}});
+});

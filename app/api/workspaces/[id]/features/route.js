@@ -77,7 +77,7 @@ export async function POST(request, { params }) {
         const incoming = {
           name: feature.name,
           description: feature.description || "",
-          scoring_basis: basis.success ? basis.data : (found.scoring_basis || {}),
+          scoring_basis: basis.success ? { ...basis.data, ...(basis.data.claims === undefined && found.scoring_basis?.claims ? { claims: found.scoring_basis.claims } : {}) } : (found.scoring_basis || {}),
           reach: feature.reach,
           impact: feature.impact,
           confidence: feature.confidence,

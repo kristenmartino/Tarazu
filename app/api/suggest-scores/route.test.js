@@ -22,7 +22,7 @@ const fakeSupabase = (count = 0) => ({
 });
 
 const makeRequest = (body) => ({ json: () => Promise.resolve(body) });
-const assessment = score => ({ score, justification: "reason", evidence: [], assumptions: [], gaps: [], nextAction: "Validate audience" });
+const assessment = score => ({ score, justification: "reason", evidence: [], assumptions: [], gaps: [], nextAction: "Validate audience", claimReviews: [], followUp: score === null ? {question:"How many eligible accounts are there?", whyItChangesScore:"The audience share determines the reach band.", claimIds:[]} : null });
 const okText = (obj) => ({
   ok: true,
   status: 200,
@@ -108,6 +108,23 @@ describe("POST /api/suggest-scores", () => {
   it("requires a feature name", async () => {
     const res = await POST(makeRequest({ featureName: "" }));
     expect(res.status).toBe(400);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('sends source-linked claims with checked provenance and rejects an invented claim review', async () => {
+    const claim = {id:'c1',dimension:'reach',text:'30 accounts; forecast',kind:'estimate',sources:[{signalId:'s1',relation:'supports',quote:'30 accounts'}]};
+    const body = {featureName:'Reminders',dimensions:['reach'],scoringBasis:{claims:[claim]},signals:[{id:'s1',body:'30 accounts'}]};
+    fetch.mockResolvedValue(okText({reach:{...assessment(35),claimReviews:[{claimId:'made-up',status:'supported',explanation:'A source',evidence:['signal:s1']}]}}));
+    expect((await POST(makeRequest(body))).status).toBe(502);
+    const prompt = JSON.parse(fetch.mock.calls[0][1].body).messages[0].content;
+    expect(prompt).toContain('Excerpt matches source');
+    expect(prompt).toContain('30 accounts; forecast');
+    expect(prompt).toContain('A complaint about a problem does not establish its prevalence');
+  });
+
+  it('rejects malformed scoring claims before billing AI', async () => {
+    const response = await POST(makeRequest({featureName:'Reminders',scoringBasis:{claims:[{kind:'verified'}]}}));
+    expect(response.status).toBe(400);
     expect(fetch).not.toHaveBeenCalled();
   });
 

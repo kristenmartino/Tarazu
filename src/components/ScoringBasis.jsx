@@ -1,5 +1,6 @@
 import { useC } from '../ThemeProvider';
 import { SCORING_FIELDS, CANDIDATE_QUESTIONS, normalizeScoringSettings, scoringRubric } from '../../lib/scoring-basis';
+import { ScoringClaims } from './ScoringClaims';
 
 function BasisField({ label, value, placeholder, onChange, maxLength = 700 }) {
   const C = useC();
@@ -34,10 +35,13 @@ export function SharedScoringBasis({ settings, onChange }) {
   </details>;
 }
 
-export function CandidateScoringBasis({ basis, onChange }) {
+export function CandidateScoringBasis({ basis, onChange, signals = [] }) {
   return <fieldset style={{ border: 0, padding: 0, margin: 0, display: 'grid', gap: 10, minWidth: 0 }}>
     <legend style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Basis for this candidate</legend>
-    <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0 }}>Answer what you know; leave unknowns blank. These answers are saved with the candidate and used by AI. Put source details in the evidence answer or link Signals after saving.</p>
+    <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0 }}>Save specific claims with their sources below. Existing summary answers remain available to AI as unclassified narrative.</p>
+    <ScoringClaims claims={basis.claims} signals={signals} onChange={claims => onChange({ ...basis, claims })} />
+    <details><summary>Candidate summary answers</summary><p>Optional background. Labels and source links belong on individual claims above.</p>
     {Object.entries(CANDIDATE_QUESTIONS).map(([key, field]) => <BasisField key={key} {...field} value={basis[key]} maxLength={1400} onChange={next => onChange({ ...basis, [key]: next })} />)}
+    </details>
   </fieldset>;
 }
