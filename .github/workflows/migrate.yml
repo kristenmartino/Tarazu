@@ -50,7 +50,8 @@ jobs:
       - uses: supabase/setup-cli@v1
         if: steps.guard.outputs.ready == 'true'
         with:
-          version: latest
+          # Pin the CLI: resolving "latest" can fail before migration on GitHub API rate limits.
+          version: 2.109.0
 
       - name: Link project
         if: steps.guard.outputs.ready == 'true'
