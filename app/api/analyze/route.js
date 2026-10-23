@@ -65,7 +65,7 @@ For confidence: "high" means strong data supports this pick, "medium" means reas
       model: process.env.ANTHROPIC_MODEL_ANALYSIS || "claude-opus-4-8",
       maxTokens: 1000,
       prompt,
-      schema: withAppOwnedAssessments(AnalysisSchema.extend({ evidence: z.array(z.string()).max(30).refine(refs => refs.every(ref => contextReferences(context).includes(ref)), "Unknown evidence reference") })),
+      schema: withAppOwnedAssessments(AnalysisSchema.extend({ evidence: z.array(z.string()).max(30).refine(refs => refs.every(ref => contextReferences(context).includes(ref)), "Unknown evidence reference") }), context.candidates.map(candidate => candidate.name)),
       timeoutMs: 30000,
     });
 
