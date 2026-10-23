@@ -757,6 +757,12 @@ export default function App() {
     return () => document.removeEventListener("keydown", handler);
   }, [activeScreen, handleScreenChange]);
 
+  if (!loaded) return (
+    <main className="tz-app" style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
+      <p role="status" style={{ fontSize: 14, color: C.textMuted }}>Loading your workspace…</p>
+    </main>
+  );
+
   return (
     <div className="tz-app" style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
       <style>{printStyles}</style>
