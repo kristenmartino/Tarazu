@@ -147,7 +147,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
 
   const cards = [
     { icon: "🎯", label: "RECOMMENDED NEXT MOVE", value: analysis.topPick?.name, detail: analysis.topPick?.reason, color: C.accent, confidence: analysis.topPick?.confidence },
-    { icon: "⚡", label: "FASTEST HIGH-VALUE WIN", value: analysis.quickWin?.name, detail: analysis.quickWin?.reason, color: C.warn, confidence: analysis.quickWin?.confidence },
+    { icon: "⚡", label: "POSSIBLE QUICK WIN", value: analysis.quickWin?.name, detail: analysis.quickWin?.reason, color: C.warn, confidence: analysis.quickWin?.confidence },
     { icon: "⚠️", label: "PRIMARY RISK", value: analysis.riskFlag?.name, detail: analysis.riskFlag?.reason, color: C.danger, confidence: analysis.riskFlag?.confidence },
   ];
 

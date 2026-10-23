@@ -146,7 +146,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           onMouseLeave={ev => ev.target.style.background = C.purpleDim}>
           {aiLoading ? "Suggesting..." : "✦ AI Suggest Scores"}
         </button>
-        {aiLoading && <p role="status" style={{ fontSize: 11, color: C.textMuted, margin: 0 }}>Reviewing the supplied context. This may take up to a minute.</p>}
+        {aiLoading && <p role="status" style={{ fontSize: 11, color: C.textMuted, margin: 0 }}>Reviewing the supplied context. This can take a minute, or longer if the response needs validation.</p>}
         {stale && <p role="status">Context changed. Previous suggestions are stale; request new suggestions before accepting.</p>}
         <AIContextDetails context={usedContext} />
         {["reach", "impact", "confidence", "effort"].filter(dim => aiResults[dim]).map(dim => {
