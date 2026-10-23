@@ -225,7 +225,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
           { label: "CANDIDATES", value: scored.length },
           { label: "FRAMEWORK", value: "RICE" },
           { label: "CONTEXT", value: productContext?.productSummary ? "Provided" : "Not provided" },
-          { label: "CALIBRATION", value: feedbackContext?.scoreCalibration ? `Active (${feedbackContext.scoreCalibration.split("\n").length} events)` : "None" },
+          { label: "RUBRIC", value: "Shared scoring anchors" },
         ].map(m => (
           <div key={m.label} style={{ display: "flex", alignItems: "center", gap: 4 }}>
             <span style={{ fontSize: 8, fontWeight: 700, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>{m.label}</span>
