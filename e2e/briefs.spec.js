@@ -55,3 +55,18 @@ test("high opportunity ratings cannot produce Build without evidence", async ({ 
   await expect(page.getByText("Build", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Validate Further", { exact: true })).toBeVisible();
 });
+
+test("mobile users can reach briefs from Home, save, and reopen without horizontal overflow", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/app");
+  await page.getByRole("button", { name: "Validate", exact: true }).click({ timeout: 45000 });
+  await page.getByLabel("IDEA NAME", { exact: true }).fill("Mobile investigation");
+  await page.getByRole("button", { name: "Save brief", exact: true }).click();
+  await expect(page.getByText("Saved in this browser · Revision 1", { exact: true })).toBeVisible();
+  await page.reload();
+  await page.getByRole("button", { name: "Validate", exact: true }).click();
+  await page.getByRole("button", { name: "Open brief: Mobile investigation", exact: true }).click();
+  await expect(page.getByLabel("IDEA NAME", { exact: true })).toHaveValue("Mobile investigation");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: "/private/tmp/tarazu-brief-mobile.png" });
+});
