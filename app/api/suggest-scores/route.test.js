@@ -43,15 +43,15 @@ afterEach(() => {
 describe("POST /api/suggest-scores", () => {
   it("returns scored dimensions on success", async () => {
     fetch.mockResolvedValueOnce(okText({
-      reach: { score: 60, justification: "broad" },
+      reach: { score: 55, justification: "broad" },
       impact: { score: 75, justification: "meaningful" },
       confidence: { score: 50, justification: "some data" },
-      effort: { score: 40, justification: "moderate" },
+      effort: { score: 35, justification: "moderate" },
     }));
     const res = await POST(makeRequest({ featureName: "Search" }));
     expect(res.status).toBe(200);
     const data = await res.json();
-    expect(data.reach.score).toBe(60);
+    expect(data.reach.score).toBe(55);
     expect(data.impact.justification).toBe("meaningful");
   });
 
@@ -59,6 +59,19 @@ describe("POST /api/suggest-scores", () => {
     fetch.mockResolvedValue(okText({ reach: assessment(250) }));
     const res = await POST(makeRequest({ featureName: "X", dimensions: ["reach"] }));
     expect(res.status).toBe(502);
+  });
+  it("repairs arbitrary precision and sends the shared rubric with candidate answers", async () => {
+    fetch.mockResolvedValueOnce(okText({reach:assessment(42)})).mockResolvedValueOnce(okText({reach:{...assessment(35), evidence:['scoring:rubric', 'candidate:unsaved']}}));
+    const res = await POST(makeRequest({featureName:'Reminders', dimensions:['reach'], productContext:{scoring:{timeframe:'90 days', audience:'100 accounts'}}, scoringBasis:{reach:'30 accounts; estimate'}}));
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.reach.score).toBe(35);
+    expect(data.context.candidate.scoringBasis.reach).toBe('30 accounts; estimate');
+    const prompt = JSON.parse(fetch.mock.calls[0][1].body).messages[0].content;
+    expect(prompt).toContain('30 accounts; estimate');
+    expect(prompt).toContain('About 30% of the workspace audience');
+    expect(prompt).toContain('return reach:null');
+    expect(JSON.parse(fetch.mock.calls[1][1].body).messages[2].content).toContain('Use a shared anchor score');
   });
   it("supports insufficient information without a default score", async () => {
     fetch.mockResolvedValue(okText({ reach: assessment(null) }));
@@ -74,8 +87,8 @@ describe("POST /api/suggest-scores", () => {
   });
 
   it("repairs assessment narration before returning a score suggestion", async () => {
-    fetch.mockResolvedValueOnce(okText({ confidence: { ...assessment(22), justification: 'The draft decision notes four of seven opportunity dimensions remain unassessed.' } }))
-      .mockResolvedValueOnce(okText({ confidence: { ...assessment(22), justification: 'Synthetic interviews conflict on the cause of delays.' } }));
+    fetch.mockResolvedValueOnce(okText({ confidence: { ...assessment(20), justification: 'The draft decision notes four of seven opportunity dimensions remain unassessed.' } }))
+      .mockResolvedValueOnce(okText({ confidence: { ...assessment(20), justification: 'Synthetic interviews conflict on the cause of delays.' } }));
     const res = await POST(makeRequest({ featureName: 'Reminders', dimensions: ['confidence'] }));
     expect(res.status).toBe(200);
     expect((await res.json()).confidence.justification).toBe('Synthetic interviews conflict on the cause of delays.');
@@ -85,7 +98,7 @@ describe("POST /api/suggest-scores", () => {
   });
 
   it("returns no suggestions if the repair still narrates assessment counts", async () => {
-    fetch.mockResolvedValue(okText({ confidence: { ...assessment(22), gaps: ['4 of 7 dimensions unassessed.'] } }));
+    fetch.mockResolvedValue(okText({ confidence: { ...assessment(20), gaps: ['4 of 7 dimensions unassessed.'] } }));
     const res = await POST(makeRequest({ featureName: 'Reminders', dimensions: ['confidence'] }));
     expect(res.status).toBe(502);
     expect(await res.json()).toMatchObject({ category: 'invalid_response' });

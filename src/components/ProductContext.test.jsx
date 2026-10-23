@@ -15,3 +15,16 @@ it('updates immediately once and never writes an old brief after unmount', () =>
   vi.advanceTimersByTime(1000);
   expect(onChange).toHaveBeenCalledTimes(1);
 });
+
+it('updates shared anchors without replacing the brief or counting settings as a seventh brief field', () => {
+  const onChange = vi.fn();
+  render(<ProductContext context={{constraints:'One engineer', scoring:{timeframe:'90 days'}}} onChange={onChange} />);
+  expect(screen.getByText('1/6 FIELDS')).toBeTruthy();
+  fireEvent.click(screen.getByText('Shared scoring basis'));
+  expect(screen.getByLabelText('Scoring timeframe').value).toBe('90 days');
+  fireEvent.change(screen.getByLabelText('Audience unit and size'), {target:{value:'100 accounts'}});
+  expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({constraints:'One engineer', scoring:expect.objectContaining({timeframe:'90 days', audience:'100 accounts'})}));
+  fireEvent.click(screen.getByText('Impact and effort anchors · view or customize'));
+  fireEvent.change(screen.getByLabelText('Effort 35 · S'), {target:{value:'Up to five person-days'}});
+  expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({scoring:expect.objectContaining({effortBands:expect.objectContaining({35:'Up to five person-days'})})}));
+});

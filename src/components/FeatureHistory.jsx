@@ -21,12 +21,14 @@ function formatRelativeTime(isoString) {
 const FieldDiff = ({ change }) => {
   const C = useC();
   const SCORE_COLORS = { reach: C.reach, impact: C.impact, confidence: C.confidence, effort: C.danger };
-  const { field, old: oldVal, new: newVal } = change;
+  const { field, old: oldValue, new: newValue } = change;
+  const display = value => value && typeof value === 'object' ? Object.entries(value).filter(([, text]) => text).map(([key, text]) => `${key}: ${text}`).join('; ') : value;
+  const oldVal = display(oldValue), newVal = display(newValue);
   const isScore = ["reach", "impact", "confidence", "effort"].includes(field);
   const color = SCORE_COLORS[field] || C.textMuted;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "3px 0", fontSize: 10, fontFamily: "var(--mono)" }}>
-      <span style={{ color, width: 80, fontWeight: 600 }}>{field.toUpperCase()}</span>
+      <span style={{ color, width: 80, fontWeight: 600 }}>{field === "scoring_basis" ? "SCORING ANSWERS" : field.toUpperCase()}</span>
       {isScore ? (
         <>
           <span style={{ color: "color-mix(in srgb, var(--danger) 56%, transparent)" }}>{oldVal}</span>
@@ -170,7 +172,7 @@ export const FeatureHistory = ({ wsId, featureId, feature, onRevert }) => {
   }, [wsId, featureId]);
 
   // Re-fetch after feature changes (delayed to wait for auto-save + server)
-  const featureKey = feature ? `${feature.name}-${feature.description}-${feature.reach}-${feature.impact}-${feature.confidence}-${feature.effort}` : "";
+  const featureKey = feature ? `${feature.name}-${feature.description}-${feature.reach}-${feature.impact}-${feature.confidence}-${feature.effort}-${JSON.stringify(feature.scoringBasis)}` : "";
   useEffect(() => {
     if (isInitialLoad.current) return;
     clearTimeout(refreshTimer.current);

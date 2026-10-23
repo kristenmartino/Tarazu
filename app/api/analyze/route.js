@@ -43,6 +43,7 @@ async function handlePost(request) {
     const context = buildScoringContext(body);
     const prompt = `You are a product strategist assessing competing options.
 ${CONTEXT_RULES}
+Use the supplied shared rubric and candidate scoring answers to explain gaps and tradeoffs. Existing scores may predate the rubric; do not assume they were calibrated or silently rescore them.
 Explain strategy and constraint fit, assumptions, gaps, and next validation action in your reasons. Do not infer evidence strength from existing scores. Use low confidence where linked evidence is absent. Sprint plan is only a proposed sequence.
 Keep the response compact: summary at most 60 words, each pick reason at most 45 words, insight at most 45 words. Cite at most five references, copying their complete allowed IDs only into the evidence array. Use source titles in prose. Copy candidate names exactly in picks and sprintPlan. Do not repeat whole source notes.
 Allowed references: ${JSON.stringify(contextReferences(context))}

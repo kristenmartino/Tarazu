@@ -1,0 +1,59 @@
+import { test, expect } from '@playwright/test';
+
+test('shared anchors and candidate answers survive reopening and invalidate old AI estimates', async ({page}) => {
+  await page.goto('/app');
+  await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Priorities',exact:true}).click();
+  await page.getByRole('button',{name:/Add Candidate/i}).first().click();
+  await page.getByLabel('Candidate name',{exact:true}).fill('Scoring basis test');
+  await page.locator('#main-content').getByText('STRATEGY BRIEF',{exact:true}).click();
+  await page.locator('#main-content').getByText('Shared scoring basis',{exact:true}).click();
+  await page.locator('#main-content').getByLabel('Scoring timeframe',{exact:true}).fill('First 90 days');
+  await page.locator('#main-content').getByLabel('Audience unit and size',{exact:true}).fill('100 active accounts');
+  await page.locator('#main-content').getByLabel('Target outcome and baseline',{exact:true}).fill('Reduce overdue approvals; baseline unknown');
+  await page.locator('#main-content').getByText('Impact and effort anchors · view or customize',{exact:true}).click();
+  await page.locator('#main-content').getByLabel('Effort 35 · S',{exact:true}).fill('Over 1 and up to 5 total person-days');
+  await page.getByLabel('Who will this reach?',{exact:true}).fill('30 accounts; planning estimate');
+  await page.getByLabel('What should improve per user?',{exact:true}).fill('Less follow-up work; hypothesis');
+  await page.getByLabel('What supports these estimates?',{exact:true}).fill('Synthetic planning exercise, no customer measurements');
+  await page.getByLabel('What will it take to deliver?',{exact:true}).fill('Pilot, existing notification API, three person-days including QA');
+  await page.route('**/api/suggest-scores', async route => {
+    const body = route.request().postDataJSON();
+    expect(body.productContext.scoring.effortBands['35']).toContain('5 total');
+    expect(body.scoringBasis.reach).toBe('30 accounts; planning estimate');
+    await route.fulfill({json:{reach:{score:35,justification:'Segment band from explicit planning assumptions',evidence:[],assumptions:['Uptake untested'],gaps:[],nextAction:'Measure eligible accounts'}}});
+  });
+  await page.getByRole('button',{name:'✦ AI Suggest Scores',exact:true}).click();
+  const accept = page.getByRole('button',{name:'Accept reach suggestion',exact:true});
+  await page.getByText('reach: Suggested 35/100',{exact:true}).click();
+  await expect(accept).toBeEnabled();
+  await page.getByLabel('What should improve per user?',{exact:true}).fill('Benefit still unknown');
+  await expect(accept).toBeDisabled();
+  await page.getByRole('button',{name:'Add Candidate',exact:true}).click();
+  await page.reload();
+  await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Priorities',exact:true}).click();
+  await page.getByRole('button',{name:'Edit Scoring basis test',exact:true}).click();
+  await expect(page.getByLabel('Who will this reach?',{exact:true})).toHaveValue('30 accounts; planning estimate');
+  await expect(page.getByLabel('What should improve per user?',{exact:true})).toHaveValue('Benefit still unknown');
+  await page.locator('#main-content').getByText('Shared scoring basis',{exact:true}).click();
+  await expect(page.locator('#main-content').getByLabel('Scoring timeframe',{exact:true})).toHaveValue('First 90 days');
+  await page.locator('#main-content').getByText('Impact and effort anchors · view or customize',{exact:true}).click();
+  await expect(page.locator('#main-content').getByLabel('Effort 35 · S',{exact:true})).toHaveValue('Over 1 and up to 5 total person-days');
+  await expect(page.getByLabel('Reach',{exact:true})).toHaveValue('50');
+});
+
+test('candidate questions and editable anchors fit on mobile', async ({page}, testInfo) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/app');
+  await page.getByRole('button',{name:'Priorities',exact:true}).click();
+  await page.getByRole('button',{name:/Add Candidate/i}).first().click();
+  const editor = page.getByRole('form',{name:'New candidate'});
+  await editor.getByLabel('Candidate name',{exact:true}).fill('Mobile scoring basis');
+  await editor.getByText('STRATEGY BRIEF',{exact:true}).click();
+  await editor.getByText('Shared scoring basis',{exact:true}).click();
+  await editor.getByLabel('Audience unit and size',{exact:true}).fill('100 active accounts');
+  await editor.getByText('Impact and effort anchors · view or customize',{exact:true}).click();
+  await editor.getByLabel('Impact 75 · High',{exact:true}).fill('Ten percentage-point improvement per account');
+  await editor.getByLabel('Who will this reach?',{exact:true}).fill('Thirty accounts; assumption');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({path:testInfo.outputPath('scoring-basis-mobile.png')});
+});

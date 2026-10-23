@@ -1,3 +1,4 @@
+import { SCORING_RULES, SCORING_ANCHORS } from "../../../lib/scoring-basis";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { buildScoringContext, contextReferences, CONTEXT_RULES } from "../../../lib/scoring-context";
@@ -20,7 +21,7 @@ function buildSchema(dims, refs) {
     gaps: z.array(z.string().max(500)).max(8),
     nextAction: z.string().min(1).max(500),
   });
-  return withAppOwnedAssessments(z.object(Object.fromEntries(dims.map(d => [d, dimension]))));
+  return withAppOwnedAssessments(z.object(Object.fromEntries(dims.map(d => [d, dimension.extend({ score: dimension.shape.score.refine(value => value === null || SCORING_ANCHORS[d].some(anchor => anchor.pos === value), `Use a shared anchor score: ${SCORING_ANCHORS[d].map(anchor => anchor.pos).join(", ")}, or null when unknown`) })]))));
 }
 
 // Authenticated: this endpoint bills the Anthropic API per call, so it must
@@ -47,6 +48,7 @@ async function handlePost(request) {
     const refs = contextReferences(context);
     const prompt = `You are assessing a candidate using RICE on relative integer scales 1–100.
 ${CONTEXT_RULES}
+${SCORING_RULES}
 Reach = affected audience in a stated timeframe; impact = benefit per reached user; effort = estimated work (higher means more work).
 For any dimension that cannot reasonably be estimated, return score:null and explain the insufficient information. Never replace unknowns with default scores. State assumptions explicitly. Confidence is evidence strength, not certainty of your answer.
 Respond ONLY with JSON with these keys: ${dims.join(', ')}.

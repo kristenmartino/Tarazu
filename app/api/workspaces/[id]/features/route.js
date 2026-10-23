@@ -1,8 +1,10 @@
+import { normalizeCandidateBasis } from "../../../../../lib/scoring-basis";
+import { candidateBasisSchema } from "../../../../../lib/scoring-basis-validation";
 import { NextResponse } from "next/server";
 import { withAuth, verifyWorkspaceOwner } from "../../../../../lib/api-auth";
 import { createRevision, resolveActor } from "../../../../../lib/revisions";
 
-const TRACKED_FIELDS = ["name", "description", "reach", "impact", "confidence", "effort", "owner", "theme", "status"];
+const TRACKED_FIELDS = ["name", "description", "reach", "impact", "confidence", "effort", "owner", "theme", "status", "scoring_basis"];
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // GET /api/workspaces/[id]/features — list features
@@ -21,6 +23,7 @@ export async function GET(request, { params }) {
       id: r.id,
       name: r.name,
       description: r.description,
+      scoringBasis: r.scoring_basis || {},
       reach: r.reach,
       impact: r.impact,
       confidence: r.confidence,
@@ -43,6 +46,9 @@ export async function POST(request, { params }) {
     if (!(await verifyWorkspaceOwner(supabase, id, userId)))
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     const feature = await request.json();
+    const basis = candidateBasisSchema.safeParse(feature.scoringBasis);
+    if (feature.scoringBasis !== undefined && !basis.success)
+      return NextResponse.json({ error: "Invalid candidate scoring answers" }, { status: 400 });
 
     // Attribution costs a Clerk lookup, so resolve it lazily and at most once:
     // a request that changes nothing writes no revision and pays nothing, and
@@ -63,7 +69,7 @@ export async function POST(request, { params }) {
       // Upsert: select full row to detect changes (only for valid UUIDs)
       const { data: found } = await supabase
         .from("features")
-        .select("id, name, description, reach, impact, confidence, effort, owner, theme, status")
+        .select("id, name, description, reach, impact, confidence, effort, owner, theme, status, scoring_basis")
         .eq("id", feature.id)
         .eq("workspace_id", id)
         .single();
@@ -71,6 +77,7 @@ export async function POST(request, { params }) {
         const incoming = {
           name: feature.name,
           description: feature.description || "",
+          scoring_basis: basis.success ? basis.data : (found.scoring_basis || {}),
           reach: feature.reach,
           impact: feature.impact,
           confidence: feature.confidence,
@@ -85,7 +92,7 @@ export async function POST(request, { params }) {
         for (const field of TRACKED_FIELDS) {
           const oldVal = typeof found[field] === "string" ? (found[field] || "") : found[field];
           const newVal = typeof incoming[field] === "string" ? (incoming[field] || "") : incoming[field];
-          if (oldVal !== newVal) {
+          if (field === "scoring_basis" ? JSON.stringify(normalizeCandidateBasis(oldVal)) !== JSON.stringify(normalizeCandidateBasis(newVal)) : oldVal !== newVal) {
             changedFields.push({ field, old: oldVal, new: newVal });
           }
         }
@@ -117,6 +124,7 @@ export async function POST(request, { params }) {
         workspace_id: id,
         name: feature.name,
         description: feature.description || "",
+        scoring_basis: basis.success ? basis.data : {},
         reach: feature.reach ?? 50,
         impact: feature.impact ?? 50,
         confidence: feature.confidence ?? 50,
@@ -137,6 +145,7 @@ export async function POST(request, { params }) {
       snapshot: {
         name: feature.name,
         description: feature.description || "",
+        scoring_basis: basis.success ? basis.data : {},
         reach: feature.reach ?? 50,
         impact: feature.impact ?? 50,
         confidence: feature.confidence ?? 50,
