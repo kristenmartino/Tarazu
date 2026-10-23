@@ -6,6 +6,10 @@ import { withUser } from "../../../lib/api-auth";
 
 const VALID_DIMS = ["reach", "impact", "confidence", "effort"];
 
+// Four grounded assessments can exceed 20 seconds. Allow one schema-repair
+// attempt within the function budget rather than timing out a valid response.
+export const maxDuration = 180;
+
 function buildSchema(dims, refs) {
   const dimension = z.object({
     score: z.number().int().min(1).max(100).nullable(),
@@ -56,7 +60,7 @@ ${JSON.stringify(context)}`;
       maxTokens: 2400,
       prompt,
       schema: buildSchema(dims, refs),
-      timeoutMs: 20000,
+      timeoutMs: 60000,
     });
 
     result.context = context;
