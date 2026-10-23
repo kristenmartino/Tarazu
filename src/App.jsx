@@ -338,7 +338,7 @@ export default function App() {
   const handleRevert = useCallback((revertedFeature) => {
     setFeatures(prev => prev.map(f =>
       f.id === revertedFeature.id
-        ? { ...f, name: revertedFeature.name, description: revertedFeature.description, reach: revertedFeature.reach, impact: revertedFeature.impact, confidence: revertedFeature.confidence, effort: revertedFeature.effort }
+        ? { ...f, name: revertedFeature.name, description: revertedFeature.description, scoringBasis: revertedFeature.scoringBasis || {}, reach: revertedFeature.reach, impact: revertedFeature.impact, confidence: revertedFeature.confidence, effort: revertedFeature.effort }
         : f
     ));
   }, []);

@@ -19,6 +19,7 @@ create table public.workspaces (
   constraints text default '',
   assumptions text default '',
   success_metrics text default '',
+  scoring_settings jsonb not null default '{}'::jsonb,
   view_mode text not null default 'list',
   sort_mode text not null default 'rice',
   map_color_by text not null default 'tier',
@@ -33,6 +34,7 @@ create table public.features (
   workspace_id uuid not null references public.workspaces(id) on delete cascade,
   name text not null,
   description text default '',
+  scoring_basis jsonb not null default '{}'::jsonb,
   reach int not null default 50,
   impact int not null default 50,
   confidence int not null default 50,
@@ -112,6 +114,7 @@ create table public.feature_revisions (
   snapshot_effort int not null,
   snapshot_owner text,
   snapshot_theme text,
+  snapshot_scoring_basis jsonb not null default '{}'::jsonb,
   snapshot_status text,
   change_type text not null default 'updated'
     check (change_type in ('created', 'updated', 'reverted')),

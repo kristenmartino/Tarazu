@@ -1,12 +1,15 @@
 import { useState, useCallback } from "react";
 import { useC } from "../ThemeProvider";
+import { SharedScoringBasis } from "./ScoringBasis";
+import { BRIEF_FIELDS } from "../../lib/scoring-context";
 import { Pill } from "./Pill";
 
 const EMPTY = { productSummary: "", targetUsers: "", strategicPriorities: "", constraints: "", assumptions: "", successMetrics: "" };
 
 export const ProductContext = ({ context = EMPTY, onChange }) => {
   const C = useC();
-  const hasContent = context.productSummary || context.targetUsers || context.strategicPriorities || context.constraints || context.assumptions || context.successMetrics;
+  const populated = Object.keys(BRIEF_FIELDS).filter(key => typeof context[key] === "string" && context[key].trim()).length;
+  const hasContent = populated > 0 || !!context.scoring;
   const [open, setOpen] = useState(!!hasContent);
 
   const update = useCallback((field, value) => {
@@ -29,7 +32,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
         <span style={{ fontSize: 10, fontWeight: 700, color: C.textMuted, letterSpacing: "0.08em", fontFamily: "var(--mono)", flex: 1 }}>
           STRATEGY BRIEF
         </span>
-        {hasContent && <Pill color={C.purple} dimColor={C.purpleDim} small>{Object.values(context).filter(v => typeof v === "string" && v.trim()).length}/6 FIELDS</Pill>}
+        {hasContent && <Pill color={C.purple} dimColor={C.purpleDim} small>{populated}/6 FIELDS</Pill>}
         <span style={{ fontSize: 10, color: C.textDim, transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
       </button>
       {open && (
@@ -88,6 +91,7 @@ export const ProductContext = ({ context = EMPTY, onChange }) => {
               onFocus={e => e.target.style.borderColor = C.purple} onBlur={e => e.target.style.borderColor = C.border}
             />
           </div>
+          <SharedScoringBasis settings={context.scoring} onChange={next => update("scoring", next)} />
         </div>
       )}
     </div>

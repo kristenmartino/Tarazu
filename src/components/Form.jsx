@@ -7,34 +7,13 @@ import { buildScoringContext, BRIEF_FIELDS } from "../../lib/scoring-context";
 import { ProductContext } from "./ProductContext";
 import { AIContextDetails, referenceLabel } from "./AIContextDetails";
 
-// Reference bands for each RICE dimension's slider. Positioned on the same
-// 1-100 scale everything already scores on — these don't change the value
-// space, just give it shared vocabulary two different people would place a
-// number against roughly the same way.
-//
-// Reach/Impact/Effort sit on 15/35/55/75/95 (even fifths). Confidence is a
-// distinct axis — evidence quality, not magnitude — so it gets its own
-// four-band spacing rather than a forced fifth bucket with nothing behind it.
-const REACH_ANCHORS = [
-  { pos: 15, label: "Niche" }, { pos: 35, label: "Segment" }, { pos: 55, label: "Broad" },
-  { pos: 75, label: "Majority" }, { pos: 95, label: "Everyone" },
-];
-const IMPACT_ANCHORS = [
-  { pos: 15, label: "Minimal" }, { pos: 35, label: "Low" }, { pos: 55, label: "Medium" },
-  { pos: 75, label: "High" }, { pos: 95, label: "Massive" },
-];
-const CONFIDENCE_ANCHORS = [
-  { pos: 20, label: "Guess" }, { pos: 50, label: "Weak" },
-  { pos: 80, label: "Strong" }, { pos: 95, label: "Certain" },
-];
-const EFFORT_ANCHORS = [
-  { pos: 15, label: "XS" }, { pos: 35, label: "S" }, { pos: 55, label: "M" },
-  { pos: 75, label: "L" }, { pos: 95, label: "XL" },
-];
+import { SCORING_ANCHORS, normalizeCandidateBasis } from "../../lib/scoring-basis";
+import { CandidateScoringBasis } from "./ScoringBasis";
 
 export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEvent, onResolveScores, feedbackContext, scored = [], features = [], signals = [], decisions = [], workspaceId, onProductContextChange }) => {
   const C = useC();
   const [name, setName] = useState(editFeature?.name || ""); const [desc, setDesc] = useState(editFeature?.description || "");
+  const [scoringBasis, setScoringBasis] = useState(() => normalizeCandidateBasis(editFeature?.scoringBasis));
   const [owner, setOwner] = useState(editFeature?.owner || ""); const [theme, setTheme] = useState(editFeature?.theme || ""); const [status, setStatus] = useState(editFeature?.status || "");
   const [r, setR] = useState(editFeature?.reach ?? 50); const [i, setI] = useState(editFeature?.impact ?? 50); const [c, setC] = useState(editFeature?.confidence ?? 50); const [e, setE] = useState(editFeature?.effort ?? 50);
   const [aiModes, setAiModes] = useState({ reach: false, impact: false, confidence: false, effort: false });
@@ -54,7 +33,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   }, [scored, preview, editFeature]);
   const submit = () => {
     if (!name.trim()) return;
-    onAdd({ id: pendingFeatureId, name: name.trim(), description: desc.trim(), reach: r, impact: i, confidence: c, effort: e, owner: owner.trim() || null, theme: theme.trim() || null, status: status || null });
+    onAdd({ id: pendingFeatureId, name: name.trim(), description: desc.trim(), scoringBasis, reach: r, impact: i, confidence: c, effort: e, owner: owner.trim() || null, theme: theme.trim() || null, status: status || null });
     // Resolve any pending AI score events with the final values
     const hasAiScores = Object.values(aiModes).some(v => v);
     if (hasAiScores && onResolveScores) {
@@ -63,7 +42,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   };
 
   const setters = { reach: setR, impact: setI, confidence: setC, effort: setE };
-  const context = buildScoringContext({ productContext, features, signals, decisions, workspaceId, candidateId: editFeature?.id, featureName: name, featureDescription: desc });
+  const context = buildScoringContext({ productContext, features, signals, decisions, workspaceId, candidateId: editFeature?.id, featureName: name, featureDescription: desc, scoringBasis });
   const signature = JSON.stringify(context);
   const current = useRef(signature); current.current = signature;
   const sequence = useRef(0);
@@ -79,7 +58,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
     try {
       const res = await fetch("/api/suggest-scores", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ featureName: name.trim(), featureDescription: desc.trim(), candidateId: editFeature?.id, productContext, dimensions, features, signals, decisions, workspaceId }),
+        body: JSON.stringify({ featureName: name.trim(), featureDescription: desc.trim(), scoringBasis, candidateId: editFeature?.id, productContext, dimensions, features, signals, decisions, workspaceId }),
       });
       const data = await res.json();
       if (requestId !== sequence.current || current.current !== requestedSignature) return;
@@ -89,7 +68,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
     } catch (err) {
       if (requestId === sequence.current && current.current === requestedSignature) setAiError(err.message || "AI scoring failed");
     } finally { if (requestId === sequence.current) setAiLoading(false); }
-  }, [name, desc, signature, resultSignature, editFeature?.id, productContext, features, signals, decisions, workspaceId]);
+  }, [name, desc, scoringBasis, signature, resultSignature, editFeature?.id, productContext, features, signals, decisions, workspaceId]);
   const acceptSuggestion = dim => {
     const value = aiResults[dim]?.score;
     if (stale || !Number.isInteger(value) || value < 1 || value > 100) return;
@@ -114,7 +93,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   const inputStyle = { padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg, color: C.text, outline: "none", fontFamily: "var(--body)" };
 
   return (
-    <div style={{ padding: 20, border: `1px solid ${C.borderActive}`, borderRadius: 12, background: C.surface, animation: "slideUp 0.25s ease" }}>
+    <div role="form" aria-label={editFeature ? "Edit candidate" : "New candidate"} style={{ padding: 20, border: `1px solid ${C.borderActive}`, borderRadius: 12, background: C.surface, animation: "slideUp 0.25s ease" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         <input value={name} onChange={ev => setName(ev.target.value)} placeholder="Candidate name" aria-label="Candidate name" style={{ ...inputStyle, fontSize: 14 }} onFocus={ev => ev.target.style.borderColor = C.accent} onBlur={ev => ev.target.style.borderColor = C.border} />
         <textarea value={desc} onChange={ev => setDesc(ev.target.value)} placeholder="Brief description (optional)" aria-label="Candidate description" rows={2} style={{ ...inputStyle, fontSize: 13, resize: "vertical" }} onFocus={ev => ev.target.style.borderColor = C.accent} onBlur={ev => ev.target.style.borderColor = C.border} />
@@ -139,7 +118,8 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           </div>
         </div>
         {onProductContextChange && <ProductContext context={productContext} onChange={onProductContextChange} />}
-        <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0 }}>AI context: {6 - context.missing.length}/6 brief fields, {context.evidence.length} linked signals. Missing: {context.missing.map(k => BRIEF_FIELDS[k]).join(", ") || "no brief fields"}. You can proceed with limited context or score manually. Running AI sends the brief, candidate, competing options, linked signals, and related decisions to Tarazu and Anthropic.</p>
+        <CandidateScoringBasis basis={scoringBasis} onChange={setScoringBasis} />
+        <p style={{ fontSize: 12, lineHeight: 1.6, margin: 0 }}>AI context: {6 - context.missing.length}/6 brief fields, {context.evidence.length} linked signals. Missing: {context.missing.map(k => BRIEF_FIELDS[k]).join(", ") || "no brief fields"}. Set the audience, period and anchors under Strategy Brief → Shared scoring basis. You can proceed with limited context or score manually. Running AI sends the brief, shared anchors, candidate answers, competing options, linked signals, and related decisions to Tarazu and Anthropic.</p>
         <button onClick={suggestAll} disabled={!name.trim() || aiLoading}
           style={{ padding: "7px 14px", border: `1px solid ${C.purple}30`, borderRadius: 6, background: C.purpleDim, color: C.purple, fontSize: 11, fontWeight: 600, cursor: !name.trim() || aiLoading ? "not-allowed" : "pointer", fontFamily: "var(--mono)", opacity: !name.trim() || aiLoading ? 0.4 : 1, transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
           onMouseEnter={ev => { if (name.trim() && !aiLoading) ev.target.style.background = `${C.purple}20`; }}
@@ -165,19 +145,19 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
         <details style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.6 }}>
           <summary style={{ cursor: "pointer", fontWeight: 600 }}>How to interpret these scores</summary>
           <p>These are relative 1–100 estimates. Reach describes the size of the affected audience, impact the benefit per user, confidence the strength of your evidence, and effort the work required. Agree on the same audience, time horizon, and scale anchors when comparing candidates; a shared scale alone does not align different teams’ estimates.</p>
-          <p>Record the audience, timeframe, and key assumptions in the description, and capture supporting or conflicting evidence in Signals. The initial 50s are placeholders to review. AI suggestions are editable estimates; inspect their justification before accepting them.</p>
+          <p>Use the shared scoring basis and candidate answers to record the audience, timeframe, delivery scope and assumptions. Capture supporting or conflicting evidence in Signals. The initial 50s are placeholders to review. AI suggestions are editable estimates; inspect their justification before accepting them.</p>
         </details>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-          <Slider label="Reach" value={r} onChange={setR} color={C.reach} icon="📡" anchors={REACH_ANCHORS}
+          <Slider label="Reach" value={r} onChange={setR} color={C.reach} icon="📡" anchors={SCORING_ANCHORS.reach}
             aiMode={aiModes.reach} aiScore={aiResults.reach?.score} aiJustification={aiResults.reach?.justification}
             aiLoading={aiLoading && aiModes.reach && !aiResults.reach} onToggleAi={() => toggleDimension("reach")} />
-          <Slider label="Impact" value={i} onChange={setI} color={C.impact} icon="💥" anchors={IMPACT_ANCHORS}
+          <Slider label="Impact" value={i} onChange={setI} color={C.impact} icon="💥" anchors={SCORING_ANCHORS.impact}
             aiMode={aiModes.impact} aiScore={aiResults.impact?.score} aiJustification={aiResults.impact?.justification}
             aiLoading={aiLoading && aiModes.impact && !aiResults.impact} onToggleAi={() => toggleDimension("impact")} />
-          <Slider label="Confidence" value={c} onChange={setC} color={C.confidence} icon="🎯" anchors={CONFIDENCE_ANCHORS}
+          <Slider label="Confidence" value={c} onChange={setC} color={C.confidence} icon="🎯" anchors={SCORING_ANCHORS.confidence}
             aiMode={aiModes.confidence} aiScore={aiResults.confidence?.score} aiJustification={aiResults.confidence?.justification}
             aiLoading={aiLoading && aiModes.confidence && !aiResults.confidence} onToggleAi={() => toggleDimension("confidence")} />
-          <Slider label="Effort" value={e} onChange={setE} color={C.danger} icon="⏱️" anchors={EFFORT_ANCHORS}
+          <Slider label="Effort" value={e} onChange={setE} color={C.danger} icon="⏱️" anchors={SCORING_ANCHORS.effort}
             aiMode={aiModes.effort} aiScore={aiResults.effort?.score} aiJustification={aiResults.effort?.justification}
             aiLoading={aiLoading && aiModes.effort && !aiResults.effort} onToggleAi={() => toggleDimension("effort")} />
         </div>

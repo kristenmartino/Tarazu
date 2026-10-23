@@ -1,3 +1,4 @@
+import { scoringSettingsSchema } from "../../../../../lib/scoring-basis-validation";
 import { NextResponse } from "next/server";
 import { withAuth, verifyWorkspaceOwner } from "../../../../../lib/api-auth";
 
@@ -9,7 +10,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     const { data, error } = await supabase
       .from("workspaces")
-      .select("product_summary, target_users, strategic_priorities, constraints, assumptions, success_metrics")
+      .select("product_summary, target_users, strategic_priorities, constraints, assumptions, success_metrics, scoring_settings")
       .eq("id", id)
       .single();
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -20,6 +21,7 @@ export async function GET(request, { params }) {
       constraints: data.constraints || "",
       assumptions: data.assumptions || "",
       successMetrics: data.success_metrics || "",
+      scoring: data.scoring_settings || {},
     });
   });
 }
@@ -30,7 +32,11 @@ export async function PUT(request, { params }) {
     const { id } = await params;
     if (!(await verifyWorkspaceOwner(supabase, id, userId)))
       return NextResponse.json({ error: "Not found" }, { status: 404 });
-    const { productSummary, targetUsers, strategicPriorities, constraints, assumptions, successMetrics } = await request.json();
+    const body = await request.json();
+    const { productSummary, targetUsers, strategicPriorities, constraints, assumptions, successMetrics } = body;
+    const scoring = scoringSettingsSchema.safeParse(body.scoring);
+    if (body.scoring !== undefined && !scoring.success)
+      return NextResponse.json({ error: "Invalid shared scoring basis" }, { status: 400 });
     const { error } = await supabase
       .from("workspaces")
       .update({
@@ -40,6 +46,7 @@ export async function PUT(request, { params }) {
         constraints: constraints || "",
         assumptions: assumptions || "",
         success_metrics: successMetrics || "",
+        ...(body.scoring !== undefined ? { scoring_settings: scoring.data } : {}),
       })
       .eq("id", id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });

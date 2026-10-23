@@ -1,8 +1,9 @@
+import { normalizeCandidateBasis } from "../../../../../../../lib/scoring-basis";
 import { NextResponse } from "next/server";
 import { withAuth, verifyWorkspaceOwner } from "../../../../../../../lib/api-auth";
 import { createRevision, resolveActor } from "../../../../../../../lib/revisions";
 
-const TRACKED_FIELDS = ["name", "description", "reach", "impact", "confidence", "effort", "owner", "theme", "status"];
+const TRACKED_FIELDS = ["name", "description", "reach", "impact", "confidence", "effort", "owner", "theme", "status", "scoring_basis"];
 
 // POST /api/workspaces/[id]/features/[featureId]/revert
 // Body: { revision_number: 3 }
@@ -29,7 +30,7 @@ export async function POST(request, { params }) {
     // Get current feature state
     const { data: current } = await supabase
       .from("features")
-      .select("name, description, reach, impact, confidence, effort, owner, theme, status")
+      .select("name, description, reach, impact, confidence, effort, owner, theme, status, scoring_basis")
       .eq("id", featureId)
       .eq("workspace_id", id)
       .single();
@@ -39,6 +40,7 @@ export async function POST(request, { params }) {
     const restored = {
       name: targetRev.snapshot_name,
       description: targetRev.snapshot_description,
+      scoring_basis: targetRev.snapshot_scoring_basis || {},
       reach: targetRev.snapshot_reach,
       impact: targetRev.snapshot_impact,
       confidence: targetRev.snapshot_confidence,
@@ -55,7 +57,7 @@ export async function POST(request, { params }) {
     for (const field of TRACKED_FIELDS) {
       const oldVal = typeof current[field] === "string" ? (current[field] || "") : current[field];
       const newVal = typeof restored[field] === "string" ? (restored[field] || "") : restored[field];
-      if (oldVal !== newVal) {
+      if (field === "scoring_basis" ? JSON.stringify(normalizeCandidateBasis(oldVal)) !== JSON.stringify(normalizeCandidateBasis(newVal)) : oldVal !== newVal) {
         changedFields.push({ field, old: oldVal, new: newVal });
       }
     }
@@ -91,6 +93,7 @@ export async function POST(request, { params }) {
       id: featureId,
       revision_number: newRevisionNumber,
       ...restored,
+      scoringBasis: restored.scoring_basis,
     });
   });
 }

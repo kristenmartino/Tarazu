@@ -150,12 +150,10 @@ export default function RicePage() {
         <Prose>
           <h2>Normalized RICE: why Tarazu scores every input 1–100</h2>
           <p>
-            Classic RICE mixes units. Reach is a count of people, impact is a
-            multiplier from a fixed ladder, confidence is a percentage, and effort is
-            person-months. Multiply and divide across four different units and the
-            result is arithmetically valid but dimensionally meaningless — which is why
-            two teams using &ldquo;the same&rdquo; framework routinely produce scores
-            that cannot be compared.
+            Classic RICE uses audience counts, an impact multiplier, confidence and
+            person-months of effort. Tarazu expresses each input on a relative 1–100
+            scale to support a quick comparison within a workspace. The result
+            depends on shared definitions for the audience, period and score bands.
           </p>
 
           <KeyFact label="How Tarazu computes it">
@@ -170,14 +168,16 @@ export default function RicePage() {
           </KeyFact>
 
           <p>
-            Normalizing buys comparability: scores mean the same thing across teams and
-            across quarters, and a whole class of unit-mismatch bug disappears.
+            A shared numeric range alone does not make scores comparable across
+            teams or quarters. Set the shared scoring basis and anchor definitions,
+            record candidate-specific assumptions, and review older scores when
+            those definitions change.
           </p>
           <p>
             <strong>What it costs you</strong> is the literal reading. In classic RICE
             you can say &ldquo;this reaches 4,000 users a quarter.&rdquo; On a 1–100
             scale you&apos;re saying &ldquo;this reaches far more people than that one,
-            about four-fifths of the most reach anything here has.&rdquo; That&apos;s a
+            about four-fifths of the workspace audience in the agreed period.&rdquo; That&apos;s a
             real loss, and worth knowing you&apos;ve accepted. If your team genuinely has
             trustworthy reach data in absolute units, classic RICE preserves
             information that normalization discards.

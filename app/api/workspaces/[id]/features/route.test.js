@@ -47,7 +47,7 @@ describe("GET /api/workspaces/[id]/features", () => {
     expect(data.features[0]).toEqual({
       id: "f-1", name: "Auth", description: "Login",
       reach: 80, impact: 70, confidence: 90, effort: 30,
-      owner: "Bob", theme: "Core", status: "active",
+      scoringBasis: {}, owner: "Bob", theme: "Core", status: "active",
       created_at: "2026-01-01T00:00:00Z", updated_at: "2026-02-02T00:00:00Z",
     });
     expect(data.features[1].owner).toBeNull();
