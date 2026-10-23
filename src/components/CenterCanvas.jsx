@@ -285,7 +285,7 @@ export const CenterCanvas = ({
         <Pill color={C.accent} dimColor={C.accentDim} small>{filtersActive ? `${filteredDisplayOrder.length}/${features.length}` : features.length} CANDIDATES</Pill>
         <Pill color={C.blue} dimColor={C.blueDim} small>RICE</Pill>
 
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+        {!showForm && <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
           <button data-no-print onClick={onImportFile} style={headerBtnStyle}
             onMouseEnter={e => { e.target.style.borderColor = C.blue; e.target.style.color = C.blue; }}
             onMouseLeave={e => { e.target.style.borderColor = C.border; e.target.style.color = C.textMuted; }}>↑ Import</button>
@@ -295,7 +295,7 @@ export const CenterCanvas = ({
           <button data-no-print onClick={() => window.print()} style={headerBtnStyle}
             onMouseEnter={e => { e.target.style.borderColor = C.purple; e.target.style.color = C.purple; }}
             onMouseLeave={e => { e.target.style.borderColor = C.border; e.target.style.color = C.textMuted; }}>⎙ PDF</button>
-        </div>
+        </div>}
       </div>
 
       {/* Content area */}
@@ -307,13 +307,13 @@ export const CenterCanvas = ({
           </p>
         </div>
 
-        <div data-no-print style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {!showForm && <div data-no-print style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button onClick={() => { onEditingFeature(null); onShowForm(true); }} style={{ flex: 1, padding: "10px 16px", border: `1px dashed color-mix(in srgb, var(--success) 31%, transparent)`, borderRadius: 8, background: C.accentGlow, color: C.accent, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "var(--mono)", transition: "all 0.2s" }}
             onMouseEnter={e => e.target.style.background = C.accentDim} onMouseLeave={e => e.target.style.background = C.accentGlow}>+ Add Candidate</button>
           <button onClick={onLoadSamples} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Load example backlog">↻ Example Backlog</button>
           <button onClick={onClear} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.danger, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Clear workspace">✕ Clear Workspace</button>
           {undoSnapshot && <button onClick={onUndo} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.warn, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Undo last action">↩ Undo</button>}
-        </div>
+        </div>}
 
         {!showForm && features.some(f => /Approval reminders/i.test(f.name) && /synthetic/i.test(f.name)) && <section aria-label="Fictional decision walkthrough" style={{ padding: 16, borderLeft: `3px solid ${C.brass || C.accent}`, background: C.surface, borderRadius: 8 }}>
           <h3 style={{ margin: "0 0 8px", fontSize: 18 }}>One engineer, two weeks—what should we test first?</h3>
