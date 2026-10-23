@@ -140,7 +140,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
             <p>{result.justification}</p>
             <p>References: {result.evidence?.map(ref => referenceLabel(ref, usedContext)).join("; ") || "No supplied evidence cited"}</p>
             <strong>AI assumptions (unverified)</strong>
-            {result.assumptions?.length ? <ul>{result.assumptions.map((assumption, index) => <li key={index}>{assumption} <button disabled={scoringBasis.claims.length >= MAX_CLAIMS || scoringBasis.claims.some(c => c.origin === 'ai' && c.text === assumption)} onClick={() => addClaim(newScoringClaim(dim, assumption, 'ai_assumption', { origin: 'ai' }))}>Add as AI assumption</button></li>)}</ul> : <p>None stated</p>}
+            {result.assumptions?.length ? <ul>{result.assumptions.map((assumption, index) => <li key={index}>{assumption} <button style={{ ...inputStyle, padding: '4px 8px', fontSize: 11, cursor: 'pointer' }} disabled={scoringBasis.claims.length >= MAX_CLAIMS || scoringBasis.claims.some(c => c.origin === 'ai' && c.text === assumption)} onClick={() => addClaim(newScoringClaim(dim, assumption, 'ai_assumption', { origin: 'ai' }))}>Add as AI assumption</button></li>)}</ul> : <p>None stated</p>}
             {result.claimReviews?.length > 0 && <section aria-label={`${dim} claim review`}><strong>AI review of supplied claims</strong><p>These are AI judgments about source support; provenance labels stay as recorded.</p><ul>{result.claimReviews.map(review => {
               const claim = usedContext?.candidate?.scoringBasis?.claims?.find(c => c.id === review.claimId);
               return <li key={review.claimId}><strong>{CLAIM_KINDS[claim?.kind] || 'Unclassified'} · {claim?.text || 'Claim unavailable'}</strong><p>{({ supported: 'Appears supported', conflicting: 'Conflicting evidence', source_missing: 'Source missing or unusable', assumption: 'Unverified assumption', needs_review: 'Needs review' })[review.status]}: {review.explanation}</p><p>{review.evidence.map(ref => referenceLabel(ref, usedContext)).join('; ') || 'No Signal cited'}</p></li>;
@@ -148,7 +148,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
             <p>Gaps: {result.gaps?.join("; ") || "None stated"}</p>
             <p>Next: {result.nextAction}</p>
             <ScoringFollowUp key={`${dim}:${result.followUp?.question}`} followUp={result.followUp} dimension={dim} claims={scoringBasis.claims} signals={availableSignals} onAdd={addClaim} />
-            {Number.isInteger(result.score) && <button disabled={stale} onClick={() => acceptSuggestion(dim)}>Accept {dim} suggestion</button>}
+            {Number.isInteger(result.score) && <button style={{ ...inputStyle, cursor: 'pointer', opacity: stale ? 0.5 : 1 }} disabled={stale} onClick={() => acceptSuggestion(dim)}>Accept {dim} suggestion</button>}
           </details>;
         })}
         {aiError && <p style={{ fontSize: 10, color: C.danger, margin: 0, fontFamily: "var(--mono)" }}>{aiError}</p>}

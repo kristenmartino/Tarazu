@@ -33,7 +33,7 @@ export function ClaimSources({ sources, signals, onChange, label }) {
         </label>
         <p role="status">{sourceStatus(source, signals)}. Linking a source does not verify the claim.</p>
         {signal && <details><summary>Read source</summary><p style={{ whiteSpace: 'pre-wrap' }}>{signal.body || 'No source body'}</p><p>{signal.source || 'Origin not recorded'}</p></details>}
-        <button type="button" onClick={() => onChange(sources.filter((_, i) => i !== index))}>Remove source</button>
+        <button type="button" style={{ ...style, width: 'auto', cursor: 'pointer' }} onClick={() => onChange(sources.filter((_, i) => i !== index))}>Remove source</button>
       </div>;
     })}
     {sources.length < 3 && <label style={{ display: 'grid', gap: 4 }}>Link a Signal to this claim
@@ -66,17 +66,18 @@ function ClaimEditor({ claim, index, signals, onChange, onRemove }) {
       {claim.origin === 'ai' && <p>Originally proposed by AI. Changing its label is a human judgment.</p>}
       {claim.kind === 'fact' && !claim.sources.length && <p role="status">Reported fact · source missing. Add the observation or measurement that supports it.</p>}
       <ClaimSources sources={claim.sources} signals={signals} label={label} onChange={sources => onChange({ ...claim, sources })} />
-      <button type="button" onClick={onRemove}>Remove claim</button>
+      <button type="button" style={{ ...style, cursor: 'pointer' }} onClick={onRemove}>Remove claim</button>
     </div>
   </details>;
 }
 
 export function ScoringClaims({ claims = [], signals = [], onChange }) {
+  const style = useControlStyle();
   return <section aria-label="Scoring claims and sources" style={{ fontSize: 12, lineHeight: 1.6, display: 'grid', gap: 10, minWidth: 0 }}>
     <strong>Scoring claims and sources</strong>
     <p style={{ margin: 0 }}>Record one claim at a time. A reported fact is your assertion; source links and AI review do not independently verify it. Keep forecasts and AI assumptions labeled. Include conflicting evidence.</p>
     {claims.map((claim, index) => <ClaimEditor key={claim.id} claim={claim} index={index} signals={signals} onChange={next => onChange(claims.map(c => c.id === claim.id ? next : c))} onRemove={() => onChange(claims.filter(c => c.id !== claim.id))} />)}
-    <button type="button" disabled={claims.length >= MAX_CLAIMS} onClick={() => onChange([...claims, newScoringClaim()])}>Add scoring claim</button>
+    <button type="button" style={{ ...style, cursor: 'pointer' }} disabled={claims.length >= MAX_CLAIMS} onClick={() => onChange([...claims, newScoringClaim()])}>Add scoring claim</button>
     {claims.length >= MAX_CLAIMS && <p>Up to {MAX_CLAIMS} claims per candidate. Edit or remove a claim to add another.</p>}
   </section>;
 }
@@ -95,7 +96,7 @@ export function ScoringFollowUp({ followUp, dimension, claims, signals, onAdd })
       <textarea aria-label={`Answer ${dimension} follow-up`} style={style} value={answer} rows={2} maxLength={700} placeholder="Answer what you know, with date, sample and segment. Keep uncertainty explicit." onChange={e => setAnswer(e.target.value)} />
       <select aria-label={`Provenance for ${dimension} answer`} style={style} value={kind} onChange={e => setKind(e.target.value)}><option value="estimate">User estimate</option><option value="fact">Reported fact</option><option value="unclassified">Unclassified</option></select>
       <ClaimSources sources={sources} signals={signals} label={`${dimension} answer`} onChange={setSources} />
-      <button type="button" disabled={!answer.trim() || claims.length >= MAX_CLAIMS} onClick={() => onAdd(newScoringClaim(dimension, answer.trim(), kind, { sources, question: followUp.question }))}>Add answer to scoring basis</button>
+      <button type="button" style={{ ...style, cursor: 'pointer', opacity: !answer.trim() || claims.length >= MAX_CLAIMS ? 0.5 : 1 }} disabled={!answer.trim() || claims.length >= MAX_CLAIMS} onClick={() => onAdd(newScoringClaim(dimension, answer.trim(), kind, { sources, question: followUp.question }))}>Add answer to scoring basis</button>
       {claims.length >= MAX_CLAIMS && <p>Edit an existing claim to record this answer; the candidate already has {MAX_CLAIMS} claims.</p>}
     </>}
   </section>;
