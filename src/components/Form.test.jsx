@@ -263,3 +263,32 @@ it('preserves manual values between bands and does not assign them a neighboring
   expect(reach.getByText('Reach value 23')).toBeTruthy();
   expect(screen.getByText('Evidence strength, not a probability of success.')).toBeTruthy();
 });
+
+it('shows the server-reviewed supplied answer instead of an editable paraphrased question and retains manual scores', async () => {
+  const reply = {reach:{...result(55).reach,nextAction:'Run a real pilot to collect new evidence.',followUp:null,followUpResolution:{status:'answered',sourceId:'claim:answer',label:'Recorded claim · User estimate',text:'No measured eligible-user count exists.'}}};
+  vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:true,json:async()=>reply}));
+  render(<Form editFeature={candidate} onAdd={()=>{}} />);
+  fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
+  await screen.findByText('AI suggests 55/100');
+  expect(screen.getByText('Answer already supplied; original uncertainty retained.')).toBeTruthy();
+  fireEvent.click(screen.getByText('Review reasoning & evidence'));
+  expect(screen.getByText('Already in your context')).toBeTruthy();
+  expect(screen.getByText('Run a real pilot to collect new evidence.')).toBeTruthy();
+  expect(screen.getByText('No measured eligible-user count exists.')).toBeTruthy();
+  expect(screen.queryByLabelText('Answer reach follow-up')).toBeNull();
+  expect(screen.getByText('Reach value 23')).toBeTruthy();
+});
+
+it('explains a withheld ambiguous question without inventing an answer or hiding a null score', async () => {
+  const reply = {reach:{...result(null).reach,followUp:null,followUpResolution:{status:'uncertain'}}};
+  vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:true,json:async()=>reply}));
+  render(<Form editFeature={candidate} onAdd={()=>{}} />);
+  fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
+  await screen.findByText('AI needs more information');
+  fireEvent.click(screen.getByText('Review reasoning & evidence'));
+  expect(screen.getByText('Follow-up needs review')).toBeTruthy();
+  expect(screen.queryByText('Already in your context')).toBeNull();
+  expect(screen.queryByLabelText('Answer reach follow-up')).toBeNull();
+  expect(screen.queryByText('Accept reach suggestion')).toBeNull();
+  expect(screen.getByText('Reach value 23')).toBeTruthy();
+});

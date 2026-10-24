@@ -198,3 +198,33 @@ describe("POST /api/suggest-scores — quota gate", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 });
+
+describe('POST /api/suggest-scores — supplied-answer review', () => {
+  const answer = {id:'saved',dimension:'reach',kind:'estimate',text:'No measured count exists. Forecast 60 of 100 pilot users over 30 days.',question:'What share of the 100 pilot users had an overdue request in a comparable 30-day period?',sources:[]};
+  const body = {featureName:'Reminders',dimensions:['reach'],scoringBasis:{claims:[answer]}};
+  const proposed = {...assessment(55),claimReviews:[{claimId:'saved',status:'source_missing',explanation:'This forecast is unmeasured.',evidence:[]}],followUp:{question:'How many of 100 users had an overdue request in the most recent comparable 30 days?',whyItChangesScore:'Changes reach band.',claimIds:['saved']},nextAction:'Ask how many users were eligible.'};
+  const raw = object => ({ok:true,status:200,json:async()=>({content:[{text:JSON.stringify(object)}]})});
+  it('returns a source-backed acknowledgement for the observed paraphrase without retrying the valid scores', async () => {
+    fetch.mockResolvedValueOnce(okText({reach:proposed})).mockResolvedValueOnce(raw({reviews:['followUp','nextAction'].map(field=>({id:`reach:${field}`,status:'answered',sourceId:'claim:saved',quote:'No measured count exists.'}))}));
+    const response = await POST(makeRequest(body));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({reach:{score:55,followUp:null,followUpResolution:{status:'answered',sourceId:'claim:saved',text:'No measured count exists.'}}});
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(JSON.parse(fetch.mock.calls[1][1].body).messages[0].content).toContain(answer.question);
+  });
+  it('withholds an unchecked question when review invents an answer, preserving a valid score response', async () => {
+    fetch.mockResolvedValueOnce(okText({reach:proposed})).mockResolvedValue(raw({reviews:[{id:'reach:followUp',status:'answered',sourceId:'claim:saved',quote:'There are 60 measured users.'},{id:'reach:nextAction',status:'new',sourceId:null,quote:null}]}));
+    const response = await POST(makeRequest(body));
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.reach).toMatchObject({score:55,followUp:null,followUpResolution:{status:'unavailable'}});
+    expect(JSON.stringify(data.reach)).not.toContain('60 measured users');
+    expect(fetch).toHaveBeenCalledTimes(3); // one scoring call, two bounded review attempts
+  });
+  it('preserves a different timeframe question after a new-information review', async () => {
+    const followUp={...proposed.followUp,question:'How many of the 100 users qualify over 90 days rather than 30?'};
+    fetch.mockResolvedValueOnce(okText({reach:{...proposed,followUp}})).mockResolvedValueOnce(raw({reviews:['followUp','nextAction'].map(field=>({id:`reach:${field}`,status:'new',sourceId:null,quote:null}))}));
+    const response = await POST(makeRequest(body));
+    expect((await response.json()).reach.followUp).toEqual(followUp);
+  });
+});
