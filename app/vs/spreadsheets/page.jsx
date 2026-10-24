@@ -36,8 +36,8 @@ export default function VsSpreadsheetsPage() {
         <Prose>
           <h2>Three failure modes of spreadsheet prioritization</h2>
           <p>
-            Spreadsheets aren&apos;t bad at arithmetic. They&apos;re bad at the three things
-            that make a prioritization decision hold up a quarter later.
+            Spreadsheets can support a sound decision process. These problems arise when
+            the team has no shared structure for scoring, evidence and later reviews.
           </p>
         </Prose>
         <CardGrid items={SPREADSHEET_PROBLEMS} />
@@ -47,8 +47,8 @@ export default function VsSpreadsheetsPage() {
         <Prose>
           <h2>Built for prioritization, not just tracking</h2>
           <p>
-            Four categories of tool get used for this job. They&apos;re genuinely
-            different, and none of them is bad at everything:
+            Different tools can support the same decision. This is a general guide;
+            capabilities vary by product, plan and configuration.
           </p>
         </Prose>
 
@@ -60,11 +60,10 @@ export default function VsSpreadsheetsPage() {
 
         <Prose>
           <p>
-            The pattern worth noticing: spreadsheets and generic AI assistants both
-            lose the <em>record</em>. A spreadsheet keeps the numbers and drops the
-            argument; a chat assistant keeps the argument until the conversation
-            scrolls away. Roadmap tools keep a great deal, but what they keep is status
-            — what state a thing is in, not why it was chosen over something else.
+            A spreadsheet, AI conversation or discovery tool can retain reasoning when
+            you structure it that way. Tarazu brings the choice, preserved evidence,
+            tradeoffs and dated reviews into one workflow. The question is whether
+            that structure makes your own decision easier to explain and revisit.
           </p>
         </Prose>
       </Section>
@@ -105,19 +104,20 @@ export default function VsSpreadsheetsPage() {
         <Prose>
           <h2>What you carry over</h2>
 
-          <KeyFact label="No lock-in">
+          <KeyFact label="Take a decision brief with you">
             <p>
               Import a CSV; export a CSV. Your columns map onto reach, impact,
               confidence, and effort, with common aliases recognised automatically and
               out-of-range values clamped rather than rejected. Ranked output exports
-              back to CSV, and the priority view exports to PDF.
+              back to CSV, and the priority view exports to PDF. Copy a saved decision as
+              a Markdown brief with preserved source text and dated reviews.
             </p>
           </KeyFact>
 
           <p>
-            This matters more than it sounds. A prioritization tool you cannot leave is
-            a tool that can stop earning its place and keep it anyway — so the exit
-            being cheap is part of the argument for walking in.
+            The decision brief is a readable handoff, not a full workspace backup. CSV
+            and PDF cover the candidates and priority view; they do not contain all
+            scoring claims, Signals or saved validation briefs. Keep your source originals.
           </p>
           <p>
             If you want the mechanics before you move anything, the{" "}

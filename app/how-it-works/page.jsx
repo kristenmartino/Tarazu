@@ -135,23 +135,24 @@ export default function HowItWorksPage() {
             a meeting.
           </p>
           <p>
-            This is the part spreadsheets lose. The numbers survive; the argument that
-            produced them doesn&apos;t — which is why the same debate reopens every quarter.
+            Copy the decision brief into your existing documents or messages. It includes
+            the preserved evidence and caveats, so readers can follow the reasoning.
           </p>
         </Prose>
       </Section>
 
       <Section id="learn">
         <Prose>
-          <h2>05 · Review — inspect suggestions and decisions</h2>
+          <h2>05 · Review — return with new evidence</h2>
           <p>
-            Tarazu summarizes how you accept or adjust AI scores and how you rate
-            recommendations. These summaries are for your review; they are not included in later AI prompts.
+            Open a decision when its review is due. Record what happened, attach new
+            evidence and choose whether to keep, revise or retire the direction.
+            Each dated review preserves the decision and evidence as reviewed.
           </p>
           <p>
-            This is feedback on suggestions, not measured product performance or model
-            training. Decision records capture expected outcomes and review dates;
-            actual shipped outcomes are not currently fed into recommendations.
+            Reported outcomes are not independently verified results. Reviews do not
+            rewrite the original reasoning or automatically train the AI. Score edits
+            and recommendation ratings remain available separately for your review.
           </p>
         </Prose>
       </Section>

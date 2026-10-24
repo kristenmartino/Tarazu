@@ -180,3 +180,15 @@ describe("POST /api/workspaces/[id]/decisions", () => {
     expect(response.status).toBe(500);
   });
 });
+
+it('loads only current-workspace reviews onto their matching decisions', async () => {
+  const reviewQuery={eq:vi.fn().mockReturnThis(),order:vi.fn(async()=>({data:[{id:'r',decision_id:'d-1',outcome:'Unknown'}],error:null}))};
+  mockSupabase.from.mockImplementation(table=>({select:()=>table==='decision_reviews'?reviewQuery:{eq:()=>({order:async()=>({data:[{id:'d-1'},{id:'d-2'}],error:null})})}}));
+  const response=await GET(makeRequest(null),makeParams('ws-1'));
+  const data=await response.json();expect(data.decisions[0].reviews).toHaveLength(1);expect(data.decisions[1].reviews).toEqual([]);
+  expect(reviewQuery.eq).toHaveBeenCalledWith('workspace_id','ws-1');
+});
+it('reports review-loading failure rather than showing an empty review history', async () => {
+  mockSupabase.from.mockImplementation(table=>({select:()=>({eq:()=>({order:async()=>table==='decision_reviews'?{data:null,error:{message:'offline'}}:{data:[{id:'d-1'}],error:null}})})}));
+  expect((await GET(makeRequest(null),makeParams('ws-1'))).status).toBe(500);
+});

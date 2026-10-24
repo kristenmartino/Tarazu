@@ -24,7 +24,10 @@ export async function GET(request, { params }) {
 
     const { data, error } = await query;
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ decisions: data || [] });
+    if (!data?.length) return NextResponse.json({ decisions: [] });
+    const reviews = await supabase.from('decision_reviews').select('*').eq('workspace_id', id).order('reviewed_at');
+    if (reviews.error) return NextResponse.json({ error: 'Decision reviews could not be loaded.' }, { status: 500 });
+    return NextResponse.json({ decisions: data.map(d => ({ ...d, reviews: (reviews.data || []).filter(r => r.decision_id === d.id) })) });
   });
 }
 

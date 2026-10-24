@@ -9,6 +9,10 @@ This update is not a fresh customer, revenue, traffic or production-database aud
 
 ## Purpose
 
+Positioning: **Make a product decision you can explain — and revisit when the
+evidence changes.** This describes the workflow, not an exclusive capability:
+spreadsheets and other discovery products can also preserve evidence and rationale.
+
 Help a person making a product decision compare options, inspect the evidence
 and assumptions behind them, choose a useful next test, and return to the
 reasoning when new information arrives.
@@ -59,7 +63,7 @@ customer adoption or commercial readiness.
 | Validation briefs | Investigations can be saved, reopened and revised independently of decisions, including unassessed areas and reviewed evidence. Partial ratings or weak evidence do not establish customer validation. |
 | Decisions | Draft decisions can preserve the originating brief revision, sources and reasoning. Revising a brief does not rewrite an earlier decision snapshot. A saved draft is not an approved build or an observed outcome. |
 | Persistence and identity | Guest work stays in the current browser. Signed-in work uses workspace-scoped cloud storage, with personal and organization access paths. Revision and decision records include creator attribution where implemented. The prepared cloud demo contains synthetic records. The public /demo link seeds a separate browser-only Relay copy with its evidence, saved brief and frozen draft decisions, even for a signed-in visitor; restarting it preserves personal workspaces. Starting a personal decision opens a blank candidate in the current workspace without importing Relay or replacing existing work. |
-| Review records | Score edits and recommendation feedback can be reviewed. These records are not automatic model training or a system that learns from shipped outcomes. |
+| Review records | Dated decision reviews record reported outcomes, new evidence snapshots and a keep/revise/retire direction without changing the original decision. Due reviews appear on Home. Score edits and recommendation feedback remain separate. Reviews are not independently verified outcomes or automatic model training. |
 
 AI requires sign-in, network access and atomic server-side usage reservations. Per-user and shared request budgets, concurrency limits, crash-recovery leases and a conservative $10 rolling daily provider-spending envelope bound admitted requests. Reservations are not a copy of the provider invoice. Provider or
 validation failures display an explicit error; the app does not invent a local
@@ -107,7 +111,7 @@ Questions for review:
 - What support effort, AI usage and infrastructure cost would a repeat workflow require?
 - What evidence would justify a paid offering, and how should a change be communicated?
 
-Feedback and data-help requests have a public contact path at /contact. CSV/PDF exports cover candidates and the priority view; they do not include Signals, validation briefs or decision history. No full workspace backup export is claimed.
+Feedback and data-help requests have a public contact path at /contact. Saved decisions can be copied as Markdown briefs with their preserved evidence, caveats and dated reviews. CSV/PDF exports cover candidates and the priority view; they do not include Signals, validation briefs or decision history. None is a full workspace backup.
 
 ## Next milestone: observed use
 

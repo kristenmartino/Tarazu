@@ -93,11 +93,11 @@ export function Landing() {
         <section className="hero">
           <div className="wrap hero-grid">
             <div className="hero-copy">
-              <span className="eyebrow">Product prioritization</span>
-              <h1>Weigh what to <span className="br">build next.</span></h1>
+              <span className="eyebrow">Product decisions, explained</span>
+              <h1>Make a decision <span className="br">you can explain.</span></h1>
               <p className="lede">
-                Tarazu turns scattered requests, feedback, and data into ranked, defensible
-                decisions — with visible assumptions and a record of why you chose.
+                Compare product options, keep the evidence and tradeoffs behind your choice,
+                and revisit it when you learn something new.
               </p>
               <div className="hero-actions">
                 <Link href="/app" className="btn btn-solid">
@@ -201,7 +201,7 @@ export function Landing() {
                   </svg>
                 </div>
                 <div className="step-n">05</div><h3>Review</h3>
-                <p>Review score edits and recommendation ratings alongside the decisions you recorded.</p>
+                <p>Record what happened, add new evidence, and choose whether to keep, revise or retire the direction.</p>
               </div>
             </div>
             <div className="loop-back" data-reveal>
@@ -252,9 +252,9 @@ export function Landing() {
                         <path d="M12 7v5l3 2" />
                       </svg>
                     </span>
-                    <h3>A rationale everyone sees</h3>
+                    <h3>A brief you can share</h3>
                   </div>
-                  <p>A transparent ranking with the "why," so "this, not that" is never a mystery to your team or your stakeholders.</p>
+                  <p>Copy a decision brief with the problem, choice, tradeoffs, evidence and next test into your existing documents or messages.</p>
                 </div>
                 <div className="feat">
                   <div className="ftop">
@@ -263,9 +263,9 @@ export function Landing() {
                         <path d="M21 12a9 9 0 1 1-3-6.7M21 4v4h-4" />
                       </svg>
                     </span>
-                    <h3>Review your feedback</h3>
+                    <h3>Return with new evidence</h3>
                   </div>
-                  <p>Review your score adjustments and recommendation feedback. These records are for your review; they are not included in AI requests and do not measure shipped outcomes.</p>
+                  <p>Compare your expected outcome with what you report happened. Dated reviews preserve the original reasoning; they do not independently verify results or train the AI.</p>
                 </div>
               </div>
 
