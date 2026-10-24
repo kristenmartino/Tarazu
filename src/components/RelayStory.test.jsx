@@ -20,7 +20,7 @@ it("keeps the quick story read-only, focuses each step and exposes the actual sa
   fireEvent.click(screen.getByRole("button",{name:"Next",exact:true}));expect(props.onStep).toHaveBeenLastCalledWith(1);
   expect(props.onInspectCandidate).not.toHaveBeenCalled();
   rerender(<RelayStory {...props} step={1}/>);expect(document.activeElement).toBe(screen.getByRole("heading",{name:"Evidence",exact:true}));
-  expect(screen.getByText(/does not establish how common/)).toBeTruthy();
+  expect(screen.getByText(/too small to establish how common/)).toBeTruthy();
   rerender(<RelayStory {...props} step={3}/>);fireEvent.click(screen.getAllByRole("button",{name:"Open the saved decision",exact:true})[0]);expect(props.onOpenDecision).toHaveBeenCalledOnce();
   expect(screen.queryByRole("textbox")).toBeNull();
 });

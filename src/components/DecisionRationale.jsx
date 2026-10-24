@@ -1,6 +1,8 @@
 import { ASSUMPTION_CATEGORIES, VALIDATE_DIMENSIONS } from "../validate/validationScore";
 import "./decision-story.css";
 import { evidenceGroups } from "../../lib/decision-record";
+import { isGeneratedBriefText } from "../../lib/decision-text";
+export { isGeneratedBriefText } from "../../lib/decision-text";
 
 const object = value => value && typeof value === "object" && !Array.isArray(value);
 const textValue = value => typeof value === "string" ? value : "";
@@ -9,34 +11,7 @@ export function SourceBriefReference({decision}) {
   const brief=decision.recommendation_snapshot?.validation_brief;
   if(!object(brief)) return null;
   const revision=Number.isSafeInteger(brief.revision)&&brief.revision>0 ? brief.revision : "unavailable";
-  return <p className="tz-decision-source">Source brief: {textValue(brief.draft?.ideaName) || "Unnamed preserved brief"} · Revision {revision}. This decision keeps the brief as it was when recorded.</p>;
-}
-
-// Recognise only unchanged generated copies. Unknown/edited text stays visible.
-export function isGeneratedBriefText(text, decision) {
-  const snapshot=decision.recommendation_snapshot;
-  const draft=snapshot?.validation_brief?.draft;
-  if(!object(draft) || !object(draft.assumptions) || !object(draft.scores)
-    || typeof snapshot.recommendation!=="string" || typeof snapshot.reason!=="string"
-    || !Number.isInteger(snapshot.assessedCount) || snapshot.assessedCount<0 || snapshot.assessedCount>VALIDATE_DIMENSIONS.length
-    || (snapshot.average!=null && (typeof snapshot.average!=="number" || !Number.isFinite(snapshot.average)))
-    || ![draft.ideaName,draft.ideaDesc,draft.risks,draft.nextActions].every(v=>typeof v==="string")
-    || ASSUMPTION_CATEGORIES.some(c=>draft.assumptions[c.key]!==undefined&&typeof draft.assumptions[c.key]!=="string")
-    || typeof draft.evidenceReviewed!=="boolean" || VALIDATE_DIMENSIONS.some(d=>draft.scores[d.key]!==null&&(!Number.isInteger(draft.scores[d.key])||draft.scores[d.key]<1||draft.scores[d.key]>5))
-    || !Array.isArray(draft.attachedSignals) || draft.attachedSignals.some(s=>!object(s)||![s.title,s.body,s.source,s.confidence_impact].every(v=>typeof v==="string"))) return false;
-  const average=snapshot.average;
-  const scoreSummary=`${snapshot.recommendation} — ${snapshot.assessedCount}/${VALIDATE_DIMENSIONS.length} dimensions assessed${average==null?"":`; average ${average.toFixed(1)}/5`}. ${snapshot.reason}`;
-  const lines=[`Idea: ${draft.ideaName || "(unnamed)"}`];
-  if(draft.ideaDesc) lines.push(`Description: ${draft.ideaDesc}`);
-  lines.push(`Assessment: ${scoreSummary}`,"","Opportunity scores:");
-  VALIDATE_DIMENSIONS.forEach(d=>lines.push(`  - ${d.label}: ${draft.scores?.[d.key]==null?"Not assessed":`${draft.scores[d.key]}/5`}`));
-  const assumptions=ASSUMPTION_CATEGORIES.filter(c=>draft.assumptions?.[c.key]?.trim());
-  if(assumptions.length){lines.push("","Key assumptions:");assumptions.forEach(c=>lines.push(`  - ${c.label}: ${draft.assumptions[c.key].trim()}`));}
-  if(draft.attachedSignals?.length){lines.push("",`Attached evidence (${draft.attachedSignals.length}; review ${draft.evidenceReviewed?"completed":"pending"}):`);draft.attachedSignals.forEach(s=>lines.push(`  - ${s.title}${s.source?` (${s.source})`:""}${s.confidence_impact?` — ${s.confidence_impact}`:""}`));}
-  if(draft.risks?.trim())lines.push("",`Risks / unknowns: ${draft.risks.trim()}`);
-  if(draft.nextActions?.trim())lines.push("",`Next validation actions: ${draft.nextActions.trim()}`);
-  const normalise=v=>String(v||"").replace(/\s+/g," ").trim();
-  return normalise(text)===normalise(lines.join("\n"));
+  return <p className="tz-decision-source">Source brief: {textValue(brief.draft?.ideaName) || "Unnamed preserved brief"} · Revision {revision}. Saved with this decision.</p>;
 }
 
 // Plain text only: preserve paragraphs, headings and bullet lines without HTML.
@@ -67,14 +42,14 @@ export function DecisionRationale({ decision:d }) {
   const expectedOutcome=textValue(d.expected_outcome);
   const nextMatches=Boolean(draft?.nextActions && expectedOutcome.trim()===draft.nextActions.trim());
   return <div className="tz-decision-story">
-    {draft&&<p className="tz-decision-source">Problem and evidence are preserved source-brief context. The recorded decision appears separately below.{Number.isInteger(count)&&<> Recorded assessment: {count}/{VALIDATE_DIMENSIONS.length} dimensions assessed{status?` · ${status}`:""}.</>}</p>}
+    {draft&&<p className="tz-decision-source">Problem and evidence from the saved brief.{Number.isInteger(count)&&<> Assessment: {count}/{VALIDATE_DIMENSIONS.length} dimensions assessed{status?` · ${status}`:""}.</>}</p>}
     {draft?.assumptions?.problem&&<section aria-label="Problem"><h3>Problem</h3><ReadableText text={draft.assumptions.problem}/>{ASSUMPTION_CATEGORIES.some(c=>c.key!=="problem"&&draft.assumptions[c.key])&&<details><summary>Audience and original assumptions</summary>{ASSUMPTION_CATEGORIES.filter(c=>c.key!=="problem"&&draft.assumptions[c.key]).map(c=><div key={c.key}><h4>{c.label}</h4><ReadableText text={draft.assumptions[c.key]}/></div>)}</details>}</section>}
-    {draft&&<section aria-label="Evidence"><h3>Evidence</h3><p className="tz-decision-source">{draft.evidenceReviewed===true?"Evidence marked reviewed in this saved brief; review is not independent verification.":draft.evidenceReviewed===false?"Evidence review was not completed in this saved brief.":"Evidence review status was not recorded."}</p>
-      {evidence.length > 0 && <p className="tz-decision-source">Groups describe the relationship to the originating candidate{typeof raw.ideaName === "string" && raw.ideaName ? `, ${raw.ideaName}` : ""}. That may differ from the chosen option below.</p>}
+    {draft&&<section aria-label="Evidence"><h3>Evidence</h3><p className="tz-decision-source">{draft.evidenceReviewed===true?"Marked reviewed in this brief; not independently verified.":draft.evidenceReviewed===false?"Evidence review incomplete.":"Evidence review not recorded."}</p>
+      {evidence.length > 0 && <p className="tz-decision-source">Groups refer to the originating candidate{typeof raw.ideaName === "string" && raw.ideaName ? `, ${raw.ideaName}` : ""}. The chosen option is recorded below.</p>}
       {evidence.length ? <div className="tz-evidence-digest">{evidenceGroups(d).map(group => <div key={group.key} className={`tz-evidence-group tz-evidence-${group.key}`}><h4>{group.label}<span>{group.items.length}</span></h4>{group.items.length ? <ul className="tz-decision-evidence">{group.items.map((s,index)=><li key={`${s.id}:${index}`}><strong>{s.title || "Preserved source"}</strong><span className="tz-decision-source">{s.confidence_impact==="increases"?"Supports the originating candidate":s.confidence_impact==="decreases"?"Challenges the originating candidate":"Context for the originating candidate"}{s.source?` · ${s.source}`:""}</span>{s.body&&<p>{s.body.length > 180 ? s.body.slice(0,180).trimEnd() + "…" : s.body}</p>}{s.body&&<details><summary>Read preserved source and caveats</summary><ReadableText text={s.body}/></details>}</li>)}</ul> : <p className="tz-decision-source">No preserved sources in this group.</p>}</div>)}</div> : <p>{draft.evidenceAvailable?"No evidence was attached to this preserved brief.":"Preserved evidence details are unavailable in this record."}</p>}
-      <div className="tz-evidence-unknowns"><h4>Unknowns</h4><ReadableText text={draft.risks || "Unknowns were not recorded in this source brief. That does not establish that none remain."}/></div>
+      <div className="tz-evidence-unknowns"><h4>Unknowns</h4><ReadableText text={draft.risks || "Unknowns not recorded in this brief."}/></div>
     </section>}
     <section aria-label="Decision"><h3>Decision</h3>{d.chosen_candidate_name&&<p><strong>Chosen: {d.chosen_candidate_name}</strong></p>}{d.summary_rationale&&<ReadableText text={d.summary_rationale}/>}<p className="tz-decision-source">Status: {d.status || "not recorded"}.</p>{d.final_rationale&&(generated?<details><summary>Full recorded rationale</summary><ReadableText text={d.final_rationale}/></details>:<div><h4>Recorded rationale</h4><ReadableText text={d.final_rationale}/></div>)}{expectedOutcome&&!nextMatches&&<div><h4>Recorded expected outcome</h4><ReadableText text={expectedOutcome}/></div>}{d.tradeoffs_considered&&<details><summary>Tradeoffs considered</summary><ReadableText text={d.tradeoffs_considered}/></details>}{d.risks_accepted&&<details><summary>Risks accepted</summary><ReadableText text={d.risks_accepted}/></details>}</section>
-    {draft?.nextActions&&<section aria-label="Next test"><h3>Next test</h3>{!nextMatches&&<p className="tz-decision-source">Original proposed next action from the preserved source brief:</p>}<ReadableText text={draft.nextActions}/></section>}
+    {draft?.nextActions&&<section aria-label="Next test"><h3>Next test</h3>{!nextMatches&&<p className="tz-decision-source">Proposed in the saved brief:</p>}<ReadableText text={draft.nextActions}/></section>}
   </div>;
 }

@@ -105,7 +105,7 @@ export function Landing() {
                 </Link>
                 <Link href="/demo" className="btn btn-ghost">Try the Relay demo</Link>
               </div>
-              <div className="hero-foot"><span className="pip" /> From signal to a decision you can explain</div>
+              <div className="hero-foot"><span className="pip" /> Keep the notes behind your choice</div>
             </div>
 
             {/* balance scale */}
@@ -143,7 +143,7 @@ export function Landing() {
             <span className="sep">/</span>
             <span>noun</span>
             <span className="sep">/</span>
-            <span>the balance scales — an instrument for weighing what matters.</span>
+            <span>the balance scales.</span>
           </div>
         </div>
 
@@ -151,9 +151,9 @@ export function Landing() {
         <section className="band lifecycle" id="lifecycle">
           <div className="wrap">
             <div className="sec-head" data-reveal>
-              <span className="eyebrow">The decision lifecycle</span>
-              <h2>Five steps. <span className="br">One loop.</span></h2>
-              <p>Keep the evidence and reasoning behind each decision, so your team can revisit its choices and improve its reasoning as new evidence arrives.</p>
+              <span className="eyebrow">How it works</span>
+              <h2>From a request <span className="br">to a decision.</span></h2>
+              <p>Add what you know, compare the options, and save why you chose one. Return to the record when something changes.</p>
             </div>
             <div className="loop" data-reveal>
               <div className="stage">
@@ -208,7 +208,7 @@ export function Landing() {
               <svg viewBox="0 0 40 14" fill="none" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M38 7H6M12 2 6 7l6 5" />
               </svg>
-              Learn feeds back into Listen
+              New findings become part of the next review
             </div>
           </div>
         </section>
@@ -218,7 +218,7 @@ export function Landing() {
           <div className="wrap">
             <div className="sec-head" data-reveal>
               <span className="eyebrow">What you get</span>
-              <h2>Decisions you can <span className="br">actually defend.</span></h2>
+              <h2>See what each <span className="br">choice rests on.</span></h2>
             </div>
             <div className="show-grid">
               <div className="feat-list" data-reveal>
@@ -229,9 +229,9 @@ export function Landing() {
                         <path d="M4 6h16M4 12h16M4 18h10" />
                       </svg>
                     </span>
-                    <h3>Every signal, one place</h3>
+                    <h3>Notes beside the options</h3>
                   </div>
-                  <p>Requests, feedback, data, and ideas together — so nothing important gets decided in the dark.</p>
+                  <p>Attach an interview note, request or data point to the option it supports or challenges.</p>
                 </div>
                 <div className="feat">
                   <div className="ftop">
@@ -265,7 +265,7 @@ export function Landing() {
                     </span>
                     <h3>Return with new evidence</h3>
                   </div>
-                  <p>Compare your expected outcome with what you report happened. Dated reviews preserve the original reasoning; they do not independently verify results or train the AI.</p>
+                  <p>Record what happened, add a source, and choose whether to keep, revise or retire the direction. Earlier reasoning stays available.</p>
                 </div>
               </div>
 
@@ -279,8 +279,8 @@ export function Landing() {
           <div className="wrap">
             <div className="sec-head" data-reveal style={{ marginBottom: 0 }}>
               <span className="eyebrow">Why Tarazu</span>
-              <h2>Roadmaps shouldn't run on <span className="br">whoever argues loudest.</span></h2>
-              <p>The strongest opinion in the room isn't a strategy. Tarazu replaces gut-feel debates with a shared, repeatable way to weigh options — and a record of why you chose what you chose, ready the next time someone asks.</p>
+              <h2>Why did we <span className="br">choose this?</span></h2>
+              <p>Keep the notes behind your choice, so the next discussion starts with the same context. You can see which sources supported it, what was uncertain, and what changed later.</p>
             </div>
           </div>
         </section>
@@ -288,8 +288,8 @@ export function Landing() {
         {/* ============ CTA ============ */}
         <section className="cta">
           <div className="wrap cta-inner">
-            <h2>Bring balance to your <span className="br">roadmap.</span></h2>
-            <p>Start weighing what to build next — and stop relitigating the same decisions every quarter.</p>
+            <h2>Try it with a decision <span className="br">you need to make.</span></h2>
+            <p>Compare two options, attach what you know, and save the next step.</p>
             <div className="hero-actions">
               <Link href="/app" className="btn btn-solid">
                 Start prioritizing <span className="arrow">→</span>
@@ -309,7 +309,7 @@ export function Landing() {
                 <BrandMark />
                 Tarazu
               </a>
-              <p>The balance scale for product decisions. Weigh what matters, ship what counts, and learn from every call.</p>
+              <p>Compare product options and keep the notes behind your choice.</p>
             </div>
             <div className="foot-cols">
               <div className="foot-col">

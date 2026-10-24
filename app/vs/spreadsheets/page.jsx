@@ -28,8 +28,8 @@ export default function VsSpreadsheetsPage() {
 
       <PageHero
         eyebrow="Comparison"
-        title={<>Roadmaps shouldn&apos;t run on <span className="br">whoever argues loudest.</span></>}
-        lede="Most product prioritization still happens in spreadsheets, meetings, and opinion loops. Here is what that actually costs — and where a spreadsheet is still the right answer."
+        title={<>Where should you keep <span className="br">the decision record?</span></>}
+        lede="Spreadsheets and discovery tools can work well. See how Tarazu organizes options, sources and reviews, and when your current setup may be enough."
       />
 
       <Section id="failure-modes">

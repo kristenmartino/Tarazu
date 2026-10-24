@@ -38,19 +38,14 @@ export default function AboutPage() {
         <Prose>
           <h2>Why it exists</h2>
           <p>
-            I kept watching the same thing happen on product teams: someone opens a
-            spreadsheet, plugs in reach and impact and confidence, and out comes a
-            ranking everyone nods at. Three months later, someone asks why the fourth
-            item shipped before the second, and nobody remembers. The numbers are still
-            there. The argument is harder to reconstruct when nobody recorded it.
-            Spreadsheets and other discovery tools can retain that context; Tarazu
-            gives the decision and its later review an explicit structure.
+            A ranking answers which option came first. It may take more work to
+            explain why, especially when someone returns to it months later.
+            Tarazu keeps the choice, source notes and later reviews together.
           </p>
           <p>
-            Tarazu keeps the argument. It scores a backlog the same way most teams
-            already do — RICE, plotted as a tradeoff instead of collapsed into one
-            number — and it holds onto the reasoning behind each score long enough for
-            someone to check it later.
+            Use RICE to compare options, check the sources behind a score, and save
+            the next step. Spreadsheets and other discovery tools can also keep
+            this context; Tarazu gives it a place in the decision record.
           </p>
 
           <h3>What it isn&apos;t</h3>
@@ -69,7 +64,7 @@ export default function AboutPage() {
           <p>
             I&apos;m{" "}
             <a href="https://linkedin.com/in/kristenmartino">Kristen Martino</a>, an
-            AI-native product manager with a Master&apos;s in Business Analytics from UT
+            Product manager with a Master&apos;s in Business Analytics from UT
             Dallas. I built Tarazu to keep product decisions connected to their
             evidence, assumptions and reasoning.
           </p>

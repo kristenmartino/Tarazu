@@ -2,23 +2,23 @@ FEATURED ITEM TITLE
 Tarazu — product decisions you can explain and revisit
 
 FEATURED ITEM DESCRIPTION
-I built Tarazu to connect product decisions with their evidence, assumptions and recorded rationale. Read the short case study on scoring context, preserved decisions and demo usability, then try the fictional example.
+Why I built Tarazu, the choices I made, and what still needs testing. Read the case study, then try the fictional Relay example without signing in.
 
 LINK
 https://tarazu.app/case-study
 
 POST DRAFT — NOT PUBLISHED
-I’ve been building Tarazu around a question: when a product decision changes, can you still explain what you believed, what evidence you had, and why you chose that next step?
+I built Tarazu around a question that comes after prioritization: “Why did we choose this?”
 
-The working product connects scoring assumptions to evidence, keeps reported facts separate from estimates and AI assumptions, saves validation briefs, and produces a copyable decision brief. Dated reviews record reported outcomes and new evidence without rewriting the original decision.
+The fictional demo starts with approval reminders. Notes about missing documents suggest a different problem, so the team chooses a checklist experiment before building anything.
 
-The case study explains three choices and their tradeoffs: making scoring assumptions visible, preserving the evidence behind each decision, and showing a short story before the full editor.
+Tarazu keeps that choice, its sources and later reviews together. You can copy the brief into a document or bring it back when the situation changes.
 
-I’ve made a complete fictional example available without signing in. It follows a team investigating approval delays and comparing what to test before committing to a build.
+The case study covers what I chose to build, what I changed after feedback, and how I used AI coding tools.
 
-I’m looking for product, design and business feedback, especially from people with a recent difficult test-or-build decision. Where would this help, and where would it add work?
+I’d like feedback from people making a product decision now: would this help you explain your choice, or add work?
 
 Case study: https://tarazu.app/case-study
 Try it: https://tarazu.app/demo
 
-The example is synthetic. I’m testing the usefulness of the workflow; it does not establish customer adoption or measured business results.
+The demo research is fictional. I’m still testing whether this is useful for real decisions.

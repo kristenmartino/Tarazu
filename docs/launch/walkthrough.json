@@ -1,13 +1,69 @@
 {
   "secondsPerChapter": 12,
   "chapters": [
-    {"image":"01-home","title":"Make a decision you can explain","captions":["Compare options, preserve the reasoning, and return when evidence changes.","Explore the fictional Relay example without an account."]},
-    {"image":"video-story-problem","title":"Start with the decision at stake","captions":["One engineer, two weeks: what should the fictional Relay team test?","Begin with the problem before committing to a build."]},
-    {"image":"video-story-evidence","title":"Let conflicting evidence change the question","captions":["Missing documents challenge a reminder-only explanation.","All Relay interviews and case reviews are synthetic."]},
-    {"image":"video-story-next-test","title":"Record a choice and a next test","captions":["The draft proposes testing request readiness before building reminders.","The experiment is proposed; no completed test or business result is claimed."]},
-    {"image":"06-evidence-digest","title":"Read the evidence and its limits","captions":["Scan Supports, Challenges, Context, and Unknowns in the evidence digest.","Relationships concern the originating candidate, which may differ from the choice."]},
-    {"image":"07-copyable-brief","title":"Take the reasoning into your next conversation","captions":["Copy a decision brief with preserved sources, caveats, and dated reviews.","The brief is a readable handoff, not a complete workspace backup."]},
-    {"image":"08-decision-review","title":"Return with what happened","captions":["Record an outcome or an explicit unknown, then keep, revise, or retire the direction.","This synthetic review demonstrates the form; it is not customer validation."]},
-    {"image":"09-review-history","title":"Keep the original and the later review","captions":["Dated reviews preserve the earlier reasoning alongside reported updates.","Try tarazu.app/demo. Live AI runs separately after sign-in and human review."]}
+    {
+      "image": "01-home",
+      "title": "Make a decision you can explain",
+      "captions": [
+        "Compare two product options and save why you chose one.",
+        "Try the fictional Relay example without an account."
+      ]
+    },
+    {
+      "image": "video-story-problem",
+      "title": "One engineer. Two weeks. What should they test?",
+      "captions": [
+        "Administrators say they spend time chasing approvals.",
+        "The team starts by considering reminders."
+      ]
+    },
+    {
+      "image": "video-story-evidence",
+      "title": "Missing documents suggest a different test",
+      "captions": [
+        "In the example, four of five delayed requests were missing documents.",
+        "That small sample raises a question; it does not prove a checklist will work."
+      ]
+    },
+    {
+      "image": "video-story-next-test",
+      "title": "Try a paper checklist before building",
+      "captions": [
+        "Check whether requests include an owner, date and documents.",
+        "The team has not run this experiment yet."
+      ]
+    },
+    {
+      "image": "06-evidence-digest",
+      "title": "Compare the sources",
+      "captions": [
+        "Read what supports and challenges the reminder idea.",
+        "The digest also shows what remains unknown."
+      ]
+    },
+    {
+      "image": "07-copyable-brief",
+      "title": "Copy the decision brief",
+      "captions": [
+        "Take the choice, notes and source references into a document or message.",
+        "Full source text stays in the appendix."
+      ]
+    },
+    {
+      "image": "08-decision-review",
+      "title": "Add a review",
+      "captions": [
+        "Write what happened, or “Not tested yet”.",
+        "Choose Keep, Revise or Retire and record the next step."
+      ]
+    },
+    {
+      "image": "09-review-history",
+      "title": "See what changed after a review",
+      "captions": [
+        "The original decision stays alongside the dated update.",
+        "Try tarazu.app/demo. Sign in separately to use live AI."
+      ]
+    }
   ]
 }
