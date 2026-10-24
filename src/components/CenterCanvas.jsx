@@ -25,7 +25,7 @@ const SIDE_BY_SIDE_MIN_W = 740;
 const MAP_EXPANDED_KEY = "tz-priorities-map-expanded";
 
 export const CenterCanvas = ({
-  activeScreen, saveTarget, savePendingSync,
+  activeScreen, saveTarget, savePendingSync, guestDemo = false,
   features, scored, sorted, displayOrder, maxScore,
   selectedId, onSelect,
   showForm, onShowForm, editingFeature, onEditingFeature,
@@ -127,12 +127,12 @@ export const CenterCanvas = ({
   });
 
   // Non-priorities screens
-  if (activeScreen === "home") return <WorkspaceHome scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} isSignedIn={isSignedIn} onInspectCandidate={() => { onScreenChange("priorities"); const reminder = features.find(f => /Approval reminders/i.test(f.name)); if (reminder) onEditFeature(reminder); }} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
+  if (activeScreen === "home") return <WorkspaceHome guestDemo={guestDemo} scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} isSignedIn={isSignedIn} onInspectCandidate={() => { onScreenChange("priorities"); const reminder = features.find(f => /Approval reminders/i.test(f.name)); if (reminder) onEditFeature(reminder); }} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
   if (activeScreen === "decisions") return <DecisionsScreen decisions={decisions} scored={scored} onAdd={onAddDecision} onUpdate={onUpdateDecision} onDelete={onDeleteDecision} />;
   if (activeScreen === "signals") return <SignalsScreen signals={signals} scored={scored} onAdd={onAddSignal} onUpdate={onUpdateSignal} onDelete={onDeleteSignal} onImport={onImportSignals} />;
   if (activeScreen === "validate") return <ValidationWorkspace key={`${activeWsId}:${isSignedIn}`} workspaceId={activeWsId} isSignedIn={isSignedIn} isMobile={isMobile} scored={scored} signals={signals} productContext={productContext} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
   if (activeScreen === "scenarios") return <ScenariosScreen features={features} scored={scored} sorted={sorted} activeWsId={activeWsId} isSignedIn={isSignedIn} onSelect={onSelect} isMobile={isMobile} />;
-  if (activeScreen === "settings") return <SettingsScreen activeWs={activeWs} onRenameWorkspace={onRenameWorkspace} onClear={onClear} onDeleteWorkspace={() => onDeleteWorkspace(activeWs?.id)} sortMode={sortMode} onSortModeChange={onSortModeChange} mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode} onMapColorByChange={onMapColorByChange} onMapSizeByChange={onMapSizeByChange} onMapLabelModeChange={onMapLabelModeChange} isSignedIn={isSignedIn} features={features} />;
+  if (activeScreen === "settings") return <SettingsScreen guestDemo={guestDemo} activeWs={activeWs} onRenameWorkspace={onRenameWorkspace} onClear={onClear} onDeleteWorkspace={() => onDeleteWorkspace(activeWs?.id)} sortMode={sortMode} onSortModeChange={onSortModeChange} mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode} onMapColorByChange={onMapColorByChange} onMapSizeByChange={onMapSizeByChange} onMapLabelModeChange={onMapLabelModeChange} isSignedIn={isSignedIn} features={features} />;
   if (activeScreen !== "priorities") {
     const ph = PLACEHOLDER_SCREENS[activeScreen];
     if (ph) return (
@@ -208,7 +208,7 @@ export const CenterCanvas = ({
     filtersActive ? (
       <div style={{ textAlign: "center", padding: 40 }}><p style={{ fontSize: 13, color: C.textMuted }}>No candidates match the current filters</p></div>
     ) : (
-      !showForm && <OnboardingPanel isSignedIn={isSignedIn} onAddCandidate={() => { onEditingFeature(null); onShowForm(true); }} onLoadSamples={onLoadSamples} />
+      !showForm && <OnboardingPanel guestDemo={guestDemo} isSignedIn={isSignedIn} onAddCandidate={() => { onEditingFeature(null); onShowForm(true); }} onLoadSamples={onLoadSamples} />
     )
   ) : filteredDisplayOrder.map((f, i) => (
     <div key={f.id}>
@@ -310,7 +310,7 @@ export const CenterCanvas = ({
         {!showForm && <div data-no-print style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <button onClick={() => { onEditingFeature(null); onShowForm(true); }} style={{ flex: 1, padding: "10px 16px", border: `1px dashed color-mix(in srgb, var(--success) 31%, transparent)`, borderRadius: 8, background: C.accentGlow, color: C.accent, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "var(--mono)", transition: "all 0.2s" }}
             onMouseEnter={e => e.target.style.background = C.accentDim} onMouseLeave={e => e.target.style.background = C.accentGlow}>+ Add Candidate</button>
-          <button onClick={onLoadSamples} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Load example backlog">↻ Example Backlog</button>
+          {!guestDemo && <button onClick={onLoadSamples} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Load example backlog">↻ Example Backlog</button>}
           <button onClick={onClear} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.danger, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Clear workspace">✕ Clear Workspace</button>
           {undoSnapshot && <button onClick={onUndo} style={{ padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: "transparent", color: C.warn, fontSize: 11, cursor: "pointer", fontFamily: "var(--mono)" }} title="Undo last action">↩ Undo</button>}
         </div>}

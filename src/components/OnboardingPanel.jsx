@@ -1,6 +1,6 @@
 import { useC } from "../ThemeProvider";
 
-export const OnboardingPanel = ({ onAddCandidate, onLoadSamples, isSignedIn = false }) => {
+export const OnboardingPanel = ({ onAddCandidate, onLoadSamples, isSignedIn = false, guestDemo = false }) => {
   const C = useC();
   const steps = [
     {
@@ -37,7 +37,7 @@ export const OnboardingPanel = ({ onAddCandidate, onLoadSamples, isSignedIn = fa
       <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, margin: "0 0 4px" }}>Welcome to Tarazu</h3>
       <p style={{ fontSize: 12, color: C.textMuted, margin: 0, lineHeight: 1.5 }}>{isSignedIn ? "Start with a decision or explore a fictional example. Your workspace saves to your account." : "Try a decision before signing up. Your guest workspace saves in this browser."}</p>
     </div>
-    {steps.map(s => (
+    {steps.filter(s => !guestDemo || s.action !== "samples").map(s => (
       <div key={s.num} style={{ display: "flex", gap: 14, padding: 16, border: `1px solid ${s.color}20`, borderRadius: 10, background: `${s.color}06` }}>
         <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${s.color}15`, color: s.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, fontFamily: "var(--mono)", flexShrink: 0 }}>{s.num}</div>
         <div style={{ flex: 1 }}>
@@ -52,6 +52,7 @@ export const OnboardingPanel = ({ onAddCandidate, onLoadSamples, isSignedIn = fa
         </div>
       </div>
     ))}
+    {!guestDemo && <p style={{ textAlign: "center", fontSize: 13 }}><a href="/demo" style={{ color: C.accent }}>Try the complete Relay demo</a> — evidence, saved briefs and decisions. No account needed.</p>}
     <div style={{ textAlign: "center", padding: "8px 0" }}>
       <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>Press <strong style={{ color: C.textMuted }}>?</strong> anytime for keyboard shortcuts</span>
     </div>

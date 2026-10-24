@@ -1,7 +1,7 @@
 TARAZU PRODUCT FEEDBACK WALKTHROUGH
-Prepared October 23, 2026 • https://tarazu.app/app
+Prepared October 23, 2026 • https://tarazu.app/demo
 
-Use “Tarazu demo (synthetic)”. Relay, its 100 users across 10 teams, interviews, case reviews, baselines and forecasts are fictional. This demonstrates a decision workflow, not customer validation or measured product results.
+Open the link to “Relay demo (fictional)”; no account is required. Each visitor gets a separate browser copy, including the evidence, saved brief and two decision drafts. Changes persist in that browser; Restart demo restores only this example. Your own guest workspaces and account data stay separate. Relay, its 100 users across 10 teams, interviews, case reviews, baselines and forecasts are fictional. This demonstrates a decision workflow, not customer validation or measured product results.
 
 Opening sentence
 “Tarazu keeps the evidence, assumptions and reasoning behind a product decision easy to revisit. Here is a fictional team moving from a reminder hypothesis to a smaller readiness experiment before committing to a build.”
@@ -23,16 +23,16 @@ Show “Round B: four of five cases were incomplete”. Those five invented case
 Continue the latest saved brief for “Approval reminders — synthetic”. Revision 5 includes the added Signal, changed assumption, risks and next action. Four of seven areas have illustrative ratings; market pull, differentiation and monetization remain unassessed. The investigation is incomplete. Evidence attachments require explicit human review. Saving a brief does not approve a decision; changed sources or context can require reviewing evidence again.
 
 5. Decisions: distinguish history from today's comparison (one minute)
-The default CURRENT filter excludes the archived persistence check.
+The guest example includes only the two story decisions.
 “Round A: investigate reminder versus readiness” preserves brief revision 4 and its original two attachments.
 “Round B: test readiness before building reminders” preserves revision 5 and proposes a paper checklist experiment before a reminder build. Its historical scores are frozen earlier judgments. Today the calibrated list also puts the checklist first. The proposed test compares a paper checklist with the current workflow, records remaining causes of delay, and has an October 30 review date. Both decisions are drafts, not approved builds or observed outcomes.
 
 Optional live AI
-Sign in and request scores from the candidate edit form, or generate an advisor recommendation. Review the selected bands, supplied claim references, source relationships, uncertainties and targeted follow-up questions. AI values require explicit acceptance; changed context makes old results stale. Allow for a slow response: the advisor permits up to two provider attempts within its route budget, and can return an explicit error. This is a live sanity check, not a comprehensive model-quality evaluation. The demo has no generated local fallback recommendation.
+Open your own workspace at /app, sign in and request scores from the candidate edit form, or generate an advisor recommendation. Review the selected bands, supplied claim references, source relationships, uncertainties and targeted follow-up questions. AI values require explicit acceptance; changed context makes old results stale. Allow for a slow response: the advisor permits up to two provider attempts within its route budget, and can return an explicit error. This is a live sanity check, not a comprehensive model-quality evaluation. The demo has no generated local fallback recommendation.
 
 Close with one question
 “Think of your last difficult product decision: which part of this would have helped, and where would it have added work?”
 
 Before the meeting
-Confirm sign-in, synthetic workspace, three candidates, five Signals, twelve selected basis claims, saved brief revision 5 and two current draft decisions. Reload and reopen a candidate to check cloud persistence. Dismissing the local-import banner is account-scoped across tabs and reloads; Settings can reopen review/import, and the browser copy is preserved.
+Open /demo without signing in. Confirm three candidates, five Signals, twelve selected basis claims, saved brief revision 5 and two current draft decisions. Reload and reopen the brief to check browser persistence. Restart demo if prior edits have changed the story. This resets only the reserved demo copy; it does not import, clear or modify your own workspaces.
 Leave the app on Home with the scoring form closed. Avoid importing local workspaces, clearing data, accepting new scores or approving a decision unless deliberately part of the session.

@@ -28,7 +28,7 @@ const ShortcutButton = ({ label, icon, color, onClick }) => (
   </button>
 );
 
-export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate, isSignedIn, onInspectCandidate }) => {
+export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate, isSignedIn, onInspectCandidate, guestDemo = false }) => {
   const C = useC();
 
   const avgConfidence = useMemo(() => {
@@ -72,7 +72,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
 
       <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
         {scored.length === 0 && (
-          <OnboardingPanel onAddCandidate={onAddCandidate} onLoadSamples={onLoadSamples} isSignedIn={isSignedIn} />
+          <OnboardingPanel guestDemo={guestDemo} onAddCandidate={onAddCandidate} onLoadSamples={onLoadSamples} isSignedIn={isSignedIn} />
         )}
         {scored.length > 0 && <section aria-label="Decision walkthrough" style={{ padding: "22px 20px", borderLeft: `3px solid ${C.brass || C.accent}`, background: C.surface, borderRadius: 8 }}>
           {isRelayDemo && <Pill color={C.warn} dimColor={C.warn + "20"} small>Fictional demo</Pill>}

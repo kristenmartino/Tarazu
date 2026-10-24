@@ -4,9 +4,11 @@ import { AIContextDetails } from "./AIContextDetails";
 import { useState, useRef, useEffect } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
+import { useAuth } from "../hooks/useAuth";
 
 export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, productContext, onAnalysisEvent, onAnalysisFeedback, feedbackContext, onSaveDecisionDraft, onScreenChange }) => {
   const C = useC();
+  const { isGuestDemo } = useAuth();
   const CONF_STYLES = {
     high: { color: C.accent, label: "High confidence" },    // jade / success
     medium: { color: C.warn, label: "Medium confidence" },  // gold / caution
@@ -27,6 +29,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
   const [resultSignature, setResultSignature] = useState(null);
   useEffect(() => () => { sequence.current += 1; }, []);
   const runAnalysis = async () => {
+    if (isGuestDemo) return;
     const requestId = ++sequence.current;
     const requestedSignature = signature;
     setLoading(true); setError(null); setAuthRequired(false); setThumbs(null); setEventId(null);
@@ -79,6 +82,8 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
       onAnalysisFeedback(eventId, isUp);
     }
   };
+
+  if (isGuestDemo) return <div style={{ padding: 16, border: `1px solid ${C.border}`, borderRadius: 10, fontSize: 13, lineHeight: 1.6 }}><p style={{ margin: 0 }}>Explore the saved reasoning in this fictional demo. Live AI runs in your own workspace after sign-in.</p><a href="/app" style={{ color: C.accent }}>Open your workspace</a></div>;
 
   if (authRequired) {
     return (

@@ -42,7 +42,7 @@ const Logo = () => {
   );
 };
 
-export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, onSwitchWorkspace, onAddWorkspace, onDeleteWorkspace, onRenameWorkspace, isMobile, isSignedIn, advisorInNav }) => {
+export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, onSwitchWorkspace, onAddWorkspace, onDeleteWorkspace, onRenameWorkspace, isMobile, isSignedIn, advisorInNav, guestDemo = false }) => {
   const C = useC();
   const [wsDropdownOpen, setWsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -92,7 +92,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
       gap: 8, flexShrink: 0, boxSizing: "border-box",
     }}>
       {/* Workspace switcher */}
-      <div ref={dropdownRef} style={{ position: "relative", width: "100%" }}>
+      {!guestDemo && <div ref={dropdownRef} style={{ position: "relative", width: "100%" }}>
         <button onClick={() => setWsDropdownOpen(!wsDropdownOpen)} title={activeWs?.name || "Workspace"} style={{
           width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
           padding: "10px 0", border: "none",
@@ -131,7 +131,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
             </button>
           </div>
         )}
-      </div>
+      </div>}
 
       {/* Nav items */}
       <div style={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 4, width: "100%" }}>
@@ -159,7 +159,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
       </div>
 
       <div style={{ marginTop: "auto" }}>
-        <AuthButton />
+        {!guestDemo && <AuthButton />}
       </div>
     </div>
   );

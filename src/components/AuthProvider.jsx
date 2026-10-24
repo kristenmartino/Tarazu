@@ -18,7 +18,7 @@ export function ClerkAuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function GuestAuthProvider({ children }) {
-  const value = { isSignedIn: false, isLoaded: true, userId: null, orgId: null };
+export function GuestAuthProvider({ children, demo = false }) {
+  const value = { isSignedIn: false, isLoaded: true, userId: null, orgId: null, ...(demo ? { isGuestDemo: true } : {}) };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
