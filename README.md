@@ -118,6 +118,10 @@ Copy `.env.example` to `.env.local`. Guest workflows run locally without service
 | `npm run submit:indexnow` | Pushes the live sitemap's URLs to Bing/IndexNow after a deploy |
 | `npm run icons` | Regenerates the icon assets from `app/icon.svg` |
 
+The [mutation workflow](.github/workflows/mutation.yml) runs the full configured suite for library logic, API code, scoring/helpers and their related tests, plus dependency, test-runner and mutation-workflow changes. Marketing pages, docs, assets, route metadata, site/contact constants and FAQ copy do not start it by themselves. Mixed copy-and-logic changes still run it. Normal CI and browser checks continue on pull requests; weekly and manual mutation runs remain available.
+
+Mutation jobs share the installed `node_modules` cache used by CI/E2E, requiring an exact OS, Node-version-file and lockfile key. Cache misses run `npm ci`. The mutation targets, full test command and **90% failure threshold** are unchanged.
+
 Adding a public page means adding one row to [`lib/routes.js`](./lib/routes.js) — the sitemap, marketing nav, JSON-LD, and `llms.txt` all read from it, and tests fail if the registry and the filesystem disagree.
 
 ## Scoring and demonstration

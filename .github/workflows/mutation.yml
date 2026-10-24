@@ -15,13 +15,28 @@ on:
   workflow_dispatch: {}
   pull_request:
     branches: [main]
-    # Only when the mutated modules or their tests actually change.
+    # Keep logic and its tests/dependencies in scope. These marketing-data
+    # modules are not mutation targets; their invariants still run in normal CI.
+    # Exclusions must follow lib/**: GitHub applies paths in order.
     paths:
       - "lib/**"
+      - "!lib/routes.js"
+      - "!lib/site.js"
+      - "!lib/contact.js"
+      - "!lib/content/product.js"
+      - "app/api/**"
       - "src/utils.js"
+      - "src/utils.test.js"
       - "src/validate/**"
       - "src/hooks/**"
       - "stryker.config.json"
+      - "vitest.config.*"
+      - "vitest.setup.*"
+      - "package.json"
+      - "package-lock.json"
+      - ".nvmrc"
+      - ".npmrc"
+      - ".github/workflows/mutation.yml"
 
 # Supersede in-flight runs for the same pull request; pushing twice used to run
 # both to completion. Keyed by SHA on push so a branch/main run is never
@@ -43,7 +58,17 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      # Share the installed-tree cache used by CI/E2E. An exact lockfile,
+      # Node-version-file and OS match is required; no partial restore keys.
+      - name: Cache node_modules
+        id: modules-cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('.nvmrc') }}-${{ hashFiles('package-lock.json') }}
+
       - run: npm ci
+        if: steps.modules-cache.outputs.cache-hit != 'true'
 
       - name: Run mutation testing
         run: npm run mutation
