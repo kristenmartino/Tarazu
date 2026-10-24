@@ -4,6 +4,7 @@ import { useC } from "../ThemeProvider";
 import { getTier } from "../utils";
 import { Pill } from "./Pill";
 import { OnboardingPanel } from "./OnboardingPanel";
+import { trackUsage } from "../../lib/usage-events";
 
 const StatCard = ({ label, value, color }) => {
   const C = useC();
@@ -53,7 +54,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
 
   const topTier = topCandidate ? getTier(topCandidate, C) : null;
   const isRelayDemo = scored.some(f => /Approval reminders/i.test(f.name) && /synthetic/i.test(f.name)) && scored.some(f => /Request readiness checklist/i.test(f.name) && /synthetic/i.test(f.name));
-  const startReview = () => { if (isRelayDemo && onInspectCandidate) onInspectCandidate(); else onScreenChange("priorities"); };
+  const startReview = () => { if (isRelayDemo && onInspectCandidate) { trackUsage("walkthrough_started", guestDemo ? "demo" : "personal"); onInspectCandidate(); } else onScreenChange("priorities"); };
 
   const statusColor = (s) => {
     switch (s) {

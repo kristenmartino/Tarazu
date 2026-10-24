@@ -16,6 +16,7 @@ const ROUTES = [
   "/blog",
   "/about",
   "/contact",
+  "/privacy",
   "/blog/a-decision-record-is-not-a-changelog",
   "/blog/let-the-model-draft-the-score",
   "/blog/reach-is-the-number-youre-guessing-at",

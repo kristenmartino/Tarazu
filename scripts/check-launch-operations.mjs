@@ -1,0 +1,37 @@
+import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+if(process.env.AI_USAGE_TEST_DATABASE!=="isolated" || process.env.PGDATABASE!=="tarazu_quota_test") throw new Error("Isolated launch test database required");
+const exec=promisify(execFile);
+const sql=async q=>(await exec("psql",["-X","-q","-A","-t","-v","ON_ERROR_STOP=1","-c",q])).stdout.trim();
+const reserve=async()=>JSON.parse(await sql("select public.reserve_ai_spend(400000,'claude-opus-4-8',1,1)"));
+await sql("truncate public.ai_spend_reservations,public.usage_daily_counts; update public.ai_operations_policy set enabled=true,daily_budget_microusd=10000000");
+const results=await Promise.all(Array.from({length:32},reserve));
+assert.equal(results.filter(r=>r.allowed).length,25);
+assert.equal(results.filter(r=>r.reason==='spend_limit').length,7);
+assert.equal(await sql("select sum(amount_microusd) from public.ai_spend_reservations"),'10000000');
+console.log('PASS 32 concurrent provider attempts cannot overrun $10');
+await sql("update public.ai_spend_reservations set created_at=now()-interval '25 hours'");
+assert.equal((await reserve()).allowed,true);
+console.log('PASS rolling spend window expires reservations');
+await sql("update public.ai_operations_policy set enabled=false");
+assert.equal((await reserve()).reason,'ai_paused');
+console.log('PASS database pause stops provider reservations');
+await assert.rejects(sql("select public.reserve_ai_spend(1,'claude-opus-4-8',1,1)"),/too small/);
+await assert.rejects(sql("select public.reserve_ai_spend(400000,'unreviewed-model',1,1)"),/Invalid/);
+await assert.rejects(sql("update public.ai_operations_policy set daily_budget_microusd=10000001"),/check constraint/);
+console.log('PASS under-reserving, unknown models and over-$10 policy rejected');
+await Promise.all(Array.from({length:32},()=>sql("select public.record_usage_count('brief_saved','demo')")));
+assert.equal(await sql("select count from public.usage_daily_counts where event='brief_saved'"),'32');
+await assert.rejects(sql("select public.record_usage_count('private text','demo')"),/Invalid usage/);
+for(const role of ['anon','authenticated']) {
+  await assert.rejects(sql(`set role ${role}; select public.reserve_ai_spend(400000,'claude-opus-4-8',1,1)`),/permission denied/);
+  await assert.rejects(sql(`set role ${role}; select * from public.usage_daily_counts`),/permission denied/);
+  await assert.rejects(sql(`set role ${role}; select public.record_usage_count('brief_saved','demo')`),/permission denied/);
+}
+console.log('PASS usage counts are atomic and frontend roles cannot access ledgers');
+await sql("insert into public.usage_daily_counts(day,event,mode) values(current_date-31,'demo_opened','demo'); update public.ai_spend_reservations set created_at=now()-interval '31 days'; select public.prune_launch_records()");
+assert.equal(await sql("select count(*) from public.ai_spend_reservations"),'0');
+assert.equal(await sql("select count(*) from public.usage_daily_counts where day<current_date-30"),'0');
+assert.equal(await sql("select count from public.usage_daily_counts where event='brief_saved'"),'32');
+console.log('PASS 30-day cleanup retains recent aggregates');

@@ -3,6 +3,7 @@ import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { signalSnapshot, briefFingerprint } from "../../lib/validation-brief";
 import { dialog } from "./dialog";
+import { trackUsage } from "../../lib/usage-events";
 import {
   ASSUMPTION_CATEGORIES,
   VALIDATE_DIMENSIONS,
@@ -72,6 +73,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
   const openBrief = async record => {
     if (saving || !(await canLeave())) return;
     const draft = record.draft;
+    trackUsage("brief_reopened", window.location.pathname === "/demo" ? "demo" : "personal");
     setCurrentBrief(record); setMode(draft.mode); setCandidateId(draft.candidateId);
     setManualName(draft.manualName); setManualDesc(draft.manualDesc);
     setAssumptions(draft.assumptions); setScores(draft.scores);
@@ -97,6 +99,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
     if (!onSaveBrief) return null;
     if (currentBrief && !dirty) return currentBrief;
     const record = await onSaveBrief(currentDraft, currentBrief);
+    trackUsage("brief_saved", window.location.pathname === "/demo" ? "demo" : "personal");
     setCurrentBrief(record); setBaseline(briefFingerprint(record.draft)); setEdited(false);
     setSaveMessage(`${storageLabel} · Revision ${record.revision}`);
     return record;

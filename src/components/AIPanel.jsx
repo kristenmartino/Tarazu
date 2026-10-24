@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { useAuth } from "../hooks/useAuth";
+import { trackUsage } from "../../lib/usage-events";
 
 export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, productContext, onAnalysisEvent, onAnalysisFeedback, feedbackContext, onSaveDecisionDraft, onScreenChange }) => {
   const C = useC();
@@ -43,6 +44,7 @@ export const AIPanel = ({ scored, signals = [], decisions = [], workspaceId, pro
         body: JSON.stringify({ features: sorted, productContext, signals, decisions, workspaceId }),
       });
       const data = await res.json().catch(() => null);
+      trackUsage(res.ok ? "ai_completed" : "ai_refused");
       if (requestId !== sequence.current || current.current !== requestedSignature) return;
       if (res.ok) {
         if (!data) throw new Error("The advisor returned an unreadable response. Please try again.");

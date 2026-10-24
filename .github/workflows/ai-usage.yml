@@ -2,10 +2,10 @@ name: AI usage database checks
 on:
   pull_request:
     branches: [main]
-    paths: ["lib/ai-usage*", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
+    paths: ["lib/ai-usage*", "lib/ai-spend*", "scripts/check-launch-operations.mjs", "scripts/verify-launch-production.sql", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
   push:
     branches: [main]
-    paths: ["lib/ai-usage*", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
+    paths: ["lib/ai-usage*", "lib/ai-spend*", "scripts/check-launch-operations.mjs", "scripts/verify-launch-production.sql", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
   workflow_dispatch: {}
 concurrency:
   group: ai-usage-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
@@ -43,7 +43,14 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f supabase/migrations/20260820210000_ai_call_quota.sql
           psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024040000_atomic_ai_usage.sql
           psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024040000_atomic_ai_usage.sql
+          psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024060000_launch_operations.sql
+          psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024060000_launch_operations.sql
       - name: Verify production smoke script also rolls back in isolation
         run: psql -v ON_ERROR_STOP=1 -f scripts/verify-ai-usage-production.sql
       - name: Verify concurrency, budgets, leases, failures and permissions
         run: node scripts/check-ai-usage.mjs
+
+      - name: Verify launch budget, usage privacy and permissions
+        run: |
+          psql -v ON_ERROR_STOP=1 -f scripts/verify-launch-production.sql
+          node scripts/check-launch-operations.mjs

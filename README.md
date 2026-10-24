@@ -150,3 +150,11 @@ Main app views have focusable skip-link targets. Decision disclosures use native
 CSV exports cover ranked candidates; the priority view can be printed to PDF. These exports do not include Signals, validation briefs, decision history, or a complete workspace backup.
 
 The `AI usage database checks` workflow runs against isolated PostgreSQL 17 and tests actual concurrent admission, shared budgets, failure accounting, lease expiry, legacy usage and service-role permissions. Run `scripts/check-ai-usage.mjs` only with `AI_USAGE_TEST_DATABASE=isolated` and a test database named `tarazu_quota_test`; it deliberately clears its fixture ledger. Production migrations are additive and are applied by the existing migration workflow. The migration workflow checks backend permissions and quota behavior in a rolled-back transaction. Apply the reservation migration before activating application code that uses it; an absent RPC deliberately refuses AI requests.
+
+## Launch operations and materials
+
+Public data handling and opt-in usage controls are at [/privacy](https://tarazu.app/privacy). The app no longer loads the former Vercel Analytics or Google Analytics scripts. Optional measurement writes closed-vocabulary daily action counts only.
+
+The owner-approved $10 rolling daily provider-spending envelope is reserved atomically for every generation, repair and question-review call. This is conservative admission accounting, not an invoice, and may stop AI early. Current request limits remain additional controls. [/api/health](https://tarazu.app/api/health) reports effective deployed capacity and safe health categories. See [the operations runbook](docs/launch/OPERATIONS.md) for monitoring, GitHub/email incident delivery, pause, recovery, retention and measurement boundaries.
+
+[Product Hunt draft](docs/launch/product-hunt-submission.txt) and [LinkedIn draft](docs/launch/linkedin-featured.txt) are prepared, not published. `public/launch/` contains fictional-scenario gallery PNGs, the thumbnail and a 60-second captioned still-capture walkthrough with VTT captions. Rebuild sources with `CAPTURE_LAUNCH_ASSETS=1 npx playwright test e2e/product-hunt-readiness.spec.js --grep "launch gallery" --workers=1`, then `node scripts/build-launch-video.mjs` (requires ffmpeg). No real workspace content or live AI output is used in these assets.

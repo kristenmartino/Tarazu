@@ -64,3 +64,7 @@ jobs:
       - name: Verify AI usage controls without retaining test data
         if: steps.guard.outputs.ready == 'true'
         run: supabase db query --linked --file scripts/verify-ai-usage-production.sql
+
+      - name: Verify launch operations without retaining test data
+        if: steps.guard.outputs.ready == 'true'
+        run: supabase db query --linked --file scripts/verify-launch-production.sql
