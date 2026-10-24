@@ -152,7 +152,7 @@ export function Landing() {
             <div className="sec-head" data-reveal>
               <span className="eyebrow">The decision lifecycle</span>
               <h2>Five steps. <span className="br">One loop.</span></h2>
-              <p>Tarazu runs the whole arc of a product decision — and the last step feeds the first, so the system keeps getting smarter.</p>
+              <p>Keep the evidence and reasoning behind each decision, so your team can revisit its choices and improve its reasoning as new evidence arrives.</p>
             </div>
             <div className="loop" data-reveal>
               <div className="stage">
