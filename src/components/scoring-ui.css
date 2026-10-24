@@ -3,6 +3,9 @@
 .tz-candidate-form button:focus-visible, .tz-candidate-form summary:focus-visible, .tz-candidate-form input:focus-visible, .tz-candidate-form textarea:focus-visible, .tz-candidate-form select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .tz-score-cards { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
 .tz-scoring-card p, .tz-scoring-card li { overflow-wrap: anywhere; }
+.tz-scoring-card select { max-width: 100%; }
+.tz-score-units summary { min-width: 0; overflow-wrap: anywhere; }
+.tz-score-units summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .tz-scoring-card .tz-score-slider > div:first-child { display: none !important; }
 .tz-candidate-save { position: sticky; bottom: 0; z-index: 4; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 -20px -20px; padding: 14px 20px; border-radius: 0 0 12px 12px; box-shadow: 0 -8px 20px rgba(0,0,0,.1); }
 .tz-candidate-form details > summary { min-height: 28px; }

@@ -2,8 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 // Guest-mode smoke test (GitHub #28) plus the SEO suite. The web server is
 // started with the AI, auth, and database variables blanked (see `env` below),
-// so the app boots in guest/localStorage mode and the advisor exercises its
-// demo fallback regardless of what the developer has in .env.local.
+// so the app boots in guest/localStorage mode and tests the signed-out AI state.
+// AI interaction cases mock responses explicitly; no live provider is called.
 //
 // Deliberately NOT 3000: that port is the default for every Next/Vite/CRA app
 // on a developer's machine, and `reuseExistingServer` would happily point the
@@ -31,13 +31,8 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: false,
     timeout: 120_000,
-    // `next dev` auto-loads .env.local, so "runs with no env vars" was only ever
-    // true on a machine that had never configured the app. With a real
-    // ANTHROPIC_API_KEY present the advisor takes the live path and the
-    // demo-fallback assertion fails — a test that passed or failed depending on
-    // whose laptop it ran on. Next does not overwrite variables already present
-    // in process.env, so blanking them here beats .env.local and makes the run
-    // hermetic.
+    // Next preserves existing process variables over .env.local. Blank service
+    // settings keep these browser checks isolated from real accounts and AI usage.
     env: {
       ANTHROPIC_API_KEY: "",
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "",

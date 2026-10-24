@@ -110,8 +110,9 @@ export default function RicePage() {
         <Prose>
           <h2>A worked example</h2>
           <p>
-            Four candidates, scored on Tarazu&apos;s 1–100 scale. The arithmetic is
-            shown so you can check it:
+            Four fictional candidates with illustrative manual scores on Tarazu&apos;s
+            1–100 scale, including custom values between anchors. These are not the live
+            Relay demo or validated estimates. The arithmetic is shown so you can check it:
           </p>
         </Prose>
 
@@ -148,7 +149,7 @@ export default function RicePage() {
 
       <Section id="normalized">
         <Prose>
-          <h2>Normalized RICE: why Tarazu scores every input 1–100</h2>
+          <h2>Band-based RICE: why Tarazu scores every input 1–100</h2>
           <p>
             Classic RICE uses audience counts, an impact multiplier, confidence and
             person-months of effort. Tarazu expresses each input on a relative 1–100
@@ -174,14 +175,17 @@ export default function RicePage() {
             those definitions change.
           </p>
           <p>
-            <strong>What it costs you</strong> is the literal reading. In classic RICE
-            you can say &ldquo;this reaches 4,000 users a quarter.&rdquo; On a 1–100
-            scale you&apos;re saying &ldquo;this reaches far more people than that one,
-            about four-fifths of the workspace audience in the agreed period.&rdquo; That&apos;s a
-            real loss, and worth knowing you&apos;ve accepted. If your team genuinely has
-            trustworthy reach data in absolute units, classic RICE preserves
-            information that normalization discards.
+            Tarazu multiplies band scores, rather than raw user counts, outcome changes
+            and person-days. This is a heuristic adaptation of classic RICE, not a unit
+            conversion that preserves its ratios. A score twice as large does not mean
+            twice the benefit. Confidence describes evidence strength, not success probability.
           </p>
+          <p>
+            Each input shows its current band definition and a user-selected recorded
+            claim, preserving quantities such as a forecast of 60 users in 30 days or
+            an estimate of 3 person-days. Choosing a claim does not verify it or change
+            the score. AI proposals use listed anchors; manual values between anchors
+            are shown as custom scores with no band definition.          </p>
         </Prose>
       </Section>
 

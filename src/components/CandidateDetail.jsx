@@ -3,8 +3,9 @@ import { getTier, getStatusColor } from "../utils";
 import { Pill } from "./Pill";
 import { ScoreBar } from "./ScoreBar";
 import { FeatureHistory } from "./FeatureHistory";
+import { ScoreUnits } from './ScoreUnits';
 
-export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselect, isSignedIn, activeWsId, onRevert, signals, onScreenChange }) => {
+export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselect, isSignedIn, activeWsId, onRevert, signals, onScreenChange, productContext }) => {
   const C = useC();
   const linkedSignals = (signals || []).filter(s => s.linked_candidate_id === feature.id);
   const tier = getTier(feature, C);
@@ -19,12 +20,13 @@ export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselec
 
       <div>
         <span style={{ fontSize: 28, fontWeight: 800, color: tier.color, fontFamily: "var(--mono)" }}>{feature.score.toLocaleString()}</span>
+        <p style={{ margin: '4px 0 0', fontSize: 13, lineHeight: 1.5, color: C.textMuted }}>Band-based prioritization index · not measured return or financial value.</p>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: C.text, margin: "8px 0 0" }}>{feature.name}</h3>
         {feature.description && <p style={{ fontSize: 14, color: C.textMuted, margin: "6px 0 0", lineHeight: 1.6 }}>{feature.description}</p>}
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <span style={{ fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)" }}>RICE SCORES</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: C.textMuted }}>RICE BAND SCORES /100</span>
         <ScoreBar value={feature.reach} color={C.reach} label="R" />
         <ScoreBar value={feature.impact} color={C.impact} label="I" />
         <ScoreBar value={feature.confidence} color={C.confidence} label="C" />
@@ -34,6 +36,13 @@ export const CandidateDetail = ({ feature, maxScore, onEdit, onDelete, onDeselec
             (<span style={{ color: C.reach }}>{feature.reach}</span> × <span style={{ color: C.impact }}>{feature.impact}</span> × <span style={{ color: C.confidence }}>{feature.confidence}</span>) ÷ <span style={{ color: C.danger }}>{feature.effort}</span> = <span style={{ color: tier.color, fontWeight: 700 }}>{feature.score.toLocaleString()}</span>
           </span>
         </div>
+        <details style={{ fontSize: 14, lineHeight: 1.5 }}><summary style={{ cursor: 'pointer' }}>Score definitions & recorded basis</summary>
+          {['reach', 'impact', 'confidence', 'effort'].map(dimension => <section key={dimension} aria-label={`${dimension} saved basis`} style={{ borderTop: `1px solid ${C.border}`, marginTop: 10, paddingTop: 10 }}>
+            <strong style={{ textTransform: 'capitalize' }}>{dimension} · {feature[dimension]}/100</strong>
+            <ScoreUnits dimension={dimension} value={feature[dimension]} settings={productContext?.scoring} basis={feature.scoringBasis} />
+          </section>)}
+          <p style={{ color: C.textMuted, fontSize: 13 }}>Definitions use this workspace’s current rubric. Open Edit to review claims and their sources or change the selected basis.</p>
+        </details>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

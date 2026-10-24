@@ -5,12 +5,13 @@ import { ScoringFollowUp } from './ScoringClaims';
 import { CLAIM_KINDS, MAX_CLAIMS } from '../../lib/scoring-claims';
 import { newScoringClaim } from './ScoringClaims';
 import { findFollowUpAnswer, answeredClaimsForInput } from '../../lib/scoring-follow-ups';
+import { ScoreUnits } from './ScoreUnits';
 
 const REVIEW_LABELS = { supported: 'Appears supported', conflicting: 'Conflicting evidence', source_missing: 'Source missing or unusable', assumption: 'Unverified assumption', needs_review: 'Needs review' };
 const PURPOSES = { reach: 'Share of the audience affected', impact: 'Benefit for each affected user', confidence: 'Strength of the supporting evidence', effort: 'Total work across the team' };
 const title = value => value[0].toUpperCase() + value.slice(1);
 
-export function ScoreCard({ dimension, value, onChange, result, loading, stale, accepted, onAccept, context, claims, signals, onAddClaim }) {
+export function ScoreCard({ dimension, value, onChange, result, loading, stale, accepted, onAccept, context, claims, signals, onAddClaim, settings, basis, onBasisClaimChange }) {
   const C = useC();
   const label = title(dimension);
   const sourceCount = new Set(claims.filter(c => (dimension === 'confidence' ? ['reach', 'impact', 'confidence'].includes(c.dimension) : c.dimension === dimension)).flatMap(c => c.sources.map(s => s.signalId))).size;
@@ -20,8 +21,18 @@ export function ScoreCard({ dimension, value, onChange, result, loading, stale, 
   const hasScore = Number.isInteger(result?.score);
   const buttonStyle = { padding: '8px 12px', border: `1px solid ${C.border}`, borderRadius: 6, background: C.bg, color: C.text, font: 'inherit', cursor: 'pointer' };
   return <section className="tz-scoring-card" aria-label={`${label} score`} style={{ borderTop: `3px solid ${C[dimension] || C.accent}`, borderLeft: `1px solid ${C.border}`, borderRight: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`, borderRadius: 8, padding: 16, background: C.bg, minWidth: 0 }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: 10 }}><div><h3 style={{ fontSize: 17, margin: 0 }}>{label}</h3><p style={{ margin: '4px 0 12px', fontSize: 13, color: C.textMuted }}>{PURPOSES[dimension]}</p></div><div style={{ textAlign: 'right', flexShrink: 0 }}><span style={{ fontSize: 26, fontWeight: 700, fontFamily: 'var(--mono)' }}>{value}</span><span style={{ display: 'block', fontSize: 12, color: C.textMuted }}>Current /100</span></div></div>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: 10 }}><div style={{ minWidth: 0 }}><h3 style={{ fontSize: 17, margin: 0 }}>{label}</h3><p style={{ margin: '4px 0 12px', fontSize: 13, color: C.textMuted }}>{PURPOSES[dimension]}</p></div><div style={{ textAlign: 'right', flexShrink: 0, maxWidth: 110 }}><span style={{ fontSize: 26, fontWeight: 700, fontFamily: 'var(--mono)' }}>{value}</span><span style={{ display: 'block', fontSize: 12, color: C.textMuted }}>Current band score /100</span></div></div>
     <Slider label={label} value={value} onChange={onChange} color={C[dimension] || C.accent} />
+    <ScoreUnits dimension={dimension} value={value} settings={settings} basis={basis} />
+    <details style={{ fontSize: 13, marginTop: 8 }}><summary style={{ cursor: 'pointer' }}>Choose recorded basis</summary>
+      <label style={{ display: 'grid', gap: 5, paddingTop: 6 }}>Claim for {dimension}
+        <select aria-label={`Recorded basis for ${dimension}`} value={basis?.basisClaimIds?.[dimension] || ''} onChange={event => onBasisClaimChange(event.target.value)} style={{ ...buttonStyle, width: '100%', minWidth: 0, boxSizing: 'border-box' }}>
+          <option value="">No claim selected</option>
+          {claims.filter(claim => claim.dimension === dimension).map(claim => <option key={claim.id} value={claim.id}>{CLAIM_KINDS[claim.kind]} · {claim.text ? claim.text.length > 100 ? `${claim.text.slice(0, 97)}…` : claim.text : 'Empty claim'}</option>)}
+        </select>
+      </label>
+      <p style={{ marginBottom: 0 }}>Choose an existing {dimension} claim. Add or edit claims below; save the candidate to keep this selection.</p>
+    </details>
     <p style={{ fontSize: 13, margin: '12px 0 8px', color: conflicts ? C.danger : C.textMuted }}>{conflicts ? `${conflicts} conflicting claim review${conflicts === 1 ? '' : 's'}` : sourceCount ? `${sourceCount} source${sourceCount === 1 ? '' : 's'} linked to claims` : 'No claim sources linked'}</p>
     <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 10, fontSize: 14, lineHeight: 1.5 }}>
       <p style={{ margin: '0 0 8px', fontWeight: 600 }}>{loading ? 'AI review in progress…' : !result ? 'AI has not reviewed this score' : stale ? `Previous AI ${hasScore ? `${result.score}/100` : 'review'} · needs refresh` : accepted ? `AI ${result.score}/100 · accepted in draft` : hasScore ? `AI suggests ${result.score}/100` : 'AI needs more information'}</p>

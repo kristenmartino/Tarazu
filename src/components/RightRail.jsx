@@ -52,6 +52,7 @@ export const RightRail = ({
   const content = selectedFeature ? (
     <CandidateDetail
       feature={selectedFeature}
+      productContext={productContext}
       maxScore={maxScore}
       onEdit={onEditFeature}
       onDelete={onDeleteFeature}

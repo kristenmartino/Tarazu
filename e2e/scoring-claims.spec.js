@@ -18,10 +18,16 @@ test('source-linked claims and targeted answers survive reopening; assumptions r
   await page.getByLabel('Source relationship 1 for claim 1', { exact: true }).selectOption('supports');
   await page.getByLabel('Excerpt 1 for claim 1', { exact: true }).fill('thirty accounts eligible');
   await expect(page.getByText(/Excerpt matches source/)).toBeVisible();
+  const reachCard = page.getByRole('region', { name: 'Reach score', exact: true });
+  await reachCard.getByText('Choose recorded basis', { exact: true }).click();
+  await expect(page.getByLabel('Recorded basis for reach', { exact: true })).toHaveValue('');
+  await page.getByLabel('Recorded basis for reach', { exact: true }).selectOption({ index: 1 });
+  await expect(reachCard.getByText('Recorded basis · User estimate', { exact: true })).toBeVisible();
   let requests = 0;
   await page.route('**/api/suggest-scores', async route => {
     const body = route.request().postDataJSON();
     expect(body.scoringBasis.claims[0]).toMatchObject({kind:'estimate',sources:[{relation:'supports',quote:'thirty accounts eligible'}]});
+    expect(body.scoringBasis.basisClaimIds).toEqual({reach:body.scoringBasis.claims[0].id});
     if (requests++) expect(body.scoringBasis.claims).toEqual(expect.arrayContaining([expect.objectContaining({question:'Is the pilot population 100 accounts?',kind:'estimate'})]));
     await route.fulfill({json:{reach:{score:35,justification:'Segment band from a forecast',evidence:[],assumptions:['All eligible accounts adopt'],gaps:[],nextAction:'Verify audience coverage',claimReviews:[],followUp:{question:'Is the pilot population 100 accounts?',whyItChangesScore:'A different denominator changes the reach share and band.',claimIds:[]}}}});
   });
@@ -38,7 +44,8 @@ test('source-linked claims and targeted answers survive reopening; assumptions r
   await page.reload();
   await nav.getByRole('button', { name: 'Priorities', exact: true }).click();
   await page.getByRole('button', { name: 'Edit Claim provenance test', exact: true }).click();
-  await page.locator('summary').getByText('Thirty of 100 accounts forecast to use the pilot',{exact:true}).click();
+  await expect(page.getByLabel('Recorded basis for reach', { exact: true })).not.toHaveValue('');
+  await page.getByRole('region', {name:'Scoring claims and sources',exact:true}).locator('summary').getByText('Thirty of 100 accounts forecast to use the pilot',{exact:true}).click();
   await expect(page.getByLabel('Excerpt 1 for claim 1', { exact: true })).toHaveValue('thirty accounts eligible');
   await expect(page.locator('summary').getByText('All eligible accounts adopt',{exact:true})).toBeVisible();
   await expect(page.getByLabel('Reach', { exact: true })).toHaveValue('50');

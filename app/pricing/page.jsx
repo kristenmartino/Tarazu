@@ -24,9 +24,9 @@ const TIERS = [
     for: "Everyone, currently.",
     features: [
       "Unlimited candidates in your workspace",
-      "RICE scoring on a 1–100 scale",
+      "Band-based RICE scoring on a 1–100 scale",
       "Effort × impact tradeoff map",
-      "AI suggestions and analysis — content sent to Anthropic on request",
+      "AI suggestions and analysis — sign-in and internet required; per-user usage checks apply",
       "Saved scenarios",
       "CSV import and CSV/PDF export",
       "Guest mode — no account required",
@@ -82,7 +82,7 @@ export default function PricingPage() {
             <p>
               <strong>$0.</strong> There is no paid tier to buy right now, so nothing on
               this page requires payment. No account is needed to try guest mode.
-              Signing in enables cloud sync and score history; AI requires an online request.
+              Signing in enables cloud sync and score history; AI requires sign-in and an online request, subject to per-user usage checks.
             </p>
           </KeyFact>
           <p>
@@ -135,7 +135,7 @@ export default function PricingPage() {
           <p>
             Guest workspaces are saved in your browser. If you sign in, workspaces sync
             to a Postgres database with row-level security. Workspace content is sent to
-            Anthropic&apos;s API when you run an AI feature, including in guest mode. The API key stays
+            Anthropic&apos;s API when you sign in and run an AI feature. The API key stays
             server-side. The full detail is in the <Link href="/faq">FAQ</Link>.
           </p>
 

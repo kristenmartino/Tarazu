@@ -87,3 +87,28 @@ it('round-trips claim sources and preserves them when an older client only sends
   state.target.snapshot_scoring_basis = {claims:[claim]};
   expect(await (await revertFeature(request({revision_number:1}),params)).json()).toMatchObject({scoringBasis:{claims:[claim]}});
 });
+
+it('persists selected basis by reference, retains it for legacy updates, and revisions restore it', async () => {
+  const claim = { id: 'r1', dimension: 'reach', text: 'Forecast 60 users', kind: 'estimate', sources: [] };
+  const basis = { claims: [claim], basisClaimIds: { reach: 'r1' } };
+  await saveFeature(request({ ...state.feature, scoringBasis: basis }), params);
+  expect(state.writes.at(-1).value.scoring_basis).toEqual(basis);
+  expect(revision.mock.calls[0][1].snapshot.scoring_basis).toEqual(basis);
+  state.feature.scoring_basis = basis;
+  await saveFeature(request({ ...state.feature, scoringBasis: { reach: 'Legacy summary edit' } }), params);
+  expect(state.writes.at(-1).value.scoring_basis.basisClaimIds).toEqual({ reach: 'r1' });
+  state.feature.scoring_basis = { claims: [claim], basisClaimIds: {} };
+  state.target.snapshot_scoring_basis = basis;
+  expect(await (await revertFeature(request({ revision_number: 1 }), params)).json()).toMatchObject({ scoringBasis: basis });
+});
+
+it('rejects dangling, cross-input or removed selected claims before durable updates', async () => {
+  const claim = { id: 'r1', dimension: 'reach', text: 'Forecast 60 users', kind: 'estimate' };
+  state.feature.scoring_basis = { claims: [claim], basisClaimIds: { reach: 'r1' } };
+  for (const scoringBasis of [{ basisClaimIds: { reach: 'missing' } }, { basisClaimIds: { impact: 'r1' } }, { claims: [] }]) {
+    expect((await saveFeature(request({ ...state.feature, scoringBasis }), params)).status).toBe(400);
+  }
+  expect(state.writes).toEqual([]);
+  expect(revision).not.toHaveBeenCalled();
+  expect((await saveFeature(request({ ...state.feature, scoringBasis: { claims: [], basisClaimIds: {} } }), params)).status).toBe(200);
+});

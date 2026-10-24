@@ -4,13 +4,13 @@
 
 Tarazu — from the Hindi/Urdu word for a balance scale — helps product teams prioritize ideas, compare tradeoffs, capture context, and generate explainable recommendations with structured frameworks like RICE — powered by Claude.
 
-**[tarazu.app](https://tarazu.app)** · Free, and no account needed — guest mode runs entirely in your browser.
+**[tarazu.app](https://tarazu.app)** · Free. Guest scoring runs in your browser without an account; AI requires sign-in and an internet connection.
 
 [How it works](https://tarazu.app/how-it-works) · [RICE scoring guide](https://tarazu.app/frameworks/rice) · [vs. spreadsheets](https://tarazu.app/vs/spreadsheets) · [FAQ](https://tarazu.app/faq) · [Pricing](https://tarazu.app/pricing)
 
 ![Tarazu — the Priorities list with RICE-scored candidates and the AI Decision Advisor](docs/screenshots/hero.png)
 
-*RICE-scored candidates on the left, the AI Decision Advisor's recommendation on the right. [Try it live →](https://tarazu.app)*
+*Historical UI capture: RICE-scored candidates on the left, the AI Decision Advisor's recommendation on the right. [Try it live →](https://tarazu.app)*
 
 ---
 
@@ -18,16 +18,16 @@ Tarazu — from the Hindi/Urdu word for a balance scale — helps product teams 
 
 | Feature | Description |
 |---------|-------------|
-| **Normalized RICE Scoring** | Slider-based input for each dimension on a 1–100 scale with real-time score calculation |
+| **Normalized RICE Scoring** | Band-based adaptation of RICE: 1–100 inputs, shared definitions and selected recorded claims; a relative index, not ROI |
 | **Priority Matrix** | Canvas-rendered Effort vs. Impact scatter plot with labeled quadrants |
 | **AI Strategy Advisor** | One-click backlog analysis via Claude Opus — returns top priority, quick win, risk flag, sprint plan, and strategic insight |
-| **AI Score Suggestions** | Per-candidate scoring via Claude Sonnet, grounded in product context and prior feedback |
+| **AI Score Suggestions** | Per-candidate scoring via Claude Sonnet, grounded in shared scoring anchors, candidate claims, linked Signals and product context; score feedback is not sent to AI |
 | **Persistent Storage** | Features save across sessions via localStorage and cloud sync |
 | **Responsive Shell** | Three-panel desktop layout (left rail / center canvas / right rail) collapses to a two-column tablet overlay and a bottom-tab mobile layout via `matchMedia` |
 
 ## A Closer Look
 
-**From a scored backlog to an AI recommendation in one click:**
+**Historical workflow captures (the current interface and demo scores have changed):**
 
 ![Score a backlog, then generate an AI recommendation](docs/screenshots/score-to-recommend.gif)
 
@@ -74,24 +74,28 @@ flowchart LR
     UI -->|guest| LS
     UI -->|AI request| AIAPI
     UI -->|signed in| DataAPI
-    AIAPI -->|hardened JSON calls| Claude
+    AIAPI -->|verify session| Clerk
+    AIAPI -->|usage check| Supa
+    AIAPI -->|validated JSON calls| Claude
     DataAPI -->|verify session| Clerk
     DataAPI -->|service-role key| Supa
 ```
 
-In guest mode the app is fully usable against `localStorage`. The AI API routes
-(`analyze` / `suggest-scores`) don't verify Clerk or touch Supabase — they read the
-request body and proxy Claude with `ANTHROPIC_API_KEY` so the key never reaches the
-browser. The data API routes (workspaces and related) are the ones that verify the
-Clerk session and talk to Supabase with the service-role key (RLS enabled as
-defense-in-depth).
+Guest mode supports local scoring and decision exploration against `localStorage`.
+Both AI and data API routes verify the Clerk session. AI routes check per-user
+usage in Supabase before calling Anthropic; the default is 50 successful requests
+in a rolling 24-hour period, configurable with `AI_DAILY_QUOTA_PER_USER`. This is
+an application usage check, not an atomic reservation or a hard billing cap.
+Data routes verify workspace ownership and organization access before using the
+server-side service-role key. RLS is defense in depth, not a substitute for those
+checks. API keys never reach the browser.
 
 ### Highlights
 
 - **Centralized scoring** via `useScored` hook — RICE calculated once per state change, consumed by all components
 - **Memoized canvas positions** — hover/selection interactions don't trigger position recalculation
 - **Responsive breakpoint** via `window.matchMedia` hook — not CSS-in-JS or broken inline media queries
-- **Dual-mode AI** — live Claude analysis via serverless proxy when available; smart demo fallback when not
+- **Explicit AI states** — signed-in live requests through the server; provider or validation failures display an error without inventing a substitute recommendation
 - **Serverless proxies** — API keys stay server-side in `app/api/analyze/route.js` and `app/api/suggest-scores/route.js`
 
 ## Development
@@ -103,7 +107,7 @@ npm install
 npm run dev          # app + /api routes on one process
 ```
 
-Copy `.env.example` to `.env.local` and add an Anthropic API key to exercise live AI analysis. Without one the advisor falls back to locally generated analysis and labels itself demo mode. Clerk, Supabase, and GA values are all optional; without them the app runs in guest mode against `localStorage`.
+Copy `.env.example` to `.env.local`. Guest workflows run locally without service credentials. Live AI requires configured Clerk, Supabase and Anthropic services and a signed-in session; an Anthropic key alone is insufficient. Missing configuration or failed AI requests do not generate a local replacement analysis. GA is optional. Never commit credentials.
 
 | Command | Purpose |
 |---------|---------|
@@ -117,9 +121,15 @@ Copy `.env.example` to `.env.local` and add an Anthropic API key to exercise liv
 
 Adding a public page means adding one row to [`lib/routes.js`](./lib/routes.js) — the sitemap, marketing nav, JSON-LD, and `llms.txt` all read from it, and tests fail if the registry and the filesystem disagree.
 
+## Scoring and demonstration
+
+Tarazu multiplies band scores rather than raw user counts, outcome changes and person-days. The resulting index ranks the supplied judgments; a score twice as large does not mean twice the benefit. Confidence is an evidence band, not a probability. Current band definitions and a user-selected existing claim appear beside each score. Selection does not verify the claim or automatically change the score; custom values between anchors remain custom.
+
+The fictional Relay walkthrough compares scoped next learning steps, including a paper checklist exercise and software pilots. These are different scopes, not equivalent production builds. See [the current demo narrative](docs/product-demo-walkthrough.txt) and [evaluation limits](docs/ai-evaluation/README.md). Historical decision snapshots preserve earlier estimates.
+
 ## Design Record
 
-The full PRD — competitive analysis, requirements with acceptance criteria, technical architecture, risk mitigations, and launch plan — is in [`docs/Tarazu_PRD.pdf`](./docs/Tarazu_PRD.pdf). The brand system and product design spec is in [`tarazu-brand-system-spec.md`](./tarazu-brand-system-spec.md), and the forward plan for the Validate feature is in [`docs/tarazu-validate-roadmap.md`](./docs/tarazu-validate-roadmap.md).
+The historical PRD — competitive analysis, proposed requirements, architecture and launch plan, which may differ from the current implementation — is in [`docs/Tarazu_PRD.pdf`](./docs/Tarazu_PRD.pdf). The brand system and product design spec is in [`tarazu-brand-system-spec.md`](./tarazu-brand-system-spec.md), and the forward plan for the Validate feature is in [`docs/tarazu-validate-roadmap.md`](./docs/tarazu-validate-roadmap.md).
 
 ## License
 
