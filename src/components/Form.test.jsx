@@ -265,7 +265,7 @@ it('preserves manual values between bands and does not assign them a neighboring
 });
 
 it('shows the server-reviewed supplied answer instead of an editable paraphrased question and retains manual scores', async () => {
-  const reply = {reach:{...result(55).reach,followUp:null,followUpResolution:{status:'answered',sourceId:'claim:answer',label:'Recorded claim · User estimate',text:'No measured eligible-user count exists.'}}};
+  const reply = {reach:{...result(55).reach,nextAction:'Run a real pilot to collect new evidence.',followUp:null,followUpResolution:{status:'answered',sourceId:'claim:answer',label:'Recorded claim · User estimate',text:'No measured eligible-user count exists.'}}};
   vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:true,json:async()=>reply}));
   render(<Form editFeature={candidate} onAdd={()=>{}} />);
   fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
@@ -273,6 +273,7 @@ it('shows the server-reviewed supplied answer instead of an editable paraphrased
   expect(screen.getByText('Answer already supplied; original uncertainty retained.')).toBeTruthy();
   fireEvent.click(screen.getByText('Review reasoning & evidence'));
   expect(screen.getByText('Already in your context')).toBeTruthy();
+  expect(screen.getByText('Run a real pilot to collect new evidence.')).toBeTruthy();
   expect(screen.getByText('No measured eligible-user count exists.')).toBeTruthy();
   expect(screen.queryByLabelText('Answer reach follow-up')).toBeNull();
   expect(screen.getByText('Reach value 23')).toBeTruthy();

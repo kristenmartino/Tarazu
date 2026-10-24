@@ -49,7 +49,7 @@ export function ScoreCard({ dimension, value, onChange, result, loading, stale, 
         {!!result.gaps?.length && <p><strong>Still unknown:</strong> {result.gaps.join('; ')}</p>}
         <ScoringFollowUp key={`${dimension}:${result.followUp?.question}`} followUp={result.followUp} resolution={result.followUpResolution} dimension={dimension} claims={claims} signals={signals} onAdd={onAddClaim} />
       </div></details>}
-      {result && !recorded && <p style={{ margin: '10px 0 0', fontSize: 14 }}>{result.nextAction}</p>}
+      {result && <p style={{ margin: '10px 0 0', fontSize: 14 }}>{result.nextAction}</p>}
       {!result && <p style={{ margin: 0, fontSize: 13, color: C.textMuted }}>Adjust manually or ask AI to review the supplied context.</p>}
     </div>
   </section>;
