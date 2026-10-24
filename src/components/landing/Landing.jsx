@@ -103,7 +103,7 @@ export function Landing() {
                 <Link href="/app" className="btn btn-solid">
                   Start prioritizing <span className="arrow">→</span>
                 </Link>
-                <a href="#lifecycle" className="btn btn-ghost">See the lifecycle</a>
+                <Link href="/demo" className="btn btn-ghost">Try the Relay demo</Link>
               </div>
               <div className="hero-foot"><span className="pip" /> From signal to a decision you can explain</div>
             </div>

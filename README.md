@@ -123,6 +123,8 @@ Adding a public page means adding one row to [`lib/routes.js`](./lib/routes.js) 
 
 ## Scoring and demonstration
 
+Share [the complete Relay guest demo](https://tarazu.app/demo) for a no-account walkthrough. It includes three fictional candidates, five Signals, a saved revision-5 validation brief, and two draft decisions preserving revisions 4 and 5. Visitors can edit, save and reopen their browser copy. Restart demo restores this reserved example without replacing their ordinary guest workspaces or account data. Live AI requires opening their own workspace and signing in.
+
 Tarazu multiplies band scores rather than raw user counts, outcome changes and person-days. The resulting index ranks the supplied judgments; a score twice as large does not mean twice the benefit. Confidence is an evidence band, not a probability. Current band definitions and a user-selected existing claim appear beside each score. Selection does not verify the claim or automatically change the score; custom values between anchors remain custom.
 
 The fictional Relay walkthrough compares scoped next learning steps, including a paper checklist exercise and software pilots. These are different scopes, not equivalent production builds. See [the current demo narrative](docs/product-demo-walkthrough.txt) and [evaluation limits](docs/ai-evaluation/README.md). Historical decision snapshots preserve earlier estimates.

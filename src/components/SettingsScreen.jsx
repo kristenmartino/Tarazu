@@ -8,7 +8,7 @@ export const SettingsScreen = ({
   sortMode, onSortModeChange,
   mapColorBy, mapSizeBy, mapLabelMode,
   onMapColorByChange, onMapSizeByChange, onMapLabelModeChange,
-  isSignedIn, features,
+  isSignedIn, features, guestDemo = false,
 }) => {
   const C = useC();
   const { themeName, setThemeName, themes } = useTheme();
@@ -77,8 +77,8 @@ export const SettingsScreen = ({
             <div>
               <div style={labelStyle}>WORKSPACE NAME</div>
               <div style={{ display: "flex", gap: 8 }}>
-                <input value={wsName} onChange={e => setWsName(e.target.value)} onBlur={handleRename} onKeyDown={e => e.key === "Enter" && handleRename()} style={{ ...inputStyle, flex: 1 }} />
-                <button onClick={handleRename} style={{ padding: "8px 14px", border: `1px solid color-mix(in srgb, var(--accent) 19%, transparent)`, borderRadius: 8, background: C.blueDim, color: C.blue, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)", whiteSpace: "nowrap" }}>Rename</button>
+                <input disabled={guestDemo} value={wsName} onChange={e => setWsName(e.target.value)} onBlur={handleRename} onKeyDown={e => e.key === "Enter" && handleRename()} style={{ ...inputStyle, flex: 1 }} />
+                <button disabled={guestDemo} onClick={handleRename} style={{ padding: "8px 14px", border: `1px solid color-mix(in srgb, var(--accent) 19%, transparent)`, borderRadius: 8, background: C.blueDim, color: C.blue, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)", whiteSpace: "nowrap" }}>Rename</button>
               </div>
             </div>
             <div>
@@ -190,7 +190,7 @@ export const SettingsScreen = ({
                   <button onClick={() => setConfirmDelete(false)} style={{ padding: "6px 12px", border: `1px solid ${C.border}`, borderRadius: 6, background: "transparent", color: C.textMuted, fontSize: 10, cursor: "pointer", fontFamily: "var(--mono)" }}>Cancel</button>
                 </div>
               ) : (
-                <button onClick={() => setConfirmDelete(true)} style={{ padding: "6px 12px", border: `1px solid color-mix(in srgb, var(--danger) 19%, transparent)`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Delete</button>
+                <button disabled={guestDemo} onClick={() => setConfirmDelete(true)} style={{ padding: "6px 12px", border: `1px solid color-mix(in srgb, var(--danger) 19%, transparent)`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Delete</button>
               )}
             </div>
           </div>

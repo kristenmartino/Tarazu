@@ -158,3 +158,14 @@ it("labels signed-in cloud-load fallback as browser data without promoting it to
   expect(api.upsertFeature).not.toHaveBeenCalled();
   log.mockRestore();
 });
+
+
+it("forces the public demo into its isolated browser workspace even with a signed-in parent context", async () => {
+  localStorage.setItem("prioritize-active-workspace", "own-workspace");
+  render(<App guestDemo />);
+  expect(await screen.findByText("3 candidates saved")).toBeTruthy();
+  expect(screen.getByText("Save target: browser")).toBeTruthy();
+  expect(localStorage.getItem("prioritize-active-workspace")).toBe("own-workspace");
+  expect(localStorage.getItem("prioritize-workspaces")).toBeNull();
+  for (const call of Object.values(api)) expect(call).not.toHaveBeenCalled();
+});

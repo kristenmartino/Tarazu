@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import { it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { AIPanel } from './AIPanel';
+import { AuthContext } from '../hooks/useAuth';
 
 const scored = [
   {id:'a',name:'Reminders',score:8400,reach:75,impact:70,confidence:40,effort:25},
@@ -108,4 +109,11 @@ it('replaces a failed regeneration with an error instead of leaving a saveable o
   expect(await screen.findByRole('alert')).toBeTruthy();
   expect(screen.queryByText('Test before building.')).toBeNull();
   expect(screen.queryByRole('button',{name:/Save as Decision/})).toBeNull();
+});
+
+it('offers the own-workspace path without making AI requests from the public demo', () => {
+  render(<AuthContext.Provider value={{isGuestDemo:true}}><AIPanel scored={scored}/></AuthContext.Provider>);
+  expect(screen.queryByRole('button',{name:'Generate Recommendation'})).toBeNull();
+  expect(screen.getByRole('link',{name:'Open your workspace'}).getAttribute('href')).toBe('/app');
+  expect(fetch).not.toHaveBeenCalled();
 });

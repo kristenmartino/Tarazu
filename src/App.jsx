@@ -5,6 +5,7 @@ import { useC } from "./ThemeProvider";
 import { exportCSV, parseCSV, mapCSVToFeatures } from "./utils";
 import { load, saveWsIndex, loadWsIndex, saveWsFeatures, saveWsFeaturesChecked, loadWsFeatures, removeWsFeatures, saveWsContext, loadWsContext, removeWsContext, getActiveWsId, setActiveWsId as storeActiveWsId, STORAGE_KEY, saveWsDecisions, loadWsDecisions, removeWsDecisions, saveWsSignals, loadWsSignals, removeWsSignals, saveWsSettings, loadWsSettings, removeWsSettings } from "../lib/local-storage";
 import * as cloud from "../lib/cloud-storage";
+import { prepareRelayDemo, RELAY_DEMO_ID, RELAY_DEMO_WORKSPACE } from "../lib/relay-demo";
 import { useMedia } from "./hooks/useMedia";
 import { useScored } from "./hooks/useScored";
 import { useAuth } from "./hooks/useAuth";
@@ -46,13 +47,20 @@ const printStyles = `@media print {
 const workspacePreferenceKey = (userId, orgId) => `tarazu-cloud-workspace:${userId}:${orgId || "personal"}`;
 const migrationPreferenceKey = userId => `tarazu-migration-dismissed:${userId}`;
 
-export default function App() {
+const prepareGuestDemo = async (reset = false) => {
+  const prepare = () => prepareRelayDemo(localStorage, { reset });
+  if (navigator.locks) await navigator.locks.request(RELAY_DEMO_ID, prepare);
+  else prepare();
+};
+
+export default function App({ guestDemo = false }) {
   const C = useC();
   const [features, setFeatures] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editingFeature, setEditingFeature] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [demoError, setDemoError] = useState("");
   const [workspaces, setWorkspaces] = useState([]);
   const [activeWsId, setActiveWsId] = useState(null);
   const [sortMode, setSortMode] = useState("rice");
@@ -91,7 +99,9 @@ export default function App() {
   const isMobile = useMedia("(max-width: 800px)");
   const isTablet = useMedia("(max-width: 1024px)") && !isMobile;
   const isOnline = useOnlineStatus();
-  const { isSignedIn, isLoaded: authLoaded, userId, orgId } = useAuth();
+  const auth = useAuth();
+  const { isSignedIn, isLoaded: authLoaded, userId, orgId } = guestDemo
+    ? { isSignedIn: false, isLoaded: true, userId: null, orgId: null } : auth;
   const currentSaveScope = `${userId || "guest"}:${orgId || "personal"}:${activeWsId}`;
   const saveScopeRef = useRef(currentSaveScope); saveScopeRef.current = currentSaveScope;
   const editorKey = `${currentSaveScope}:${activeScreen}:${showForm}:${editingFeature?.id || "new"}`;
@@ -131,7 +141,16 @@ export default function App() {
     setLoaded(false);
     let cancelled = false;
     async function init() {
-      if (isSignedIn) {
+      if (guestDemo) {
+        try {
+          await prepareGuestDemo();
+          if (cancelled) return;
+          initLocal();
+        } catch (error) {
+          if (!cancelled) setDemoError(error.message || "Browser storage is unavailable.");
+          return;
+        }
+      } else if (isSignedIn) {
         try {
           let ws = await cloud.fetchWorkspaces();
           if (ws.length === 0) {
@@ -176,13 +195,14 @@ export default function App() {
       } else {
         initLocal();
       }
+      if (cancelled) return;
       loadedRef.current = true;
       setLoaded(true);
     }
     function initLocal() {
       setBrowserFallback(true);
       setPendingSync(false);
-      let ws = loadWsIndex();
+      let ws = guestDemo ? [RELAY_DEMO_WORKSPACE] : loadWsIndex();
       if (!ws || ws.length === 0) {
         ws = [{ id: "default", name: "My Backlog" }];
         const legacy = load();
@@ -194,7 +214,7 @@ export default function App() {
         }
         saveWsIndex(ws);
       }
-      const activeId = getActiveWsId() || ws[0].id;
+      const activeId = guestDemo ? RELAY_DEMO_ID : getActiveWsId() || ws[0].id;
       setWorkspaces(ws);
       setActiveWsId(activeId);
       const saved = loadWsFeatures(activeId);
@@ -226,7 +246,7 @@ export default function App() {
     // afterSelect*Url props alone don't cover this — they navigate to /app,
     // which is the route already mounted, so Next soft-navigates and the
     // component never remounts.
-  }, [authLoaded, isSignedIn, userId, orgId]);
+  }, [authLoaded, isSignedIn, userId, orgId, guestDemo]);
 
   const dismissMigration = () => {
     try { if (userId) localStorage.setItem(migrationPreferenceKey(userId), "1"); } catch {}
@@ -469,6 +489,7 @@ export default function App() {
 
   const workspaceLoadSequence = useRef(0);
   const switchWorkspace = useCallback(async (wsId) => {
+    if (guestDemo) return;
     const loadId = ++workspaceLoadSequence.current;
     if (isSignedIn) {
       try {
@@ -527,9 +548,10 @@ export default function App() {
     setSelectedId(null);
     setShowForm(false);
     setEditingFeature(null);
-  }, [isSignedIn, userId, orgId, loaded, activeWsId, features, manualOrder]);
+  }, [isSignedIn, userId, orgId, loaded, activeWsId, features, manualOrder, guestDemo]);
 
   const addWorkspace = async () => {
+    if (guestDemo) return;
     const name = await dialog.prompt({ title: "New workspace", label: "Workspace name", placeholder: "e.g. Q3 Roadmap", confirmText: "Create" });
     if (!name?.trim()) return;
     if (isSignedIn) {
@@ -551,6 +573,7 @@ export default function App() {
     }
   };
   const deleteWorkspace = async (wsId) => {
+    if (guestDemo) return;
     if (workspaces.length <= 1) return;
     const ws = workspaces.find(w => w.id === wsId);
     const ok = await dialog.confirm({
@@ -576,6 +599,7 @@ export default function App() {
     if (activeWsId === wsId) switchWorkspace(updated[0].id);
   };
   const renameWorkspace = async (wsId, newName) => {
+    if (guestDemo) return;
     const ws = workspaces.find(w => w.id === wsId);
     const name = newName || await dialog.prompt({ title: "Rename workspace", label: "Workspace name", defaultValue: ws?.name, confirmText: "Rename" });
     if (!name?.trim()) return;
@@ -786,6 +810,7 @@ export default function App() {
   }, []);
 
   const handleLoadSamples = useCallback(() => {
+    if (guestDemo) { showToast("Use Restart demo above to restore the complete Relay example."); return; }
     const examples = sampleBacklogFor(features);
     if (!examples) {
       showToast("Your candidates are unchanged. Create an empty workspace to try examples.");
@@ -797,7 +822,7 @@ export default function App() {
     setSelectedId(null);
     setManualOrder([]);
     setSortMode("rice");
-  }, [features, selectedId, manualOrder, sortMode, showToast]);
+  }, [features, selectedId, manualOrder, sortMode, showToast, guestDemo]);
 
   const handleClear = useCallback(() => {
     setUndoSnapshot({ features, selectedId, manualOrder, sortMode });
@@ -840,9 +865,25 @@ export default function App() {
     return () => document.removeEventListener("keydown", handler);
   }, [activeScreen, handleScreenChange]);
 
+  const restartDemo = async () => {
+    if (!await dialog.confirm({ title: "Restart the Relay demo?", message: "This replaces your edits to the fictional demo in this browser. Your own workspaces are kept.", confirmText: "Restart demo" })) return;
+    await featureWriteQueue.current.catch(() => {});
+    loadedRef.current = false;
+    setLoaded(false);
+    clearTimeout(saveTimer.current); clearTimeout(ctxSaveTimer.current); clearTimeout(settingsSaveTimer.current);
+    try {
+      await prepareGuestDemo(true);
+      window.location.reload();
+    } catch (error) {
+      loadedRef.current = loaded;
+      setLoaded(loaded);
+      setDemoError(error.message || "The demo could not be restored.");
+    }
+  };
+
   if (!loaded) return (
     <main className="tz-app" style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
-      <p role="status" style={{ fontSize: 14, color: C.textMuted }}>Loading your workspace…</p>
+      {demoError ? <section style={{ maxWidth: 500, padding: 24 }}><h1>Relay demo could not open</h1><p role="alert">{demoError} Allow browser storage and try again, or restart the example.</p><button onClick={() => window.location.reload()}>Try again</button> <button onClick={restartDemo}>Restart demo</button> <Link href="/app">Open your workspace</Link><DialogHost /></section> : <p role="status" style={{ fontSize: 14, color: C.textMuted }}>Loading your workspace…</p>}
     </main>
   );
 
@@ -885,9 +926,9 @@ export default function App() {
               RICE Guide
             </a>
           )}
-          {!isMobile && <OrgSwitcher />}
+          {!isMobile && !guestDemo && <OrgSwitcher />}
           <ThemeMenu compact={isMobile} />
-          {isMobile && (
+          {isMobile && !guestDemo && (
           <div ref={mobileWsRef} style={{ position: "relative" }}>
             <button onClick={() => setMobileWsOpen(!mobileWsOpen)} style={{
               padding: "4px 10px", border: `1px solid ${C.border}`, borderRadius: 6,
@@ -930,6 +971,13 @@ export default function App() {
         </div>
       </header>
 
+      {guestDemo && <section data-no-print aria-label="Guest demo" style={{ padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.surface, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ flex: "1 1 280px", fontSize: 13, lineHeight: 1.5 }}><strong>Relay · fictional guest demo</strong><br /><span style={{ color: C.textMuted }}>Explore, edit and reopen in this browser. No account needed. Live AI requires signing in to your own workspace.</span></div>
+        <Link href="/app" style={{ color: C.accent, fontSize: 13 }}>Open your workspace</Link>
+        <button onClick={restartDemo} style={{ padding: "8px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.text, cursor: "pointer", fontSize: 13 }}>Restart demo</button>
+        {demoError && <p role="alert" style={{ width: "100%", color: C.danger, margin: 0 }}>{demoError}</p>}
+      </section>}
+
       {isSignedIn && <OfflineBanner isOnline={isOnline} isSyncing={pendingSync && isOnline} />}
 
       <div style={{
@@ -941,7 +989,7 @@ export default function App() {
         minHeight: "calc(100vh - 48px)",
       }}>
         {!isMobile && (
-          <LeftRail
+          <LeftRail guestDemo={guestDemo}
             activeScreen={activeScreen} onScreenChange={handleScreenChange}
             activeWs={activeWs} workspaces={workspaces}
             onSwitchWorkspace={switchWorkspace} onAddWorkspace={addWorkspace}
@@ -966,7 +1014,7 @@ export default function App() {
             />
           </div>
         ) : (
-        <CenterCanvas
+        <CenterCanvas guestDemo={guestDemo}
           activeScreen={activeScreen}
           saveTarget={isSignedIn && isOnline && !pendingSync && !browserFallback ? "cloud" : "browser"}
           savePendingSync={pendingSync && !browserFallback}
@@ -1062,7 +1110,7 @@ export default function App() {
 
       {/* Mobile: bottom tab bar */}
       {isMobile && (
-        <LeftRail
+        <LeftRail guestDemo={guestDemo}
           activeScreen={activeScreen} onScreenChange={handleScreenChange}
           activeWs={activeWs} workspaces={workspaces}
           onSwitchWorkspace={switchWorkspace} onAddWorkspace={addWorkspace}

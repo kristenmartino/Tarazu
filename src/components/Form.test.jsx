@@ -3,6 +3,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, cleanup, within } from '@testing-library/react';
 import { afterEach, it, expect, vi } from 'vitest';
 import { Form } from './Form';
+import { AuthContext } from '../hooks/useAuth';
 vi.mock('../ThemeProvider', () => ({ useC: () => ({}) }));
 vi.mock('./Slider', () => ({ Slider: ({label,value}) => <div>{label} value {value}</div> }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
@@ -291,4 +292,14 @@ it('explains a withheld ambiguous question without inventing an answer or hiding
   expect(screen.queryByLabelText('Answer reach follow-up')).toBeNull();
   expect(screen.queryByText('Accept reach suggestion')).toBeNull();
   expect(screen.getByText('Reach value 23')).toBeTruthy();
+});
+
+it('keeps public demo scores editable and blocks AI requests even with a signed-in browser', () => {
+  vi.stubGlobal('fetch', vi.fn());
+  render(<AuthContext.Provider value={{isSignedIn:false, isGuestDemo:true}}><Form editFeature={candidate} onAdd={()=>{}} /></AuthContext.Provider>);
+  const suggest = screen.getByRole('button', {name:'✦ AI Suggest Scores'});
+  expect(suggest.disabled).toBe(true);
+  fireEvent.click(suggest);
+  expect(fetch).not.toHaveBeenCalled();
+  expect(screen.getByRole('link', {name:'open your workspace and sign in'}).getAttribute('href')).toBe('/app');
 });

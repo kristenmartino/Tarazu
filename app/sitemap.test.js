@@ -57,7 +57,7 @@ describe("sitemap.xml", () => {
   });
 
   it("never advertises a noindex route", () => {
-    for (const path of ["/app", "/sign-in", "/sign-up"]) {
+    for (const path of ["/app", "/demo", "/sign-in", "/sign-up"]) {
       expect(entries.some((e) => e.url === `${SITE_URL}${path}`)).toBe(false);
     }
   });

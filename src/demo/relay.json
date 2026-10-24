@@ -1,0 +1,693 @@
+{
+  "features": [
+    {
+      "id": "63dddb48-0696-5763-ae2c-a5aca482ad8a",
+      "name": "Approval reminders — synthetic",
+      "description": "FICTIONAL DEMO: Add one daily in-app reminder for overdue approval requests in Relay. Compare with an approval status dashboard and a request readiness checklist. Evaluate the next 30 days across 10 hypothetical pilot teams. All numbers and research are synthetic.",
+      "scoringBasis": {
+        "reach": "FICTIONAL PLANNING ASSUMPTION: 60 of the 100 unique pilot users will encounter an overdue-request reminder within 30 days. Uptake and eligible counts are unmeasured.",
+        "claims": [
+          {
+            "id": "11f5dd47-a205-5802-8494-1731a38bff3a",
+            "kind": "estimate",
+            "text": "FICTIONAL PLANNING ASSUMPTION: 60 of the 100 unique pilot users will encounter an overdue-request reminder within 30 days. Uptake and eligible counts are unmeasured.",
+            "origin": "user",
+            "sources": [],
+            "question": "",
+            "dimension": "reach"
+          },
+          {
+            "id": "363d7290-fca1-569d-9a44-b1cf1252c426",
+            "kind": "estimate",
+            "text": "FICTIONAL HYPOTHESIS: among affected users, reduce requests over 48 hours overdue from an assumed 30% to 25% (5 percentage points) by reducing overlooked requests. Incomplete requests may not benefit.",
+            "origin": "user",
+            "sources": [
+              {
+                "quote": "Fictional follow-up B: review of five recent overdue requests found four awaiting required documents and one overlooked by an approver.",
+                "relation": "conflicts",
+                "signalId": "0ef41f0d-74a8-597c-a918-5fb8db22bbf6"
+              },
+              {
+                "quote": "Fictional discovery round A: 4 of 6 approvers said delayed requests lacked an owner, due date, or required documents.",
+                "relation": "conflicts",
+                "signalId": "2c35a4e2-5d4a-508d-987b-51e48573bc41"
+              },
+              {
+                "quote": "Fictional discovery round A: 6 of 8 operations administrators described chasing an overdue approval manually.",
+                "relation": "context",
+                "signalId": "41a8f480-5cc3-55cd-b630-cf47adc01b27"
+              }
+            ],
+            "question": "",
+            "dimension": "impact"
+          },
+          {
+            "id": "8a96e85a-bd27-551c-9b4b-6ff14c8b8f2b",
+            "kind": "estimate",
+            "text": "FICTIONAL TEAM ESTIMATE: 3 total person-days including product definition, implementation and QA for a pilot of one daily in-app reminder. Reuse tested notifications and due-date API. Exclude email/SMS. Needs engineering review.",
+            "origin": "user",
+            "sources": [],
+            "question": "",
+            "dimension": "effort"
+          },
+          {
+            "id": "07bc41e9-c5c1-519d-81ee-500e74768089",
+            "kind": "fact",
+            "text": "The linked source is a fictional exercise, not observed customer behavior or measured impact. Its sample cannot establish real customer confidence.",
+            "origin": "user",
+            "sources": [
+              {
+                "quote": "Fictional discovery round A: 6 of 8 operations administrators described chasing an overdue approval manually.",
+                "relation": "supports",
+                "signalId": "41a8f480-5cc3-55cd-b630-cf47adc01b27"
+              }
+            ],
+            "question": "",
+            "dimension": "confidence"
+          },
+          {
+            "id": "39ae737a-0c46-5b8d-9017-c3391ae4a976",
+            "kind": "estimate",
+            "text": "No measured eligible-user count exists. For this fictional demo, retain the planning forecast of 60 eligible users out of the 100-user cohort over 30 days, assuming all 60 encounter a reminder. This is an untested forecast, not observed adoption; opt-outs and role distribution remain unknown.",
+            "origin": "user",
+            "sources": [],
+            "question": "What share of the 100 pilot users have had at least one overdue request in a comparable 30-day period?",
+            "dimension": "reach"
+          },
+          {
+            "id": "f420cc67-3abe-55f5-9012-67280f60db81",
+            "kind": "ai_assumption",
+            "text": "Reminder eligibility is broadly distributed across teams",
+            "origin": "ai",
+            "sources": [],
+            "question": "",
+            "dimension": "reach"
+          }
+        ],
+        "effort": "FICTIONAL TEAM ESTIMATE: 3 total person-days including product definition, implementation and QA for a pilot of one daily in-app reminder. Reuse tested notifications and due-date API. Exclude email/SMS. Needs engineering review.",
+        "impact": "FICTIONAL HYPOTHESIS: among affected users, reduce requests over 48 hours overdue from an assumed 30% to 25% (5 percentage points) by reducing overlooked requests. Incomplete requests may not benefit.",
+        "evidence": "All linked Signals and planning numbers are synthetic examples, not customer evidence. No measured baseline, adoption or outcomes. Supporting and conflicting stories illustrate overlooked versus incomplete requests.",
+        "basisClaimIds": {
+          "reach": "11f5dd47-a205-5802-8494-1731a38bff3a",
+          "effort": "8a96e85a-bd27-551c-9b4b-6ff14c8b8f2b",
+          "impact": "363d7290-fca1-569d-9a44-b1cf1252c426",
+          "confidence": "07bc41e9-c5c1-519d-81ee-500e74768089"
+        }
+      },
+      "reach": 55,
+      "impact": 55,
+      "confidence": 20,
+      "effort": 35,
+      "owner": "Demo product team",
+      "theme": "Approval turnaround",
+      "status": null,
+      "created_at": "2026-10-23T19:56:58.446801+00:00",
+      "updated_at": "2026-10-24T00:32:14.0201+00:00"
+    },
+    {
+      "id": "4486989e-ae76-54e7-9c07-6719b57fc83e",
+      "name": "Approval status dashboard — synthetic",
+      "description": "FICTIONAL DEMO: Show pending approvals by owner and age so an operations administrator can follow up. Same 30-day horizon and 10 hypothetical pilot teams. Scores are illustrative human estimates, not measured outcomes.",
+      "scoringBasis": {
+        "reach": "FICTIONAL PLANNING ASSUMPTION: 10 of the 100 unique pilot users are operations administrators who would view the dashboard within 30 days. Roles and uptake are unmeasured.",
+        "claims": [
+          {
+            "id": "9986867c-54d7-5887-a2aa-f4e83714cef8",
+            "kind": "estimate",
+            "text": "FICTIONAL PLANNING ASSUMPTION: 10 of the 100 unique pilot users are operations administrators who would view the dashboard within 30 days. Roles and uptake are unmeasured.",
+            "origin": "user",
+            "sources": [],
+            "question": "",
+            "dimension": "reach"
+          },
+          {
+            "id": "4dd68614-7ea3-5c44-95ab-8017d78d14bb",
+            "kind": "estimate",
+            "text": "FICTIONAL HYPOTHESIS: among affected users, reduce requests over 48 hours overdue from an assumed 30% to 27% (3 percentage points) by making follow-up needs visible. Visibility alone may not fix incomplete requests.",
+            "origin": "user",
+            "sources": [
+              {
+                "quote": "Fictional discovery round A: 5 of 8 administrators wanted one view of pending requests, their owners, and request age.",
+                "relation": "context",
+                "signalId": "db8378bf-b188-5111-b228-0a0cec1f7f06"
+              }
+            ],
+            "question": "",
+            "dimension": "impact"
+          },
+          {
+            "id": "f2e2f5fc-eb7c-58ba-b1fb-eb236f2c33fc",
+            "kind": "estimate",
+            "text": "FICTIONAL TEAM ESTIMATE: 10 total person-days across product, design, engineering and QA for a read-only pilot grouped by owner and request age. Reuse existing status/due-date data. Exclude editing, escalation and new integrations. Needs engineering review.",
+            "origin": "user",
+            "sources": [],
+            "question": "",
+            "dimension": "effort"
+          },
+          {
+            "id": "c65595ff-5ef1-54bc-99e1-a62815f80b7d",
+            "kind": "fact",
+            "text": "The linked source is a fictional exercise, not observed customer behavior or measured impact. Its sample cannot establish real customer confidence.",
+            "origin": "user",
+            "sources": [
+              {
+                "quote": "Fictional discovery round A: 5 of 8 administrators wanted one view of pending requests, their owners, and request age.",
+                "relation": "supports",
+                "signalId": "db8378bf-b188-5111-b228-0a0cec1f7f06"
+              }
+            ],
+            "question": "",
+            "dimension": "confidence"
+          }
+        ],
+        "effort": "FICTIONAL TEAM ESTIMATE: 10 total person-days across product, design, engineering and QA for a read-only pilot grouped by owner and request age. Reuse existing status/due-date data. Exclude editing, escalation and new integrations. Needs engineering review.",
+        "impact": "FICTIONAL HYPOTHESIS: among affected users, reduce requests over 48 hours overdue from an assumed 30% to 27% (3 percentage points) by making follow-up needs visible. Visibility alone may not fix incomplete requests.",
+        "evidence": "The linked dashboard request is a fictional Signal. Audience counts and expected benefit are assumptions, not usage analytics or measured outcomes. No real customer evidence is supplied.",
+        "basisClaimIds": {
+          "reach": "9986867c-54d7-5887-a2aa-f4e83714cef8",
+          "effort": "f2e2f5fc-eb7c-58ba-b1fb-eb236f2c33fc",
+          "impact": "4dd68614-7ea3-5c44-95ab-8017d78d14bb",
+          "confidence": "c65595ff-5ef1-54bc-99e1-a62815f80b7d"
+        }
+      },
+      "reach": 15,
+      "impact": 35,
+      "confidence": 20,
+      "effort": 55,
+      "owner": "Demo product team",
+      "theme": "Approval turnaround",
+      "status": null,
+      "created_at": "2026-10-23T19:57:30.168386+00:00",
+      "updated_at": "2026-10-24T00:32:07.253693+00:00"
+    },
+    {
+      "id": "07a824c9-5563-542f-b612-31abb79bc500",
+      "name": "Request readiness checklist — synthetic",
+      "description": "FICTIONAL DEMO: Prompt requesters to include the owner, due date, and required documents before asking for approval. Test the workflow with a paper checklist before building. Same 30-day horizon and 10 hypothetical pilot teams. Scores are illustrative human estimates.",
+      "scoringBasis": {
+        "reach": "FICTIONAL PLANNING ASSUMPTION: 80 of the 100 unique pilot users will use or receive requests with the paper checklist within 30 days. This audience and uptake are unmeasured.",
+        "claims": [
+          {
+            "id": "d602983f-ae4f-5b52-ab00-dc69ffd9eb79",
+            "kind": "estimate",
+            "text": "FICTIONAL PLANNING ASSUMPTION: 80 of the 100 unique pilot users will use or receive requests with the paper checklist within 30 days. This audience and uptake are unmeasured.",
+            "origin": "user",
+            "sources": [],
+            "question": "",
+            "dimension": "reach"
+          },
+          {
+            "id": "505dcf74-69b4-570f-afb9-6cd47f9abeed",
+            "kind": "estimate",
+            "text": "FICTIONAL HYPOTHESIS: among affected users, reduce requests over 48 hours overdue from an assumed 30% to 20% (10 percentage points) by supplying owner, due date and required documents before review.",
+            "origin": "user",
+            "sources": [
+              {
+                "quote": "Fictional discovery round A: 3 of 5 requesters said they did not know which documents an approver needed.",
+                "relation": "context",
+                "signalId": "a58e3381-29bc-586b-8dcc-73082a53103f"
+              }
+            ],
+            "question": "",
+            "dimension": "impact"
+          },
+          {
+            "id": "a320892b-b391-5ceb-8238-371f4a26fae9",
+            "kind": "estimate",
+            "text": "FICTIONAL TEAM ESTIMATE: 1 total person-day of product/design work to prepare and test a paper checklist. Scope is a discovery pilot, not a production software feature. Exclude engineering integration; review scope before estimating a build.",
+            "origin": "user",
+            "sources": [],
+            "question": "",
+            "dimension": "effort"
+          },
+          {
+            "id": "3e01a563-821a-55cc-a1d5-5d2bb55241cc",
+            "kind": "fact",
+            "text": "The linked source is a fictional exercise, not observed customer behavior or measured impact. Its sample cannot establish real customer confidence.",
+            "origin": "user",
+            "sources": [
+              {
+                "quote": "Fictional discovery round A: 3 of 5 requesters said they did not know which documents an approver needed.",
+                "relation": "supports",
+                "signalId": "a58e3381-29bc-586b-8dcc-73082a53103f"
+              }
+            ],
+            "question": "",
+            "dimension": "confidence"
+          }
+        ],
+        "effort": "FICTIONAL TEAM ESTIMATE: 1 total person-day of product/design work to prepare and test a paper checklist. Scope is a discovery pilot, not a production software feature. Exclude engineering integration; review scope before estimating a build.",
+        "impact": "FICTIONAL HYPOTHESIS: among affected users, reduce requests over 48 hours overdue from an assumed 30% to 20% (10 percentage points) by supplying owner, due date and required documents before review.",
+        "evidence": "The linked case-review Signal is fictional and illustrates missing request information. Cohort counts and outcome forecasts are planning assumptions. No observed customer outcomes or representative research.",
+        "basisClaimIds": {
+          "reach": "d602983f-ae4f-5b52-ab00-dc69ffd9eb79",
+          "effort": "a320892b-b391-5ceb-8238-371f4a26fae9",
+          "impact": "505dcf74-69b4-570f-afb9-6cd47f9abeed",
+          "confidence": "3e01a563-821a-55cc-a1d5-5d2bb55241cc"
+        }
+      },
+      "reach": 75,
+      "impact": 75,
+      "confidence": 20,
+      "effort": 15,
+      "owner": "Demo product team",
+      "theme": "Approval turnaround",
+      "status": null,
+      "created_at": "2026-10-23T19:57:37.772379+00:00",
+      "updated_at": "2026-10-24T00:31:46.464167+00:00"
+    }
+  ],
+  "manualOrder": [
+    "63dddb48-0696-5763-ae2c-a5aca482ad8a",
+    "4486989e-ae76-54e7-9c07-6719b57fc83e",
+    "07a824c9-5563-542f-b612-31abb79bc500"
+  ],
+  "signals": [
+    {
+      "id": "0ef41f0d-74a8-597c-a918-5fb8db22bbf6",
+      "workspace_id": "relay-demo-v1",
+      "type": "research",
+      "title": "SYNTHETIC • Round B: four of five cases were incomplete",
+      "body": "Fictional follow-up B: review of five recent overdue requests found four awaiting required documents and one overlooked by an approver. This convenience sample does not establish population prevalence or prove checklist effectiveness. It weakens the claim that reminders alone address the main cause in these cases; test request readiness first.",
+      "source": "Fictional case-review exercise B • five invented cases",
+      "tags": [
+        "synthetic",
+        "round-b",
+        "conflicting"
+      ],
+      "linked_candidate_id": "63dddb48-0696-5763-ae2c-a5aca482ad8a",
+      "linked_candidate_name": "Approval reminders — synthetic",
+      "theme": "Approval turnaround",
+      "confidence_impact": "decreases",
+      "position": 4,
+      "created_at": "2026-10-23T20:04:50.118591+00:00",
+      "updated_at": "2026-10-23T20:04:50.118591+00:00"
+    },
+    {
+      "id": "db8378bf-b188-5111-b228-0a0cec1f7f06",
+      "workspace_id": "relay-demo-v1",
+      "type": "research",
+      "title": "SYNTHETIC • Administrators want owner and age visibility",
+      "body": "Fictional discovery round A: 5 of 8 administrators wanted one view of pending requests, their owners, and request age. The same administrator sample is used in the reminder note; these are not independent votes. No dashboard usability or benefit test has been run.",
+      "source": "Fictional interview exercise A • same administrator sample",
+      "tags": [
+        "synthetic",
+        "round-a",
+        "alternative"
+      ],
+      "linked_candidate_id": "4486989e-ae76-54e7-9c07-6719b57fc83e",
+      "linked_candidate_name": "Approval status dashboard — synthetic",
+      "theme": "Approval turnaround",
+      "confidence_impact": "increases",
+      "position": 3,
+      "created_at": "2026-10-23T20:00:02.317146+00:00",
+      "updated_at": "2026-10-23T20:00:02.317146+00:00"
+    },
+    {
+      "id": "a58e3381-29bc-586b-8dcc-73082a53103f",
+      "workspace_id": "relay-demo-v1",
+      "type": "research",
+      "title": "SYNTHETIC • Requesters need a readiness prompt",
+      "body": "Fictional discovery round A: 3 of 5 requesters said they did not know which documents an approver needed. A readiness checklist could address this assumption, but nobody has used a prototype and the effect on overdue approvals is unknown.",
+      "source": "Fictional requester exercise A • no real participants",
+      "tags": [
+        "synthetic",
+        "round-a",
+        "alternative"
+      ],
+      "linked_candidate_id": "07a824c9-5563-542f-b612-31abb79bc500",
+      "linked_candidate_name": "Request readiness checklist — synthetic",
+      "theme": "Approval turnaround",
+      "confidence_impact": "increases",
+      "position": 2,
+      "created_at": "2026-10-23T19:59:39.276403+00:00",
+      "updated_at": "2026-10-23T19:59:39.276403+00:00"
+    },
+    {
+      "id": "2c35a4e2-5d4a-508d-987b-51e48573bc41",
+      "workspace_id": "relay-demo-v1",
+      "type": "research",
+      "title": "SYNTHETIC • Missing context challenges reminders",
+      "body": "Fictional discovery round A: 4 of 6 approvers said delayed requests lacked an owner, due date, or required documents. They said another reminder would not make such a request actionable. The sample differs from the administrator interviews; do not combine denominators.",
+      "source": "Fictional approver interview exercise A • no real participants",
+      "tags": [
+        "synthetic",
+        "round-a",
+        "conflicting"
+      ],
+      "linked_candidate_id": "63dddb48-0696-5763-ae2c-a5aca482ad8a",
+      "linked_candidate_name": "Approval reminders — synthetic",
+      "theme": "Approval turnaround",
+      "confidence_impact": "decreases",
+      "position": 1,
+      "created_at": "2026-10-23T19:58:45.453783+00:00",
+      "updated_at": "2026-10-23T19:58:45.453783+00:00"
+    },
+    {
+      "id": "41a8f480-5cc3-55cd-b630-cf47adc01b27",
+      "workspace_id": "relay-demo-v1",
+      "type": "research",
+      "title": "SYNTHETIC • Missed requests support reminders",
+      "body": "Fictional discovery round A: 6 of 8 operations administrators described chasing an overdue approval manually. Three described approvers overlooking a pending request. This suggests a reminder hypothesis; it does not establish causation or measured benefit.",
+      "source": "Fictional interview exercise A • no real participants",
+      "tags": [
+        "synthetic",
+        "round-a",
+        "supporting"
+      ],
+      "linked_candidate_id": "63dddb48-0696-5763-ae2c-a5aca482ad8a",
+      "linked_candidate_name": "Approval reminders — synthetic",
+      "theme": "Approval turnaround",
+      "confidence_impact": "increases",
+      "position": 0,
+      "created_at": "2026-10-23T19:58:10.103858+00:00",
+      "updated_at": "2026-10-23T19:58:10.103858+00:00"
+    }
+  ],
+  "briefs": [
+    {
+      "id": "6be08a3d-553c-500d-b830-170d1fac598d",
+      "workspace_id": "relay-demo-v1",
+      "title": "Approval reminders — synthetic",
+      "draft": {
+        "mode": "candidate",
+        "risks": "All evidence is synthetic. A five-case convenience sample cannot prove prevalence or checklist effectiveness. Reminders may still help overlooked requests, but reminder-only work misses incomplete requests. Adoption, willingness to pay, and measured benefit remain unknown.",
+        "scores": {
+          "marketPull": null,
+          "strategicFit": 2,
+          "differentiation": null,
+          "problemSeverity": 4,
+          "buildFeasibility": 4,
+          "evidenceStrength": 2,
+          "monetizationClarity": null
+        },
+        "ideaDesc": "FICTIONAL DEMO: Add one daily in-app reminder for overdue approval requests in Relay. Compare with an approval status dashboard and a request readiness checklist. Evaluate the next 30 days across 10 hypothetical pilot teams. All numbers and research are synthetic.",
+        "ideaName": "Approval reminders — synthetic",
+        "manualDesc": "Fictional example for demonstrating saved validation briefs. This is not customer research.",
+        "manualName": "Synthetic demo: approval reminders",
+        "assumptions": {
+          "problem": "FICTIONAL ROUND B: Four of five reviewed overdue cases lacked required documents, while one was overlooked. For these invented cases, request readiness is a stronger explanation than missed notifications. This does not establish population prevalence.",
+          "audience": "Operations administrators and approvers in 10 hypothetical pilot teams. The synthetic interviews cover different small samples and are not a population estimate.",
+          "workaround": "Assumed current workflow: administrators check pending requests and manually message approvers. Requesters send missing documents in separate messages.",
+          "feasibility": "Scenario assumption: one engineer, two weeks, existing tested in-app notification service and due-date API. Excludes email/SMS and does not establish real implementation effort.",
+          "willingness": "Unknown. Nobody has committed to adopt or pay. A request for reminders is not evidence that reminders will solve the delay.",
+          "differentiation": "Hypothesis: an in-app reminder adds less overhead than manual chasing. Compare with owner/age visibility and a request readiness checklist. No competitor or preference test completed."
+        },
+        "candidateId": "63dddb48-0696-5763-ae2c-a5aca482ad8a",
+        "nextActions": "Round B proposal: pause a reminder-only build. Test a paper request-readiness checklist with five hypothetical requesters, observe whether required owner/date/documents are included, and record remaining causes of delay. Compare against the current workflow before engineering commitment. Review by 2026-10-30; reconsider reminders if requests are complete but still overlooked.",
+        "productContext": {
+          "assumptions": "Assumptions: reminders may help when requests are overlooked. Missing request information may be a different cause. No measured adoption or willingness to pay.",
+          "constraints": "One engineer available for two weeks. Existing tested in-app notification service and due-date API. No email or SMS scope.",
+          "targetUsers": "Operations administrators and approvers in 10 hypothetical small teams, approximately 100 weekly active users.",
+          "productSummary": "Relay is a fictional approval workflow app. This workspace contains synthetic examples only; it is not customer validation.",
+          "successMetrics": "Proposed 30-day pilot metric: requests overdue by more than 48 hours; guardrail: notification opt-outs. Baseline and target not measured.",
+          "strategicPriorities": "Reduce avoidable overdue approval requests; decide what to test before committing to a build."
+        },
+        "attachedSignals": [
+          {
+            "id": "0ef41f0d-74a8-597c-a918-5fb8db22bbf6",
+            "body": "Fictional follow-up B: review of five recent overdue requests found four awaiting required documents and one overlooked by an approver. This convenience sample does not establish population prevalence or prove checklist effectiveness. It weakens the claim that reminders alone address the main cause in these cases; test request readiness first.",
+            "title": "SYNTHETIC • Round B: four of five cases were incomplete",
+            "source": "Fictional case-review exercise B • five invented cases",
+            "confidence_impact": "decreases"
+          },
+          {
+            "id": "2c35a4e2-5d4a-508d-987b-51e48573bc41",
+            "body": "Fictional discovery round A: 4 of 6 approvers said delayed requests lacked an owner, due date, or required documents. They said another reminder would not make such a request actionable. The sample differs from the administrator interviews; do not combine denominators.",
+            "title": "SYNTHETIC • Missing context challenges reminders",
+            "source": "Fictional approver interview exercise A • no real participants",
+            "confidence_impact": "decreases"
+          },
+          {
+            "id": "41a8f480-5cc3-55cd-b630-cf47adc01b27",
+            "body": "Fictional discovery round A: 6 of 8 operations administrators described chasing an overdue approval manually. Three described approvers overlooking a pending request. This suggests a reminder hypothesis; it does not establish causation or measured benefit.",
+            "title": "SYNTHETIC • Missed requests support reminders",
+            "source": "Fictional interview exercise A • no real participants",
+            "confidence_impact": "increases"
+          }
+        ],
+        "evidenceReviewed": true
+      },
+      "revision": 5,
+      "created_at": "2026-10-23T19:40:52.186477+00:00",
+      "updated_at": "2026-10-23T20:06:31.255+00:00"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "5c162716-5c00-5821-afe0-f482eda4ee77",
+      "workspace_id": "relay-demo-v1",
+      "title": "SYNTHETIC • Round A: investigate reminder versus readiness",
+      "chosen_candidate_id": "63dddb48-0696-5763-ae2c-a5aca482ad8a",
+      "chosen_candidate_name": "Approval reminders — synthetic",
+      "summary_rationale": "Reminders lead the illustrative RICE ranking, but conflicting fictional interviews leave the cause of delay unresolved. Compare reminders with request readiness before committing engineering time.",
+      "final_rationale": "Idea: Approval reminders — synthetic\nDescription: FICTIONAL DEMO: Add one daily in-app reminder for overdue approval requests in Relay. Compare with an approval status dashboard and a request readiness checklist. Evaluate the next 30 days across 10 hypothetical pilot teams. All numbers and research are synthetic.\nAssessment: Assessment incomplete — 4/7 dimensions assessed. Assess the remaining dimensions before comparing the overall opportunity.\n\nOpportunity scores:\n  - Problem severity: 4/5\n  - Evidence strength: 2/5\n  - Market pull: Not assessed\n  - Differentiation: Not assessed\n  - Monetization clarity: Not assessed\n  - Build feasibility: 4/5\n  - Strategic fit: 4/5\n\nKey assumptions:\n  - Problem: FICTIONAL ROUND A: Administrators spend time chasing overdue approvals. We assume some requests are overlooked; missing request information is a competing explanation.\n  - Audience: Operations administrators and approvers in 10 hypothetical pilot teams. The synthetic interviews cover different small samples and are not a population estimate.\n  - Current workaround: Assumed current workflow: administrators check pending requests and manually message approvers. Requesters send missing documents in separate messages.\n  - Willingness to pay / adopt: Unknown. Nobody has committed to adopt or pay. A request for reminders is not evidence that reminders will solve the delay.\n  - Differentiation: Hypothesis: an in-app reminder adds less overhead than manual chasing. Compare with owner/age visibility and a request readiness checklist. No competitor or preference test completed.\n  - Feasibility: Scenario assumption: one engineer, two weeks, existing tested in-app notification service and due-date API. Excludes email/SMS and does not establish real implementation effort.\n\nAttached evidence (2; review completed):\n  - SYNTHETIC • Missing context challenges reminders (Fictional approver interview exercise A • no real participants) — decreases\n  - SYNTHETIC • Missed requests support reminders (Fictional interview exercise A • no real participants) — increases\n\nRisks / unknowns: All evidence and scores are synthetic. Support and conflict remain unresolved. Baseline delay, adoption, willingness to pay, and causal benefit are unknown. Reminder fatigue is a risk.\n\nNext validation actions: Round A decision proposal: do not commit a build. Review five recent overdue requests with administrators and approvers, separate overlooked requests from incomplete requests, and compare a reminder mockup with a paper readiness checklist. Record the cause and next action by 2026-10-30.",
+      "framework_used": "Tarazu Validate",
+      "evidence_count": 2,
+      "owner": "Demo product team",
+      "status": "draft",
+      "recommendation_snapshot": {
+        "reason": "Assess the remaining dimensions before comparing the overall opportunity.",
+        "scores": {
+          "marketPull": null,
+          "strategicFit": 4,
+          "differentiation": null,
+          "problemSeverity": 4,
+          "buildFeasibility": 4,
+          "evidenceStrength": 2,
+          "monetizationClarity": null
+        },
+        "average": null,
+        "framework": "Tarazu Validate",
+        "assumptions": {
+          "problem": "FICTIONAL ROUND A: Administrators spend time chasing overdue approvals. We assume some requests are overlooked; missing request information is a competing explanation.",
+          "audience": "Operations administrators and approvers in 10 hypothetical pilot teams. The synthetic interviews cover different small samples and are not a population estimate.",
+          "workaround": "Assumed current workflow: administrators check pending requests and manually message approvers. Requesters send missing documents in separate messages.",
+          "feasibility": "Scenario assumption: one engineer, two weeks, existing tested in-app notification service and due-date API. Excludes email/SMS and does not establish real implementation effort.",
+          "willingness": "Unknown. Nobody has committed to adopt or pay. A request for reminders is not evidence that reminders will solve the delay.",
+          "differentiation": "Hypothesis: an in-app reminder adds less overhead than manual chasing. Compare with owner/age visibility and a request readiness checklist. No competitor or preference test completed."
+        },
+        "assessedCount": 4,
+        "recommendation": "Assessment incomplete",
+        "attachedSignals": [
+          {
+            "id": "2c35a4e2-5d4a-508d-987b-51e48573bc41",
+            "title": "SYNTHETIC • Missing context challenges reminders",
+            "confidence_impact": "decreases"
+          },
+          {
+            "id": "41a8f480-5cc3-55cd-b630-cf47adc01b27",
+            "title": "SYNTHETIC • Missed requests support reminders",
+            "confidence_impact": "increases"
+          }
+        ],
+        "evidenceReviewed": true,
+        "validation_brief": {
+          "id": "6be08a3d-553c-500d-b830-170d1fac598d",
+          "draft": {
+            "mode": "candidate",
+            "risks": "All evidence and scores are synthetic. Support and conflict remain unresolved. Baseline delay, adoption, willingness to pay, and causal benefit are unknown. Reminder fatigue is a risk.",
+            "scores": {
+              "marketPull": null,
+              "strategicFit": 4,
+              "differentiation": null,
+              "problemSeverity": 4,
+              "buildFeasibility": 4,
+              "evidenceStrength": 2,
+              "monetizationClarity": null
+            },
+            "ideaDesc": "FICTIONAL DEMO: Add one daily in-app reminder for overdue approval requests in Relay. Compare with an approval status dashboard and a request readiness checklist. Evaluate the next 30 days across 10 hypothetical pilot teams. All numbers and research are synthetic.",
+            "ideaName": "Approval reminders — synthetic",
+            "manualDesc": "Fictional example for demonstrating saved validation briefs. This is not customer research.",
+            "manualName": "Synthetic demo: approval reminders",
+            "assumptions": {
+              "problem": "FICTIONAL ROUND A: Administrators spend time chasing overdue approvals. We assume some requests are overlooked; missing request information is a competing explanation.",
+              "audience": "Operations administrators and approvers in 10 hypothetical pilot teams. The synthetic interviews cover different small samples and are not a population estimate.",
+              "workaround": "Assumed current workflow: administrators check pending requests and manually message approvers. Requesters send missing documents in separate messages.",
+              "feasibility": "Scenario assumption: one engineer, two weeks, existing tested in-app notification service and due-date API. Excludes email/SMS and does not establish real implementation effort.",
+              "willingness": "Unknown. Nobody has committed to adopt or pay. A request for reminders is not evidence that reminders will solve the delay.",
+              "differentiation": "Hypothesis: an in-app reminder adds less overhead than manual chasing. Compare with owner/age visibility and a request readiness checklist. No competitor or preference test completed."
+            },
+            "candidateId": "63dddb48-0696-5763-ae2c-a5aca482ad8a",
+            "nextActions": "Round A decision proposal: do not commit a build. Review five recent overdue requests with administrators and approvers, separate overlooked requests from incomplete requests, and compare a reminder mockup with a paper readiness checklist. Record the cause and next action by 2026-10-30.",
+            "productContext": {
+              "assumptions": "Assumptions: reminders may help when requests are overlooked. Missing request information may be a different cause. No measured adoption or willingness to pay.",
+              "constraints": "One engineer available for two weeks. Existing tested in-app notification service and due-date API. No email or SMS scope.",
+              "targetUsers": "Operations administrators and approvers in 10 hypothetical small teams, approximately 100 weekly active users.",
+              "productSummary": "Relay is a fictional approval workflow app. This workspace contains synthetic examples only; it is not customer validation.",
+              "successMetrics": "Proposed 30-day pilot metric: requests overdue by more than 48 hours; guardrail: notification opt-outs. Baseline and target not measured.",
+              "strategicPriorities": "Reduce avoidable overdue approval requests; decide what to test before committing to a build."
+            },
+            "attachedSignals": [
+              {
+                "id": "2c35a4e2-5d4a-508d-987b-51e48573bc41",
+                "body": "Fictional discovery round A: 4 of 6 approvers said delayed requests lacked an owner, due date, or required documents. They said another reminder would not make such a request actionable. The sample differs from the administrator interviews; do not combine denominators.",
+                "title": "SYNTHETIC • Missing context challenges reminders",
+                "source": "Fictional approver interview exercise A • no real participants",
+                "confidence_impact": "decreases"
+              },
+              {
+                "id": "41a8f480-5cc3-55cd-b630-cf47adc01b27",
+                "body": "Fictional discovery round A: 6 of 8 operations administrators described chasing an overdue approval manually. Three described approvers overlooking a pending request. This suggests a reminder hypothesis; it does not establish causation or measured benefit.",
+                "title": "SYNTHETIC • Missed requests support reminders",
+                "source": "Fictional interview exercise A • no real participants",
+                "confidence_impact": "increases"
+              }
+            ],
+            "evidenceReviewed": true
+          },
+          "revision": 4
+        },
+        "assessment_version": 2
+      },
+      "tradeoffs_considered": "All evidence and scores are synthetic. Support and conflict remain unresolved. Baseline delay, adoption, willingness to pay, and causal benefit are unknown. Reminder fatigue is a risk.",
+      "risks_accepted": "No implementation commitment. The small fictional samples do not establish prevalence, causal benefit, adoption, or willingness to pay.",
+      "expected_outcome": "Round A decision proposal: do not commit a build. Review five recent overdue requests with administrators and approvers, separate overlooked requests from incomplete requests, and compare a reminder mockup with a paper readiness checklist. Record the cause and next action by 2026-10-30.",
+      "decision_date": "2026-10-23T00:00:00+00:00",
+      "review_date": null,
+      "position": 1,
+      "created_at": "2026-10-23T20:02:55.584855+00:00",
+      "updated_at": "2026-10-23T20:04:05.329+00:00"
+    },
+    {
+      "id": "c24bb086-7f49-5d78-b0b7-a2e480be4681",
+      "workspace_id": "relay-demo-v1",
+      "title": "SYNTHETIC • Round B: test readiness before building reminders",
+      "chosen_candidate_id": "07a824c9-5563-542f-b612-31abb79bc500",
+      "chosen_candidate_name": "Request readiness checklist — synthetic",
+      "summary_rationale": "Choose a small readiness-checklist experiment despite reminders ranking first under the original estimates. The new fictional case review suggests incomplete inputs are the first problem to investigate. Keep reminders available for complete requests that are still overlooked.",
+      "final_rationale": "Idea: Approval reminders — synthetic\nDescription: FICTIONAL DEMO: Add one daily in-app reminder for overdue approval requests in Relay. Compare with an approval status dashboard and a request readiness checklist. Evaluate the next 30 days across 10 hypothetical pilot teams. All numbers and research are synthetic.\nAssessment: Assessment incomplete — 4/7 dimensions assessed. Assess the remaining dimensions before comparing the overall opportunity.\n\nOpportunity scores:\n  - Problem severity: 4/5\n  - Evidence strength: 2/5\n  - Market pull: Not assessed\n  - Differentiation: Not assessed\n  - Monetization clarity: Not assessed\n  - Build feasibility: 4/5\n  - Strategic fit: 2/5\n\nKey assumptions:\n  - Problem: FICTIONAL ROUND B: Four of five reviewed overdue cases lacked required documents, while one was overlooked. For these invented cases, request readiness is a stronger explanation than missed notifications. This does not establish population prevalence.\n  - Audience: Operations administrators and approvers in 10 hypothetical pilot teams. The synthetic interviews cover different small samples and are not a population estimate.\n  - Current workaround: Assumed current workflow: administrators check pending requests and manually message approvers. Requesters send missing documents in separate messages.\n  - Willingness to pay / adopt: Unknown. Nobody has committed to adopt or pay. A request for reminders is not evidence that reminders will solve the delay.\n  - Differentiation: Hypothesis: an in-app reminder adds less overhead than manual chasing. Compare with owner/age visibility and a request readiness checklist. No competitor or preference test completed.\n  - Feasibility: Scenario assumption: one engineer, two weeks, existing tested in-app notification service and due-date API. Excludes email/SMS and does not establish real implementation effort.\n\nAttached evidence (3; review completed):\n  - SYNTHETIC • Round B: four of five cases were incomplete (Fictional case-review exercise B • five invented cases) — decreases\n  - SYNTHETIC • Missing context challenges reminders (Fictional approver interview exercise A • no real participants) — decreases\n  - SYNTHETIC • Missed requests support reminders (Fictional interview exercise A • no real participants) — increases\n\nRisks / unknowns: All evidence is synthetic. A five-case convenience sample cannot prove prevalence or checklist effectiveness. Reminders may still help overlooked requests, but reminder-only work misses incomplete requests. Adoption, willingness to pay, and measured benefit remain unknown.\n\nNext validation actions: Round B proposal: pause a reminder-only build. Test a paper request-readiness checklist with five hypothetical requesters, observe whether required owner/date/documents are included, and record remaining causes of delay. Compare against the current workflow before engineering commitment. Review by 2026-10-30; reconsider reminders if requests are complete but still overlooked.",
+      "framework_used": "Tarazu Validate",
+      "evidence_count": 3,
+      "owner": "Demo product team",
+      "status": "draft",
+      "recommendation_snapshot": {
+        "reason": "Assess the remaining dimensions before comparing the overall opportunity.",
+        "scores": {
+          "marketPull": null,
+          "strategicFit": 2,
+          "differentiation": null,
+          "problemSeverity": 4,
+          "buildFeasibility": 4,
+          "evidenceStrength": 2,
+          "monetizationClarity": null
+        },
+        "average": null,
+        "framework": "Tarazu Validate",
+        "assumptions": {
+          "problem": "FICTIONAL ROUND B: Four of five reviewed overdue cases lacked required documents, while one was overlooked. For these invented cases, request readiness is a stronger explanation than missed notifications. This does not establish population prevalence.",
+          "audience": "Operations administrators and approvers in 10 hypothetical pilot teams. The synthetic interviews cover different small samples and are not a population estimate.",
+          "workaround": "Assumed current workflow: administrators check pending requests and manually message approvers. Requesters send missing documents in separate messages.",
+          "feasibility": "Scenario assumption: one engineer, two weeks, existing tested in-app notification service and due-date API. Excludes email/SMS and does not establish real implementation effort.",
+          "willingness": "Unknown. Nobody has committed to adopt or pay. A request for reminders is not evidence that reminders will solve the delay.",
+          "differentiation": "Hypothesis: an in-app reminder adds less overhead than manual chasing. Compare with owner/age visibility and a request readiness checklist. No competitor or preference test completed."
+        },
+        "assessedCount": 4,
+        "recommendation": "Assessment incomplete",
+        "attachedSignals": [
+          {
+            "id": "0ef41f0d-74a8-597c-a918-5fb8db22bbf6",
+            "title": "SYNTHETIC • Round B: four of five cases were incomplete",
+            "confidence_impact": "decreases"
+          },
+          {
+            "id": "2c35a4e2-5d4a-508d-987b-51e48573bc41",
+            "title": "SYNTHETIC • Missing context challenges reminders",
+            "confidence_impact": "decreases"
+          },
+          {
+            "id": "41a8f480-5cc3-55cd-b630-cf47adc01b27",
+            "title": "SYNTHETIC • Missed requests support reminders",
+            "confidence_impact": "increases"
+          }
+        ],
+        "evidenceReviewed": true,
+        "validation_brief": {
+          "id": "6be08a3d-553c-500d-b830-170d1fac598d",
+          "draft": {
+            "mode": "candidate",
+            "risks": "All evidence is synthetic. A five-case convenience sample cannot prove prevalence or checklist effectiveness. Reminders may still help overlooked requests, but reminder-only work misses incomplete requests. Adoption, willingness to pay, and measured benefit remain unknown.",
+            "scores": {
+              "marketPull": null,
+              "strategicFit": 2,
+              "differentiation": null,
+              "problemSeverity": 4,
+              "buildFeasibility": 4,
+              "evidenceStrength": 2,
+              "monetizationClarity": null
+            },
+            "ideaDesc": "FICTIONAL DEMO: Add one daily in-app reminder for overdue approval requests in Relay. Compare with an approval status dashboard and a request readiness checklist. Evaluate the next 30 days across 10 hypothetical pilot teams. All numbers and research are synthetic.",
+            "ideaName": "Approval reminders — synthetic",
+            "manualDesc": "Fictional example for demonstrating saved validation briefs. This is not customer research.",
+            "manualName": "Synthetic demo: approval reminders",
+            "assumptions": {
+              "problem": "FICTIONAL ROUND B: Four of five reviewed overdue cases lacked required documents, while one was overlooked. For these invented cases, request readiness is a stronger explanation than missed notifications. This does not establish population prevalence.",
+              "audience": "Operations administrators and approvers in 10 hypothetical pilot teams. The synthetic interviews cover different small samples and are not a population estimate.",
+              "workaround": "Assumed current workflow: administrators check pending requests and manually message approvers. Requesters send missing documents in separate messages.",
+              "feasibility": "Scenario assumption: one engineer, two weeks, existing tested in-app notification service and due-date API. Excludes email/SMS and does not establish real implementation effort.",
+              "willingness": "Unknown. Nobody has committed to adopt or pay. A request for reminders is not evidence that reminders will solve the delay.",
+              "differentiation": "Hypothesis: an in-app reminder adds less overhead than manual chasing. Compare with owner/age visibility and a request readiness checklist. No competitor or preference test completed."
+            },
+            "candidateId": "63dddb48-0696-5763-ae2c-a5aca482ad8a",
+            "nextActions": "Round B proposal: pause a reminder-only build. Test a paper request-readiness checklist with five hypothetical requesters, observe whether required owner/date/documents are included, and record remaining causes of delay. Compare against the current workflow before engineering commitment. Review by 2026-10-30; reconsider reminders if requests are complete but still overlooked.",
+            "productContext": {
+              "assumptions": "Assumptions: reminders may help when requests are overlooked. Missing request information may be a different cause. No measured adoption or willingness to pay.",
+              "constraints": "One engineer available for two weeks. Existing tested in-app notification service and due-date API. No email or SMS scope.",
+              "targetUsers": "Operations administrators and approvers in 10 hypothetical small teams, approximately 100 weekly active users.",
+              "productSummary": "Relay is a fictional approval workflow app. This workspace contains synthetic examples only; it is not customer validation.",
+              "successMetrics": "Proposed 30-day pilot metric: requests overdue by more than 48 hours; guardrail: notification opt-outs. Baseline and target not measured.",
+              "strategicPriorities": "Reduce avoidable overdue approval requests; decide what to test before committing to a build."
+            },
+            "attachedSignals": [
+              {
+                "id": "0ef41f0d-74a8-597c-a918-5fb8db22bbf6",
+                "body": "Fictional follow-up B: review of five recent overdue requests found four awaiting required documents and one overlooked by an approver. This convenience sample does not establish population prevalence or prove checklist effectiveness. It weakens the claim that reminders alone address the main cause in these cases; test request readiness first.",
+                "title": "SYNTHETIC • Round B: four of five cases were incomplete",
+                "source": "Fictional case-review exercise B • five invented cases",
+                "confidence_impact": "decreases"
+              },
+              {
+                "id": "2c35a4e2-5d4a-508d-987b-51e48573bc41",
+                "body": "Fictional discovery round A: 4 of 6 approvers said delayed requests lacked an owner, due date, or required documents. They said another reminder would not make such a request actionable. The sample differs from the administrator interviews; do not combine denominators.",
+                "title": "SYNTHETIC • Missing context challenges reminders",
+                "source": "Fictional approver interview exercise A • no real participants",
+                "confidence_impact": "decreases"
+              },
+              {
+                "id": "41a8f480-5cc3-55cd-b630-cf47adc01b27",
+                "body": "Fictional discovery round A: 6 of 8 operations administrators described chasing an overdue approval manually. Three described approvers overlooking a pending request. This suggests a reminder hypothesis; it does not establish causation or measured benefit.",
+                "title": "SYNTHETIC • Missed requests support reminders",
+                "source": "Fictional interview exercise A • no real participants",
+                "confidence_impact": "increases"
+              }
+            ],
+            "evidenceReviewed": true
+          },
+          "revision": 5
+        },
+        "assessment_version": 2
+      },
+      "tradeoffs_considered": "All evidence is synthetic. A five-case convenience sample cannot prove prevalence or checklist effectiveness. Reminders may still help overlooked requests, but reminder-only work misses incomplete requests. Adoption, willingness to pay, and measured benefit remain unknown.",
+      "risks_accepted": "A five-case fictional convenience sample cannot establish a causal result. This is a proposed validation step, with no approved build commitment or claim of real customer adoption.",
+      "expected_outcome": "Round B proposal: pause a reminder-only build. Test a paper request-readiness checklist with five hypothetical requesters, observe whether required owner/date/documents are included, and record remaining causes of delay. Compare against the current workflow before engineering commitment. Review by 2026-10-30; reconsider reminders if requests are complete but still overlooked.",
+      "decision_date": "2026-10-23T00:00:00+00:00",
+      "review_date": null,
+      "position": 2,
+      "created_at": "2026-10-23T20:06:39.811917+00:00",
+      "updated_at": "2026-10-23T20:07:02.809+00:00"
+    }
+  ],
+  "context": {
+    "assumptions": "Assumptions: reminders may help when requests are overlooked. Missing request information may be a different cause. No measured adoption or willingness to pay.",
+    "constraints": "One engineer available for two weeks. Existing tested in-app notification service and due-date API. No email or SMS scope.",
+    "targetUsers": "Operations administrators and approvers in 10 hypothetical small teams, approximately 100 weekly active users.",
+    "productSummary": "Relay is a fictional approval workflow app. This workspace contains synthetic examples only; it is not customer validation.",
+    "successMetrics": "Proposed 30-day pilot metric: requests overdue by more than 48 hours; guardrail: notification opt-outs. Baseline and target not measured.",
+    "strategicPriorities": "Reduce avoidable overdue approval requests; decide what to test before committing to a build.",
+    "scoring": {
+      "timeframe": "Fictional 30-day pilot; use the same period for every option.",
+      "audience": "100 unique weekly active users across 10 hypothetical small teams. Reach counts users, not teams or requests.",
+      "impactMetric": "Fictional planning baseline: 30% of approval requests are over 48 hours overdue. No measured baseline. Reminder hypothesis: 30% to 25%, a 5 percentage-point reduction. Guardrail: notification opt-outs."
+    }
+  }
+}

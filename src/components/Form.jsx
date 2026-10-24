@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { useC } from "../ThemeProvider";
+import { useAuth } from "../hooks/useAuth";
 import { rice } from "../utils";
 import { ScoreCard } from "./ScoreCard";
 import "./scoring-ui.css";
@@ -15,6 +16,7 @@ import { MAX_CLAIMS } from '../../lib/scoring-claims';
 
 export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEvent, onResolveScores, feedbackContext, scored = [], features = [], signals = [], decisions = [], workspaceId, onProductContextChange, saveTarget = "browser", savePendingSync = false }) => {
   const C = useC();
+  const { isGuestDemo } = useAuth();
   const [name, setName] = useState(editFeature?.name || ""); const [desc, setDesc] = useState(editFeature?.description || "");
   const [scoringBasis, setScoringBasis] = useState(() => normalizeCandidateBasis(editFeature?.scoringBasis));
   const [owner, setOwner] = useState(editFeature?.owner || ""); const [theme, setTheme] = useState(editFeature?.theme || ""); const [status, setStatus] = useState(editFeature?.status || "");
@@ -80,7 +82,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   const stale = resultSignature !== null && resultSignature !== signature;
   useEffect(() => () => { sequence.current += 1; }, []);
   const requestAiScores = useCallback(async (dimensions) => {
-    if (!name.trim() || dimensions.length === 0) return;
+    if (!name.trim() || dimensions.length === 0 || isGuestDemo) return;
     const requestId = ++sequence.current;
     const requestedSignature = signature;
     setAiLoading(true); setAiError(null);
@@ -98,7 +100,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
     } catch (err) {
       if (requestId === sequence.current && current.current === requestedSignature) setAiError(err.message || "AI scoring failed");
     } finally { if (requestId === sequence.current) setAiLoading(false); }
-  }, [name, desc, scoringBasis, signature, resultSignature, editFeature?.id, productContext, features, signals, decisions, workspaceId]);
+  }, [name, desc, scoringBasis, signature, resultSignature, editFeature?.id, productContext, features, signals, decisions, workspaceId, isGuestDemo]);
   const acceptSuggestion = dim => {
     const value = aiResults[dim]?.score;
     if (stale || !Number.isInteger(value) || value < 1 || value > 100) return;
@@ -146,8 +148,9 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
         {onProductContextChange && <ProductContext context={productContext} onChange={onProductContextChange} />}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <div><h2 style={{ fontSize: 20, margin: 0 }}>Review the four scores</h2><p style={{ fontSize: 14, color: C.textMuted, margin: '4px 0 0' }}>Your scores stay in place until you accept a suggestion.</p></div>
-          <button type="button" onClick={suggestAll} disabled={!name.trim() || aiLoading || saving} style={{ ...inputStyle, background: C.purpleDim, color: C.purple, fontWeight: 600, cursor: 'pointer' }}>{aiLoading ? 'Suggesting...' : '✦ AI Suggest Scores'}</button>
+          <button type="button" onClick={suggestAll} disabled={isGuestDemo || !name.trim() || aiLoading || saving} style={{ ...inputStyle, background: C.purpleDim, color: C.purple, fontWeight: 600, cursor: 'pointer' }}>{aiLoading ? 'Suggesting...' : '✦ AI Suggest Scores'}</button>
         </div>
+        {isGuestDemo && <p style={{ fontSize: 14, color: C.textMuted, margin: 0 }}>You can edit all four scores here. For live AI, <a href="/app" style={{ color: C.accent }}>open your workspace and sign in</a>.</p>}
         {aiLoading && <p role="status" style={{ fontSize: 14, margin: 0 }}>Reviewing your context. This can take a minute.</p>}
         {stale && <p role="status" style={{ fontSize: 14, margin: 0 }}>Context changed. Refresh AI before accepting previous suggestions.</p>}
         {aiError && <p role="alert" style={{ fontSize: 14, color: C.danger, margin: 0 }}>{aiError}</p>}
