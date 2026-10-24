@@ -34,30 +34,65 @@ test('privacy is available before sign-in, and measurement is off until chosen a
 
 test('launch gallery follows the actual fictional evidence-to-decision flow',async({page},testInfo)=>{
  await page.setViewportSize({width:1440,height:960});
- const dir=process.env.CAPTURE_LAUNCH_ASSETS?path.join(process.cwd(),'public/launch'):testInfo.outputPath('gallery');await fs.mkdir(dir,{recursive:true});
- const shot=async name=>{await page.screenshot({path:path.join(dir,name+'.png'),animations:'disabled'});};
+ await page.emulateMedia({reducedMotion:'reduce'});
+ const capture=Boolean(process.env.CAPTURE_LAUNCH_ASSETS);
+ const writes=[];page.on('request',request=>{if(request.method()!=='GET'&&/\/api\/(?:workspaces|analyze|suggest-scores)/.test(request.url()))writes.push(request.url());});
+ const align=async locator=>{const top=await locator.evaluate(element=>{element.scrollIntoView({block:'start',behavior:'instant'});for(let parent=element.parentElement;parent;parent=parent.parentElement){const gap=56-element.getBoundingClientRect().top;if(gap<=0)break;parent.scrollTop=Math.max(0,parent.scrollTop-gap);}const gap=56-element.getBoundingClientRect().top;if(gap>0)window.scrollBy({top:-gap,behavior:'instant'});return element.getBoundingClientRect().top;});expect(top).toBeGreaterThanOrEqual(48);};
+ const dir=capture?path.join(process.cwd(),'public/launch'):testInfo.outputPath('gallery');await fs.mkdir(dir,{recursive:true});
+ const shot=async name=>{await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:path.join(dir,name+'.png'),animations:'disabled'});};
+ let sourceHealth;
+ if(capture){const health=await page.request.get('/api/health');expect(health.ok()).toBe(true);sourceHealth=await health.json();expect(sourceHealth.status).toBe('ok');}
+ await page.goto('/');await expect(page.getByRole('heading',{level:1})).toContainText('Make a decision');await shot('01-home');
  await page.goto('/demo');await expect(page.getByRole('button',{name:'Start the decision walkthrough',exact:true})).toBeVisible({timeout:45000});
  await page.getByRole('button',{name:'Start the decision walkthrough',exact:true}).click();
- await expect(page.getByRole('heading',{name:'Problem',exact:true})).toBeVisible();
- await shot('01-home');
- if(process.env.CAPTURE_LAUNCH_ASSETS){
-  await shot('video-story-problem');
-  for(const [heading,file] of [['Evidence','evidence'],['Decision','decision'],['Next test','next-test']]){
-   await page.getByRole('button',{name:'Next',exact:true}).click();
-   await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();
-   await shot(`video-story-${file}`);
-  }
+ await expect(page.getByRole('heading',{name:'Problem',exact:true})).toBeVisible();await shot('video-story-problem');
+ for(const [heading,file] of [['Evidence','evidence'],['Decision','decision'],['Next test','next-test']]){
+  await page.getByRole('button',{name:'Next',exact:true}).click();
+  await expect(page.getByRole('heading',{name:heading,exact:true})).toBeVisible();await shot(`video-story-${file}`);
  }
  await nav(page,'Priorities').click();await expect(page.getByRole('region',{name:'Guest demo',exact:true})).toBeVisible();await expect(page.getByText('Request readiness checklist — synthetic',{exact:true}).first()).toBeVisible();await shot('02-priorities');
  await nav(page,'Signals').click();await expect(page.getByText('SYNTHETIC • Round B: four of five cases were incomplete',{exact:true}).first()).toBeVisible();await shot('03-signals');
  await nav(page,'Validate').click();await page.getByRole('button',{name:'Continue latest saved brief',exact:true}).click();await expect(page.getByText('Revision 5 · Saved',{exact:true})).toBeVisible();await shot('04-brief');
- await nav(page,'Decisions').click();await page.getByRole('button',{name:'Decision: SYNTHETIC • Round B: test readiness before building reminders',exact:true}).click();await expect(page.getByText(/Source brief:.*Revision 5\./)).toBeVisible();await shot('05-decisions');
- if(process.env.CAPTURE_LAUNCH_ASSETS){
+ await nav(page,'Decisions').click();await page.getByRole('button',{name:'Decision: SYNTHETIC • Round B: test readiness before building reminders',exact:true}).click();
+ const record=page.getByRole('region',{name:'Decision: SYNTHETIC • Round B: test readiness before building reminders',exact:true});
+ const toggle=page.getByRole('button',{name:'Decision: SYNTHETIC • Round B: test readiness before building reminders',exact:true});
+ await expect(record.getByText(/Source brief:.*Revision 5\./)).toBeVisible();await align(toggle);await shot('05-decisions');
+ const original=await page.evaluate(()=>JSON.parse(localStorage.getItem('prioritize-ws-relay-demo-v1-decisions'))[1]);
+ const digest=record.getByRole('region',{name:'Evidence',exact:true});
+ await expect(digest.getByRole('heading',{name:'Supports',exact:false})).toBeVisible();await expect(digest.getByRole('heading',{name:'Challenges',exact:false})).toBeVisible();await expect(digest.getByRole('heading',{name:'Unknowns',exact:true})).toBeVisible();
+ await align(digest);await shot('06-evidence-digest');
+ await page.context().grantPermissions(['clipboard-read','clipboard-write']);
+ await record.getByRole('button',{name:'Copy decision brief',exact:true}).click();
+ await expect(record.getByText('Decision brief copied. Review it before sharing.',{exact:true})).toBeVisible();
+ const copied=await page.evaluate(()=>navigator.clipboard.readText());expect(copied).toContain('SYNTHETIC');expect(copied).toContain('revision 5');
+ await fs.writeFile(path.join(dir,'decision-brief.md'),copied);await align(toggle);await shot('07-copyable-brief');
+ await record.getByRole('button',{name:'Review decision',exact:true}).click();
+ await record.getByLabel(/What happened/).fill('SYNTHETIC walkthrough exercise: no experiment has been run and the outcome is still unknown.');
+ await record.getByRole('radio',{name:'Revise',exact:true}).check();
+ await record.getByLabel('Revised direction and next action',{exact:true}).fill('SYNTHETIC proposal: narrow the paper checklist test before committing engineering.');
+ await record.getByText('Add new evidence (optional)',{exact:true}).click();
+ await record.getByLabel(/What did you learn/).fill('SYNTHETIC illustration only. The saved source is fictional; no new customer evidence was collected.');
+ await record.getByRole('checkbox').first().check();
+ await record.getByText('Add new evidence (optional)',{exact:true}).click();
+ await align(record.getByRole('heading',{name:'Revisit this decision',exact:true}));await shot('08-decision-review');
+ await record.getByRole('button',{name:'Save review',exact:true}).click();await expect(record.getByText('Review saved. The original decision and its evidence are preserved.',{exact:true})).toBeVisible();
+ const stored=await page.evaluate(()=>JSON.parse(localStorage.getItem('prioritize-ws-relay-demo-v1-decisions'))[1]);
+ const {reviews,...unchanged}=stored;expect(unchanged).toEqual(original);expect(reviews).toHaveLength(1);expect(reviews[0].evidence_snapshots).toHaveLength(1);
+ await record.getByText('Review history (1)',{exact:true}).click();await align(record.getByRole('heading',{name:'Revisit this decision',exact:true}));await shot('09-review-history');
+ await record.getByRole('button',{name:'Copy decision brief',exact:true}).click();await expect(record.getByText('Decision brief copied. Review it before sharing.',{exact:true})).toBeVisible();
+ const reviewedCopy=await page.evaluate(()=>navigator.clipboard.readText());expect(reviewedCopy).toContain('## Dated reviews');await fs.writeFile(path.join(dir,'decision-brief.md'),reviewedCopy);
+ await page.setViewportSize({width:390,height:844});await align(record.getByRole('heading',{name:'Revisit this decision',exact:true}));
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await shot('10-mobile-review');
+ expect(writes).toEqual([]);
+ if(capture){
+  const end=await(await page.request.get('/api/health')).json();expect(end.release).toBe(sourceHealth.release);
+  await fs.writeFile(path.join(dir,'capture.json'),JSON.stringify({origin:new URL(page.url()).origin,release:sourceHealth.release,capturedAt:new Date().toISOString(),scenario:'Fictional Relay example; synthetic review exercise; no customer results',storage:'Isolated guest browser',aiUsed:false},null,2)+'\n');
+  const manifest=JSON.parse(await fs.readFile('docs/launch/walkthrough.json','utf8'));
   const art=await page.context().newPage();await art.setViewportSize({width:1920,height:1080});
-  const chapters=[['video-story-problem','Start with the decision at stake','One engineer, two weeks: what should the fictional team test?'],['video-story-evidence','Let conflicting evidence change the question','Missing documents challenge the reminder-only explanation.'],['video-story-decision','Record a choice with its uncertainty','Test request readiness before committing engineering.'],['video-story-next-test','Make the next step small enough to learn','A proposed paper experiment; no completed test or measured outcome.'],['05-decisions','Reopen the reasoning behind the choice','Problem, evidence, decision and next test stay connected to the saved brief.']];
-  for(let i=0;i<chapters.length;i++){
-   const [file,title,caption]=chapters[i];const image=(await fs.readFile(path.join(dir,file+'.png'))).toString('base64');
-   await art.setContent(`<html><body style="margin:0;background:#0e0f12;color:#eceae4;font-family:Arial,sans-serif"><div style="height:1080px;position:relative;box-sizing:border-box;padding:24px 60px"><div style="color:#e2ac4d;font-size:20px;letter-spacing:3px">TARAZU · FICTIONAL RELAY DEMO · ${i+1}/5</div><h1 style="font-size:42px;margin:10px 0 0">${title}</h1><img src="data:image/png;base64,${image}" style="position:absolute;top:128px;left:280px;width:1360px;height:907px;object-fit:contain;border:1px solid #303237;border-radius:12px"/><div style="position:absolute;bottom:12px;left:60px;font-size:22px;color:#b8b9bd">${caption} · tarazu.app/demo</div></div></body></html>`);
+  const escape=value=>value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  for(let i=0;i<manifest.chapters.length;i++){
+   const {image:file,title,captions}=manifest.chapters[i];const image=(await fs.readFile(path.join(dir,file+'.png'))).toString('base64');
+   await art.setContent(`<html><body style="margin:0;background:#0e0f12;color:#eceae4;font-family:Arial,sans-serif"><div style="height:1080px;position:relative;box-sizing:border-box;padding:24px 60px"><div style="color:#e2ac4d;font-size:18px;letter-spacing:3px">TARAZU · FICTIONAL RELAY EXAMPLE · ${i+1}/${manifest.chapters.length}</div><h1 style="font-size:38px;margin:10px 0 0">${escape(title)}</h1><img src="data:image/png;base64,${image}" style="position:absolute;top:125px;left:320px;width:1280px;height:854px;object-fit:contain;border:1px solid #303237;border-radius:10px"/><div style="position:absolute;bottom:18px;left:60px;right:60px;font-size:23px;line-height:1.4;color:#eceae4">${captions.map(escape).join('<br>')}</div></div></body></html>`);
    await art.screenshot({path:path.join(dir,`video-${i+1}.png`)});
   }
   await art.setViewportSize({width:240,height:240});

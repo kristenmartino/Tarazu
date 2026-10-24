@@ -80,7 +80,8 @@ test("feedback is reachable and export limits are explicit without sending email
   await expect(page.getByRole("link",{name:"Ask for data help or deletion",exact:true})).toHaveAttribute("href",/^mailto:/);
   await expect(page.getByText(/There is currently no complete workspace backup export/)).toBeVisible();
   await page.goto("/faq");
-  await expect(page.getByText(/Copy a saved decision as a Markdown brief/)).toBeVisible();
+  // Cold Next development compilation can outlast Playwright's 5s default.
+  await expect(page.getByText(/Copy a saved decision as a Markdown brief/)).toBeVisible({timeout:45000});
   await expect(page.getByText(/CSV\/PDF omit scoring claims, Signals, saved validation briefs and decision history/)).toBeVisible();
   await expect(page.getByText(/There is no lock-in/)).toHaveCount(0);
 });

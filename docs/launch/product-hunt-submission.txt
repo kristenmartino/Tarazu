@@ -30,7 +30,7 @@ Hi Product Hunt — I’m Kristen, Tarazu’s maker.
 
 I built Tarazu to explore a problem I keep coming back to: a ranked list is easy to produce, but the evidence and assumptions behind a product decision are much harder to reconstruct later.
 
-Tarazu lets you compare options, connect scoring claims to supporting or conflicting evidence, save an investigation as a validation brief, and preserve the reasoning behind a draft decision. AI can suggest scores and questions from the context you supply; you review the output before accepting it.
+Tarazu lets you compare options, connect scoring claims to supporting or conflicting evidence, save an investigation as a validation brief, and preserve the reasoning behind a draft decision. Read supporting and conflicting sources in an evidence digest, copy a decision brief, then record a dated keep/revise/retire review when you return. AI can suggest scores and questions from the context you supply; you review the output before accepting it.
 
 The no-account Relay demo follows a fictional approval team considering reminders, a status dashboard and a readiness checklist. The evidence challenges the first explanation and supports investigating a smaller next test. All interviews, users, estimates and outcomes in that example are fictional. It demonstrates the workflow; it is not customer validation.
 
@@ -47,10 +47,13 @@ Anthropic, Vercel and Supabase, if these are available in Product Hunt's current
 
 Asset selection
 Thumbnail: public/launch/thumbnail.png
-Gallery: public/launch/01-home.png through 05-decisions.png
+Suggested gallery: 01-home.png → 06-evidence-digest.png → 07-copyable-brief.png → 08-decision-review.png → 09-review-history.png. Files are in public/launch/.
+Supplemental context: 02-priorities.png, 03-signals.png, 04-brief.png, 05-decisions.png; mobile alternative: 10-mobile-review.png.
+Copied example brief: public/launch/decision-brief.md
+Asset guide and rebuild instructions: docs/launch/README.md
 Captioned walkthrough: public/launch/tarazu-walkthrough.mp4
 Captions: public/launch/tarazu-walkthrough.vtt
-These screenshots and the video use only the fictional Relay scenario. The captioned video uses still captures of the actual app; it is not a live AI demonstration. Upload the video to an accepted video host if Product Hunt's current interface requires it; do not imply a video URL has already been published there.
+These screenshots and the 96-second, eight-chapter video use the fictional Relay scenario, including an explicitly synthetic review exercise with no completed experiment or measured outcome. The captioned video uses still captures of the actual app; it is not a live screen recording or live AI demonstration. The ZIP contains the current drafts and a SHA-256 manifest; rebuild/check it after relevant UI or copy changes. Upload the video to an accepted video host if Product Hunt's current interface requires it; do not imply a video URL has already been published there.
 
 Launch goal (proposal, not a result)
 Five relevant product conversations and two people willing to try a real decision and return with new evidence. Track completed conversations and observed tasks manually; aggregate action counts cannot establish either goal.

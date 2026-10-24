@@ -1,21 +1,33 @@
 WEBVTT
 
 00:00.000 --> 00:12.000
-One engineer, two weeks: what should the fictional Relay team test?
-Follow a short read-only story without an account.
+Compare options, preserve the reasoning, and return when evidence changes.
+Explore the fictional Relay example without an account.
 
 00:12.000 --> 00:24.000
-Administrator notes support reminders; missing documents challenge that explanation.
-All Relay interviews and case reviews are synthetic.
+One engineer, two weeks: what should the fictional Relay team test?
+Begin with the problem before committing to a build.
 
 00:24.000 --> 00:36.000
-The second draft proposes testing request readiness before a reminder build.
-This is a judgment with uncertainty, not an approved build.
+Missing documents challenge a reminder-only explanation.
+All Relay interviews and case reviews are synthetic.
 
 00:36.000 --> 00:48.000
-Compare a paper checklist with the current workflow for hypothetical requesters.
-The example contains no completed test or measured outcome.
+The draft proposes testing request readiness before building reminders.
+The experiment is proposed; no completed test or business result is claimed.
 
 00:48.000 --> 01:00.000
-Reopen problem, evidence, decision and next test from the preserved brief revision.
+Scan Supports, Challenges, Context, and Unknowns in the evidence digest.
+Relationships concern the originating candidate, which may differ from the choice.
+
+01:00.000 --> 01:12.000
+Copy a decision brief with preserved sources, caveats, and dated reviews.
+The brief is a readable handoff, not a complete workspace backup.
+
+01:12.000 --> 01:24.000
+Record an outcome or an explicit unknown, then keep, revise, or retire the direction.
+This synthetic review demonstrates the form; it is not customer validation.
+
+01:24.000 --> 01:36.000
+Dated reviews preserve the earlier reasoning alongside reported updates.
 Try tarazu.app/demo. Live AI runs separately after sign-in and human review.

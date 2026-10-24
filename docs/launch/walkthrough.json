@@ -1,0 +1,13 @@
+{
+  "secondsPerChapter": 12,
+  "chapters": [
+    {"image":"01-home","title":"Make a decision you can explain","captions":["Compare options, preserve the reasoning, and return when evidence changes.","Explore the fictional Relay example without an account."]},
+    {"image":"video-story-problem","title":"Start with the decision at stake","captions":["One engineer, two weeks: what should the fictional Relay team test?","Begin with the problem before committing to a build."]},
+    {"image":"video-story-evidence","title":"Let conflicting evidence change the question","captions":["Missing documents challenge a reminder-only explanation.","All Relay interviews and case reviews are synthetic."]},
+    {"image":"video-story-next-test","title":"Record a choice and a next test","captions":["The draft proposes testing request readiness before building reminders.","The experiment is proposed; no completed test or business result is claimed."]},
+    {"image":"06-evidence-digest","title":"Read the evidence and its limits","captions":["Scan Supports, Challenges, Context, and Unknowns in the evidence digest.","Relationships concern the originating candidate, which may differ from the choice."]},
+    {"image":"07-copyable-brief","title":"Take the reasoning into your next conversation","captions":["Copy a decision brief with preserved sources, caveats, and dated reviews.","The brief is a readable handoff, not a complete workspace backup."]},
+    {"image":"08-decision-review","title":"Return with what happened","captions":["Record an outcome or an explicit unknown, then keep, revise, or retire the direction.","This synthetic review demonstrates the form; it is not customer validation."]},
+    {"image":"09-review-history","title":"Keep the original and the later review","captions":["Dated reviews preserve the earlier reasoning alongside reported updates.","Try tarazu.app/demo. Live AI runs separately after sign-in and human review."]}
+  ]
+}

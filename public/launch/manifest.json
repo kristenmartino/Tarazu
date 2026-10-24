@@ -1,0 +1,82 @@
+{
+  "captureRelease": "96e766d8eb04b6197ae9264436faa43dacc60db5",
+  "durationSeconds": 96,
+  "files": {
+    "01-home.png": {
+      "bytes": 765672,
+      "sha256": "cccda8d01cd87aab60d8c3246e02bfbcd1ff8346aa55e3a0914154e96e01a119"
+    },
+    "02-priorities.png": {
+      "bytes": 214776,
+      "sha256": "4e2b5a04ccdee3e04261a01454b0a5d3d9b4b1100110c17ec45aae0c1d0960b3"
+    },
+    "03-signals.png": {
+      "bytes": 248244,
+      "sha256": "5e550c2ad41f6ed1d4fcf5d9e6301f06baae0b4b997ea94b9091e1de0c6bf4dc"
+    },
+    "04-brief.png": {
+      "bytes": 192430,
+      "sha256": "48a0a4c7c78f14462596965c8742ab6e9a1ff9938c4b54d4df99ab3cd899af47"
+    },
+    "05-decisions.png": {
+      "bytes": 185456,
+      "sha256": "16f6b0dc9d704fa3974dab475e247dda8517cf8977a46e3346c587497b85bf76"
+    },
+    "06-evidence-digest.png": {
+      "bytes": 182801,
+      "sha256": "2d4a26919d6134c6f1fb32426d710e865f36e17882a73a5011a2b37623be9a15"
+    },
+    "07-copyable-brief.png": {
+      "bytes": 185302,
+      "sha256": "55fcfbe946894329d3745442e1275aee405fb2edff737fcaa45c3e5ab849bcb6"
+    },
+    "08-decision-review.png": {
+      "bytes": 158346,
+      "sha256": "6258db67063d7c53cecef9c513ed9751764001eea63c8312e61a966567c54aed"
+    },
+    "09-review-history.png": {
+      "bytes": 196165,
+      "sha256": "7b3fda48d70a138a53530b47e52d5266a5c8bbf854b49a8940bc4c5f32c6148d"
+    },
+    "10-mobile-review.png": {
+      "bytes": 77900,
+      "sha256": "e3cf0521033f1fbcb1b9b24961185ee383cf1e7aebda4aca29d7b0b0609ee6a4"
+    },
+    "README.md": {
+      "bytes": 3615,
+      "sha256": "6cdfb5ee66ee44610eae816323575452e323dd6a47436da49af832f3568c18c1"
+    },
+    "capture.json": {
+      "bytes": 285,
+      "sha256": "fffd2ade35ef5a6460c999e16b6c5f0db6b4bcc1db5ca4c0cfa6b2190869ce35"
+    },
+    "decision-brief.md": {
+      "bytes": 5439,
+      "sha256": "757e4a5d8bb47adeb4ea9bb7439a454da071df69ceb27f94a441898913cfb400"
+    },
+    "linkedin-featured.txt": {
+      "bytes": 1625,
+      "sha256": "4e3116a27943febc840e69f0d77a98db0f2f8082a58c78cf3cacbcf2b80fb762"
+    },
+    "product-hunt-submission.txt": {
+      "bytes": 4844,
+      "sha256": "2e43a2ed26bc40c7a65a94b2ccbdf0b2bc4b07f066bc5941f8c93c807ada825b"
+    },
+    "tarazu-walkthrough.mp4": {
+      "bytes": 1679717,
+      "sha256": "36da9253563c7c7004655bb395c798301a8ac427b50e62d7494699aaef06d6db"
+    },
+    "tarazu-walkthrough.vtt": {
+      "bytes": 1326,
+      "sha256": "fa009114e278fb51467608b7a447c5200c94f430017a02d9cb43d2ca65c7bc9d"
+    },
+    "thumbnail.png": {
+      "bytes": 3846,
+      "sha256": "b150361755fb19caf6f4783cbd1e13eadafc40c54715ed1fa938d92274c2a7fe"
+    },
+    "walkthrough.json": {
+      "bytes": 1953,
+      "sha256": "bdcc390d3677867ce29fc218fe41801c50e605ff464a21d83ab28663c57ad04e"
+    }
+  }
+}
