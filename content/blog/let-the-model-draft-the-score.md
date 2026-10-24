@@ -7,7 +7,7 @@
 }
 ---
 
-Ask a language model to score a backlog and it will. Every item, all four RICE dimensions, confident numbers, plausible reasoning, in about eight seconds. The output looks exactly like the output of a team that spent an afternoon on it.
+Ask a language model to score a backlog and it may return confident numbers and plausible reasoning even when the context is thin. The output can resemble the work of a team that spent an afternoon on it. Response time and validity vary; neither is evidence that the estimates are sound.
 
 That resemblance is the problem worth thinking about carefully, because the two artifacts aren't interchangeable and the difference is invisible on the page.
 
@@ -61,8 +61,8 @@ Concretely, the shape that works:
 
 1. **Model drafts, with reasoning shown.** Every suggested score arrives with the sentence that produced it.
 2. **Person edits before it counts.** Nothing enters the ranking on the model's authority alone.
-3. **Grounding beats generality.** Feed it your product context and prior decisions; an estimate anchored in what your team actually shipped beats one anchored in the internet's average product team.
-4. **The rationale is human.** Whatever gets recorded as the reason — see [why that record matters](/blog/a-decision-record-is-not-a-changelog) — is written by the person accountable for the call, not generated alongside it.
+3. **Grounding beats generality.** Supply your product context, scoring claims, linked evidence and relevant decisions. Tarazu's recorded decisions may be drafts with expected outcomes; they do not establish what shipped or whether it worked.
+4. **The rationale is human.** Whatever gets recorded as the reason — see [why that record matters](/blog/a-decision-record-is-not-a-changelog) — is reviewed, edited as needed and owned by the person accountable for the call. An AI-generated starting draft is not approval.
 
 That's the division Tarazu is built around, and it's a deliberate constraint rather than a limitation waiting to be lifted. The AI drafts. A person decides. The interesting part was never the arithmetic.
 

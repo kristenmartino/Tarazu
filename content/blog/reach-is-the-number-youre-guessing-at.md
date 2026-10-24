@@ -7,9 +7,9 @@
 }
 ---
 
-Of the four numbers in a RICE score, three are judgement calls and one is a measurement. Reach is the measurement. It's also the one people most reliably make up.
+In classic RICE, reach is an audience count within a stated period. That count may come from measurement or from a forecast; the distinction needs to survive the scoring discussion.
 
-That matters more than it sounds, because reach is a multiplier. Impact and confidence are multipliers too, but they're bounded by convention — impact sits on a fixed ladder, confidence is a percentage nobody writes above 90. Reach has no ceiling. Double it and you double the score. Get it wrong by an order of magnitude and the ranking is fiction, regardless of how carefully you argued about impact.
+Reach multiplies a classic RICE score, so a large error in the audience estimate can change the ranking even when the other inputs are carefully argued. Tarazu uses a different, band-based adaptation: reach is a 1–100 input anchored to a share of the workspace audience, and confidence is an evidence band rather than a probability. Doubling an underlying count does not necessarily double Tarazu's index.
 
 ## The failure looks like agreement
 
@@ -37,7 +37,7 @@ Most useful reach estimates are of this shape: *at most X, because it cannot app
 
 ### 3. Bracket it
 
-When even the ceiling is unclear, give a range and score the pessimistic end. If you think reach is somewhere between 200 and 2,000, score 200. If the item still ranks highly at the bottom of its range, the ranking is robust and you can stop arguing. If it only ranks at the top of the range, you've learned the actual thing: this item's position depends entirely on an estimate nobody can defend.
+When even the ceiling is unclear, record a range and examine the pessimistic end. For classic RICE, if reach may be between 200 and 2,000 users in the same period, try the calculation at 200. In Tarazu, compare those quantities with the shared audience and timeframe before choosing a reach band; do not enter a raw user count into the slider. If the item still ranks highly at the bottom of its range, the ranking is robust and you can stop arguing. If it only ranks at the top of the range, you've learned the actual thing: this item's position depends entirely on an estimate nobody can defend.
 
 That's a finding, not a failure. It tells you the next move is research, not a scoring debate.
 
