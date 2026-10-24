@@ -1,41 +1,54 @@
 TARAZU PRODUCT FEEDBACK WALKTHROUGH
-Prepared October 23, 2026 • https://tarazu.app/demo
+Prepared October 24, 2026 • https://tarazu.app/demo
 
-Open the link to “Relay demo (fictional)”; no account is required. Each visitor gets a separate browser copy, including the evidence, saved brief and two decision drafts. Changes persist in that browser; Restart demo restores only this example. Your own guest workspaces and account data stay separate. Relay, its 100 users across 10 teams, interviews, case reviews, baselines and forecasts are fictional. This demonstrates a decision workflow, not customer validation or measured product results.
+Open the no-account Relay demo. Each visitor gets a separate browser copy of its evidence, saved brief and two decision drafts. Relay, its users, interviews, case reviews, baselines and forecasts are fictional. This demonstrates a decision workflow, not customer validation or measured results.
 
 Opening sentence
-“Tarazu keeps the evidence, assumptions and reasoning behind a product decision easy to revisit. Here is a fictional team moving from a reminder hypothesis to a smaller readiness experiment before committing to a build.”
+“Tarazu keeps the evidence, assumptions and reasoning behind a product decision easy to revisit. This fictional team starts with a reminder idea and chooses a smaller experiment before committing to a build.”
 
-1. Home → Start decision walkthrough → inspect the scoring basis (one minute)
-The reminder edit form is the first stop. Open the Strategy Brief separately if useful: the shared period is a 30-day pilot, the audience is 100 users, and the assumed baseline is 30% of approvals overdue by more than 48 hours. Capacity is one engineer for two weeks; notification fatigue is a proposed guardrail.
-Reach 55 is a band score, not 55 people. Its selected existing claim forecasts 60 of 100 users in 30 days. Impact 55 maps to a forecast reduction from 30% to 25% overdue: 5 percentage points, not 5 percent. Effort 35 maps to an estimate of 3 total person-days for the scoped in-app pilot, not elapsed duration. Confidence 20 is the Assumed evidence band, not a 20% success probability. Expand a recorded claim to read its full caveats and linked sources. Selection explains a score; it does not verify the claim or recalculate it.
-Cancel the form when done; avoid accepting new AI values during the prepared walkthrough.
+THE ONE-MINUTE ROUTE
+Choose “Start the decision walkthrough”. It opens a read-only prepared story, not an editing form. Use Next and Back or choose a named step.
 
-2. Priorities: compare next learning steps (one minute)
-Current calibrated inputs rank the request-readiness checklist at 7,500, reminders at 1,729 and the status dashboard at 191. These are relative indices, not benefit ratios or ROI. Each candidate is scoped differently: one product/design day for a paper checklist exercise, three total person-days for a reminder pilot, and ten for a read-only dashboard pilot. Compare the next learning step, not three equivalent production builds. More work and engineering review would be needed for production.
-The original saved decision snapshots contain earlier estimates. Do not describe those frozen rankings as the current list or claim that evidence alone mathematically caused the reranking; the scoring rubric, scope and judgments were clarified too.
+1. Problem
+Administrators are chasing overdue approvals. Reminders sound useful, but the cause is still an assumption.
 
-3. Signals: inspect support and conflict (one minute)
-The administrator exercise suggests overlooked requests and manual chasing; the approver exercise suggests missing information is another cause. Requester and dashboard notes support competing options. The small fictional samples overlap or differ: their counts are not independent votes.
-Show “Round B: four of five cases were incomplete”. Those five invented cases challenge a reminder-only approach without proving checklist effectiveness, population prevalence or causal benefit.
+2. Evidence
+One fictional source supports overlooked requests. Other sources suggest missing information. An invented five-case review found four incomplete requests; that small convenience sample does not establish prevalence or prove a solution works.
 
-4. Validate: reopen the saved investigation (one minute)
-Continue the latest saved brief for “Approval reminders — synthetic”. Revision 5 includes the added Signal, changed assumption, risks and next action. Four of seven areas have illustrative ratings; market pull, differentiation and monetization remain unassessed. The investigation is incomplete. Evidence attachments require explicit human review. Saving a brief does not approve a decision; changed sources or context can require reviewing evidence again.
+3. Decision
+Propose testing request readiness before a reminder-only build. Historical decision snapshots preserve earlier scopes and estimates; today's calibrated ranking is a different comparison. Do not say that evidence alone mathematically reranked the options.
 
-5. Decisions: distinguish history from today's comparison (one minute)
-The guest example includes only the two story decisions.
-“Round A: investigate reminder versus readiness” preserves brief revision 4 and its original two attachments.
-“Round B: test readiness before building reminders” preserves revision 5 and proposes a paper checklist experiment before a reminder build. Its historical scores are frozen earlier judgments. Today the calibrated list also puts the checklist first. The proposed test compares a paper checklist with the current workflow, records remaining causes of delay, and has an October 30 review date. Both decisions are drafts, not approved builds or observed outcomes.
+4. Next test
+Propose a paper checklist test and record what to observe next. This is planned research, not completed validation. “Open the saved decision” opens the relevant draft, with Problem, Evidence, Decision and Next test sections. The source brief revision and full original record remain available.
 
-Optional live AI
-Open your own workspace at /app, sign in and request scores from the candidate edit form, or generate an advisor recommendation. Review the selected bands, supplied claim references, source relationships, uncertainties and targeted follow-up questions. AI values require explicit acceptance; changed context makes old results stale. Allow for a slow response: the advisor permits up to two provider attempts within its route budget, and can return an explicit error. This is a live sanity check, not a comprehensive model-quality evaluation. The demo has no generated local fallback recommendation.
+The walkthrough is the prepared original example. If a visitor edits their browser copy, distinguish this fixed example from their current workspace records. Reading or stepping through the story does not save, approve or change work.
 
-Move into personal use
-“Start your own decision” opens a blank candidate in the visitor’s current workspace; existing candidates stay in place and Relay remains separate. Guest work stays in this browser. Sign in before adding work when cloud saving and live AI are wanted. The app header and /contact provide email-draft links for feedback, problem reports and data help. CSV/PDF exports cover candidates and the priority view, not a full workspace backup.
-
-Close with one question
+Ask one question
 “Think of your last difficult product decision: which part of this would have helped, and where would it have added work?”
 
-Before the meeting
-Open /demo without signing in. Confirm three candidates, five Signals, twelve selected basis claims, saved brief revision 5 and two current draft decisions. Reload and reopen the brief to check browser persistence. Restart demo if prior edits have changed the story. This resets only the reserved demo copy; it does not import, clear or modify your own workspaces.
-Leave the app on Home with the scoring form closed. Avoid importing local workspaces, clearing data, accepting new scores or approving a decision unless deliberately part of the session.
+OPTIONAL DEEPER INSPECTION
+Open “Explore the original records” for these deeper actions. Use them only when a reviewer wants detail. Do not make a hiring manager complete an editing form to understand the story.
+
+Scoring assumptions
+“Inspect scoring assumptions” explicitly opens the reminder candidate form. The shared period is a 30-day pilot, the audience is 100 hypothetical users and capacity is one engineer for two weeks. Reach 55 is a band score; its selected estimate forecasts 60 of 100 users. Impact 55 maps to a forecast change from 30% to 25% overdue, a five-percentage-point difference. Effort 35 is an estimate of three total person-days, not elapsed duration. Confidence 20 is an evidence band, not a success probability. Read full claims for their caveats and linked sources. Cancel without accepting new AI values during the prepared walkthrough.
+
+Current comparison
+Priorities ranks the paper readiness-checklist exercise at 7,500, the reminder pilot at 1,729 and the read-only status dashboard pilot at 191. These are relative indices, not benefit ratios or ROI. The scopes differ: one product/design day, three total person-days and ten total person-days respectively. Production builds would require further scope and engineering review.
+
+Evidence
+“Inspect the evidence” opens Signals. Show both support and conflict. Administrator samples overlap; they are not independent votes. The small fictional case review weakens a reminder-only explanation without proving checklist effectiveness, causal benefit or population prevalence.
+
+Saved investigation
+“Open the saved brief” opens Validate; continue the latest saved brief if needed. Revision 5 contains the added Signal, changed assumption, risks and proposed next test. Four of seven dimensions have illustrative ratings; market pull, differentiation and monetization remain unassessed. Saving a brief is separate from approving a decision.
+
+Historical decisions
+Round A preserves brief revision 4 and two sources. Round B preserves revision 5 and three sources. Expanded decisions show the frozen problem, evidence, recorded choice and next test. The original full rationale and other details remain inspectable with their line breaks and lists. A revised current brief or live Signal must not replace a decision's frozen record. Both prepared decisions are drafts, not approved builds or observed outcomes.
+
+OPTIONAL LIVE AI
+Open a personal workspace at /app and sign in. Request score suggestions or generate an advisor recommendation from fictional or shareable context. Review claims, references and follow-up questions; accept suggestions only deliberately. Shared request limits and a conservative $10 rolling daily provider-admission allowance can pause AI. These are live sanity checks, not model-accuracy benchmarks. The guest story makes no model calls and has no generated fallback.
+
+PERSONAL USE AND HELP
+“Start your own decision” opens a blank candidate in the current workspace and preserves existing work. The Relay copy stays separate. Guest work saves in this browser; sign in first for cloud saving and live AI. /contact offers email drafts and data help. /privacy explains storage, providers and optional aggregate measurement. CSV/PDF are limited exports, not a complete workspace backup.
+
+BEFORE THE MEETING
+Use /demo signed out. Confirm the read-only four-step story and its explicit deeper links. The reserved browser example contains three candidates, five Signals, saved brief revision 5 and two draft decisions. Restart demo restores only that example if prior edits changed it; it does not clear personal workspaces or account data. Leave Home ready with the editor closed. Do not import, clear, accept scores or approve decisions just to present the story.

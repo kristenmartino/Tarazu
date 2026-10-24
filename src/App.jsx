@@ -78,6 +78,8 @@ export default function App({ guestDemo = false }) {
   const [feedbackContext, setFeedbackContext] = useState(null);
   const [undoSnapshot, setUndoSnapshot] = useState(null);
   const [activeScreen, setActiveScreen] = useState("home");
+  const [quickStoryActive, setQuickStoryActive] = useState(false);
+  const storyFocused = quickStoryActive && activeScreen === "home";
   const [viewMode, setViewMode] = useState("list");
   const [mobileWsOpen, setMobileWsOpen] = useState(false);
   const mobileWsRef = useRef(null);
@@ -988,7 +990,7 @@ export default function App({ guestDemo = false }) {
         </div>
       </header>
 
-      {guestDemo && <section data-no-print aria-label="Guest demo" style={{ padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.surface, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+      {guestDemo && !storyFocused && <section data-no-print aria-label="Guest demo" style={{ padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.surface, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ flex: "1 1 280px", fontSize: 13, lineHeight: 1.5 }}><strong>Relay · fictional guest demo</strong><br /><span style={{ color: C.textMuted }}>Explore the fictional example in this browser. Start your own decision with a blank candidate; your existing work is kept. <Link href="/sign-in?start=decision" style={{ color: C.accent }}>Sign in first</Link> for cloud saving and AI.</span></div>
         <Link href="/app?start=decision" style={{ color: C.accent, fontSize: 13, fontWeight: 700 }}>Start your own decision</Link>
         <Link href="/app" style={{ color: C.textMuted, fontSize: 13 }}>Open saved work</Link>
@@ -1006,7 +1008,7 @@ export default function App({ guestDemo = false }) {
         display: isMobile ? "flex" : "grid",
         flexDirection: isMobile ? "column" : undefined,
         gridTemplateColumns: isMobile ? undefined
-          : isTablet ? "64px 1fr"
+          : isTablet || storyFocused ? "64px 1fr"
           : showForm && activeScreen === "priorities" ? "64px 1fr" : "64px 1fr 360px",
         minHeight: "calc(100vh - 48px)",
       }}>
@@ -1037,6 +1039,7 @@ export default function App({ guestDemo = false }) {
           </div>
         ) : (
         <CenterCanvas guestDemo={guestDemo}
+          onStoryActiveChange={setQuickStoryActive}
           activeScreen={activeScreen}
           saveTarget={isSignedIn && isOnline && !pendingSync && !browserFallback ? "cloud" : "browser"}
           savePendingSync={pendingSync && !browserFallback}
@@ -1074,6 +1077,7 @@ export default function App({ guestDemo = false }) {
         </ErrorBoundary>
 
         {!isMobile && !isTablet && !(showForm && activeScreen === "priorities") && (
+          <div hidden={storyFocused} style={{ display: storyFocused ? "none" : "contents" }}>
           <ErrorBoundary name="Detail Panel">
           <RightRail
             selectedFeature={selectedFeature} onDeselect={() => setSelectedId(null)}
@@ -1089,11 +1093,12 @@ export default function App({ guestDemo = false }) {
             signals={signals} decisions={decisions} onScreenChange={handleScreenChange} onAddDecision={handleAddDecision}
           />
           </ErrorBoundary>
+          </div>
         )}
       </div>
 
       {/* Tablet: right rail as overlay when candidate selected */}
-      {isTablet && selectedFeature && !showForm && (
+      {isTablet && selectedFeature && !showForm && !storyFocused && (
         <ErrorBoundary name="Detail Panel">
         <RightRail
           selectedFeature={selectedFeature} onDeselect={() => setSelectedId(null)}
@@ -1112,7 +1117,7 @@ export default function App({ guestDemo = false }) {
       )}
 
       {/* Mobile: right rail as bottom sheet overlay when candidate selected */}
-      {isMobile && selectedFeature && !showForm && (
+      {isMobile && selectedFeature && !showForm && !storyFocused && (
         <ErrorBoundary name="Detail Panel">
         <RightRail
           selectedFeature={selectedFeature} onDeselect={() => setSelectedId(null)}
