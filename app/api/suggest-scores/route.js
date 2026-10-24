@@ -5,6 +5,7 @@ import { requestJson, AiError } from "../../../lib/ai";
 import { withUser } from "../../../lib/api-auth";
 import { scoringResponseSchema } from "../../../lib/scoring-review-validation";
 import { candidateBasisSchema } from "../../../lib/scoring-basis-validation";
+import { reviewScoringQuestions } from "../../../lib/scoring-question-review";
 import { relevantClaims } from "../../../lib/scoring-claims";
 
 const VALID_DIMS = ["reach", "impact", "confidence", "effort"];
@@ -55,9 +56,10 @@ Allowed references: ${JSON.stringify(refs)}
 Supplied context JSON:
 ${JSON.stringify(context)}`;
 
-    const result = await requestJson({
+    const model = process.env.ANTHROPIC_MODEL_SUGGESTIONS || "claude-sonnet-4-6";
+    const scored = await requestJson({
       apiKey: process.env.ANTHROPIC_API_KEY,
-      model: process.env.ANTHROPIC_MODEL_SUGGESTIONS || "claude-sonnet-4-6",
+      model,
       maxTokens: 4000,
       prompt,
       schema: scoringResponseSchema(dims, refs, context),
@@ -65,6 +67,9 @@ ${JSON.stringify(context)}`;
       onAttempt: event => console.info("Scoring AI attempt", JSON.stringify(event)),
     });
 
+    const result = await reviewScoringQuestions({ result: scored, context, apiKey: process.env.ANTHROPIC_API_KEY, model,
+      onAttempt: event => console.info("Scoring question review", JSON.stringify(event)),
+    });
     result.context = context;
     return NextResponse.json(result);
   } catch (err) {

@@ -83,11 +83,15 @@ export function ScoringClaims({ claims = [], signals = [], onChange }) {
   </section>;
 }
 
-export function ScoringFollowUp({ followUp, dimension, claims, signals, onAdd }) {
+export function ScoringFollowUp({ followUp, resolution, dimension, claims, signals, onAdd }) {
   const [answer, setAnswer] = useState('');
   const [kind, setKind] = useState('estimate');
   const [sources, setSources] = useState([]);
   const style = useControlStyle();
+  if (resolution) return <section aria-label={`${dimension} follow-up`} style={{ display: 'grid', gap: 8, padding: 10, border: '1px solid currentColor', borderRadius: 8 }}>
+    <strong>{resolution.status === 'answered' ? 'Already in your context' : 'Follow-up needs review'}</strong>
+    {resolution.status === 'answered' ? <><p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{resolution.text}</p><p style={{ margin: 0, fontSize: 13 }}>{resolution.label}. Its original uncertainty still applies; this does not verify the answer.</p></> : <p style={{ margin: 0 }}>A proposed question was withheld because it could not be confidently checked against your supplied answers. Review the context before choosing another question.</p>}
+  </section>;
   if (!followUp) return null;
   const answered = findFollowUpAnswer(followUp, dimension, claims);
   if (answered) return <section aria-label={`${dimension} follow-up`} style={{ display: 'grid', gap: 8, padding: 10, border: '1px solid currentColor', borderRadius: 8 }}><strong>Your recorded answer</strong><p style={{ margin: 0 }}>{answered.text}</p><p role="status" style={{ margin: 0 }}>{answered.kind === 'fact' && answered.sources?.length ? 'Answer recorded; source still needs review.' : 'Answer recorded; measured evidence still needed.'}</p></section>;
