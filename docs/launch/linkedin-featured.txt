@@ -2,7 +2,7 @@ FEATURED ITEM TITLE
 Tarazu — evidence and reasoning behind product decisions
 
 FEATURED ITEM DESCRIPTION
-I built Tarazu with AI coding assistance, directing product choices and workflow design. Read the short case study on scoring context, preserved decision records and demo usability, then try the fictional example. Customer outcomes remain to be validated.
+I built Tarazu to connect product decisions with their evidence, assumptions and recorded rationale. Read the short case study on scoring context, preserved decisions and demo usability, then try the fictional example.
 
 LINK
 https://tarazu.app/case-study
@@ -12,7 +12,7 @@ I’ve been building Tarazu around a question: when a product decision changes, 
 
 The working product connects scoring assumptions to evidence, keeps reported facts separate from estimates and AI assumptions, and saves validation briefs and decision rationale for later review.
 
-I directed the product and used AI coding tools to help implement and test it. The case study explains the choices and tradeoffs, including moving the demo from a long form to a short decision story.
+The case study explains three choices and their tradeoffs: making scoring assumptions visible, preserving the evidence behind each decision, and showing a short story before the full editor.
 
 I’ve made a complete fictional example available without signing in. It follows a team investigating approval delays and comparing what to test before committing to a build.
 
