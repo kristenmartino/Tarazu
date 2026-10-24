@@ -15,6 +15,7 @@ const ROUTES = [
   "/pricing",
   "/blog",
   "/about",
+  "/case-study",
   "/contact",
   "/privacy",
   "/blog/a-decision-record-is-not-a-changelog",
@@ -73,7 +74,8 @@ test.describe("public pages work with JavaScript disabled", () => {
     await page.goto("/how-it-works");
     // The mobile menu is a native <details>, so it needs no client runtime.
     await expect(page.locator("details.nav-mobile summary")).toHaveCount(1);
-    await page.locator('header a[href="/faq"], footer a[href="/faq"]').first().click();
+    await page.locator("details.nav-mobile summary").click();
+    await page.getByRole("navigation", { name: "Primary mobile", exact: true }).getByRole("link", { name: "FAQ", exact: true }).click();
     await expect(page).toHaveURL(/\/faq$/);
     await expect(page.locator("h1")).toBeVisible();
   });

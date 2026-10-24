@@ -17,7 +17,7 @@ Demo URL
 https://tarazu.app/demo
 
 Pricing
-Free today. Signed-in AI is subject to per-account and shared operating limits. Planned paid tiers are not available to purchase.
+Free during early access. Signed-in AI is subject to per-account and shared operating limits. Pricing and feature availability may change; future pricing changes will be explained before they take effect. Planned paid tiers are not available to purchase.
 
 Suggested topics
 Productivity; Artificial Intelligence; SaaS. Confirm the available topic names in the submission interface.

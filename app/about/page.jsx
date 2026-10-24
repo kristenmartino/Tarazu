@@ -69,7 +69,8 @@ export default function AboutPage() {
             I&apos;m{" "}
             <a href="https://linkedin.com/in/kristenmartino">Kristen Martino</a>, an
             AI-native product manager with a Master&apos;s in Business Analytics from UT
-            Dallas. I built Tarazu myself — product decisions and code both.
+            Dallas. I built Tarazu with AI coding assistance, directing the product
+            choices and iterating on the implementation.
           </p>
           <p>
             Writing the PRD before touching the backlog UI was slower than it needed to
@@ -81,6 +82,10 @@ export default function AboutPage() {
             The source is on{" "}
             <a href="https://github.com/kristenmartino/Tarazu">GitHub</a> if you want to
             see how any of it works.
+          </p>
+          <p>
+            Read the <Link href="/case-study">short portfolio case study</Link> for
+            the product choices, tradeoffs, development approach and lessons so far.
           </p>
         </Prose>
       </Section>

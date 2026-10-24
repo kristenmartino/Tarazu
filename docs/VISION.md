@@ -3,7 +3,7 @@
 **Status:** Product and business hypotheses under review. The working demo is
 not evidence of customer demand or measured customer outcomes.
 **Owner:** Kristen Martino
-**Updated:** October 23, 2026
+**Updated:** October 24, 2026
 **Review basis:** Current repository implementation and the fictional Relay demo.
 This update is not a fresh customer, revenue, traffic or production-database audit.
 
@@ -61,7 +61,7 @@ customer adoption or commercial readiness.
 | Persistence and identity | Guest work stays in the current browser. Signed-in work uses workspace-scoped cloud storage, with personal and organization access paths. Revision and decision records include creator attribution where implemented. The prepared cloud demo contains synthetic records. The public /demo link seeds a separate browser-only Relay copy with its evidence, saved brief and frozen draft decisions, even for a signed-in visitor; restarting it preserves personal workspaces. Starting a personal decision opens a blank candidate in the current workspace without importing Relay or replacing existing work. |
 | Review records | Score edits and recommendation feedback can be reviewed. These records are not automatic model training or a system that learns from shipped outcomes. |
 
-AI requires sign-in, network access and atomic server-side usage reservations. Per-user and shared request budgets, concurrency limits and crash-recovery leases bound admitted requests; these are not a currency-denominated billing cap. Provider or
+AI requires sign-in, network access and atomic server-side usage reservations. Per-user and shared request budgets, concurrency limits, crash-recovery leases and a conservative $10 rolling daily provider-spending envelope bound admitted requests. Reservations are not a copy of the provider invoice. Provider or
 validation failures display an explicit error; the app does not invent a local
 substitute recommendation. Automated tests verify software behaviour, and live
 AI checks are individual sanity checks rather than a general accuracy benchmark.
@@ -88,9 +88,9 @@ sequence and [AI evaluation notes](ai-evaluation/README.md) for verification lim
 ## Business state and open questions
 
 The current public offering is Free. Pro, Team and Enterprise tiers are labelled
-Planned and are not available to purchase. The public promise that existing free
-functionality stays free constrains future paid packaging; any paid proposal
-must identify additional value or clearly separate a service from software.
+Planned and are not available to purchase. The current offer is free during early
+access. Pricing and feature availability may change; future pricing changes will
+be explained before they take effect. No perpetual free-feature promise is made.
 
 There is no newly verified customer count, revenue, retention, acquisition cost,
 traffic level or willingness-to-pay result in this update. The prepared signed-in demo
@@ -105,7 +105,7 @@ Questions for review:
 - Who needs to read the decision, and who could authorize payment?
 - What does the existing workflow already do well, and what would Tarazu add?
 - What support effort, AI usage and infrastructure cost would a repeat workflow require?
-- What evidence would justify a paid offering without contradicting the free promise?
+- What evidence would justify a paid offering, and how should a change be communicated?
 
 Feedback and data-help requests have a public contact path at /contact. CSV/PDF exports cover candidates and the priority view; they do not include Signals, validation briefs or decision history. No full workspace backup export is claimed.
 
