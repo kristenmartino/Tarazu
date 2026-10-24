@@ -1,0 +1,13 @@
+{
+  "width": 1270,
+  "height": 760,
+  "requirementsSource": "https://help.producthunt.com/en/articles/479557-how-to-post-a-product",
+  "provenance": "Actual app captures, framed without cropping. Fictional Relay example; no completed experiment or customer results.",
+  "images": [
+    {"file":"ph-01-positioning.png","source":"01-home.png","title":"Make a decision you can explain","caption":"Compare product options, keep the sources, and return when something changes."},
+    {"file":"ph-02-evidence.png","source":"06-evidence-digest.png","title":"Read the evidence behind the idea","caption":"Supports and challenges refer to approval reminders in this fictional example."},
+    {"file":"ph-03-brief.png","source":"07-copyable-brief.png","title":"Copy the choice and its sources","caption":"The brief includes source references, full source text and dated reviews."},
+    {"file":"ph-04-review.png","source":"08-decision-review.png","title":"Record what happened and choose the next step","caption":"An outcome can be unknown. This fictional review says the test has not run."},
+    {"file":"ph-05-history.png","source":"09-review-history.png","title":"See the original choice beside a later review","caption":"Fictional review exercise: no experiment was run and no customer result is claimed."}
+  ]
+}

@@ -19,8 +19,11 @@ https://tarazu.app/demo
 Pricing
 Free during early access. Signed-in AI is subject to per-account and shared operating limits. Pricing and feature availability may change; future pricing changes will be explained before they take effect. Planned paid tiers are not available to purchase.
 
-Suggested topics
-Productivity; Artificial Intelligence; SaaS. Confirm the available topic names in the submission interface.
+Launch tags
+Productivity; Artificial Intelligence; SaaS. Confirmed in the draft editor October 24, 2026.
+
+Category
+Productivity. Keep the category focused on the current decision workflow.
 
 Maker
 Kristen Martino
@@ -47,13 +50,13 @@ Anthropic, Vercel and Supabase, if these are available in Product Hunt's current
 
 Asset selection
 Thumbnail: public/launch/thumbnail.png
-Suggested gallery: 01-home.png → 06-evidence-digest.png → 07-copyable-brief.png → 08-decision-review.png → 09-review-history.png. Files are in public/launch/.
+Upload gallery: ph-01-positioning.png → ph-02-evidence.png → ph-03-brief.png → ph-04-review.png → ph-05-history.png. These fitted 1270 × 760 files preserve the full source captures and fictional labels. Files are in public/launch/.
 Supplemental context: 02-priorities.png, 03-signals.png, 04-brief.png, 05-decisions.png; mobile alternative: 10-mobile-review.png.
 Copied example brief: public/launch/decision-brief.md
 Asset guide and rebuild instructions: docs/launch/README.md
 Captioned walkthrough: public/launch/tarazu-walkthrough.mp4
 Captions: public/launch/tarazu-walkthrough.vtt
-These screenshots and the 96-second, eight-chapter video use the fictional Relay scenario, including an explicitly synthetic review exercise with no completed experiment or measured outcome. The captioned video uses still captures of the actual app; it is not a live screen recording or live AI demonstration. The ZIP contains the current drafts and a SHA-256 manifest; rebuild/check it after relevant UI or copy changes. Upload the video to an accepted video host if Product Hunt's current interface requires it; do not imply a video URL has already been published there.
+These screenshots and the 96-second, eight-chapter video use the fictional Relay scenario, including an explicitly synthetic review exercise with no completed experiment or measured outcome. The captioned video uses still captures of the actual app; it is not a live screen recording or live AI demonstration. The ZIP contains the current drafts and a SHA-256 manifest; rebuild/check it after relevant UI or copy changes. Product Hunt accepts a full, non-private YouTube video URL. The MP4 is the upload source; do not paste its tarazu.app URL into the YouTube field. Verify the saved YouTube URL plays before treating that field as complete.
 
 Launch goal (proposal, not a result)
 Five relevant product conversations and two people willing to try a real decision and return with new evidence. Track completed conversations and observed tasks manually; aggregate action counts cannot establish either goal.
