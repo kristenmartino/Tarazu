@@ -47,7 +47,7 @@ export const CenterCanvas = ({
   isSignedIn, activeWsId,
   // Decisions & Signals
   decisions, signals,
-  onAddDecision, onUpdateDecision, onDeleteDecision,
+  onAddDecision, onUpdateDecision, onDeleteDecision, onReviewDecision,
   onAddSignal, onUpdateSignal, onDeleteSignal, onImportSignals,
   onScreenChange,
   searchRef: externalSearchRef,
@@ -131,8 +131,8 @@ export const CenterCanvas = ({
   });
 
   // Non-priorities screens
-  if (activeScreen === "home") return <WorkspaceHome key={`${activeWsId}:${guestDemo}`} onStoryActiveChange={onStoryActiveChange} guestDemo={guestDemo} scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} isSignedIn={isSignedIn} onOpenDecision={() => { const record = relayStoryDecision(decisions); setStoryDecisionId(record?.id || null); onScreenChange("decisions"); }} onInspectCandidate={() => { onScreenChange("priorities"); const reminder = features.find(f => f.id === relay.features[0].id) || features.find(f => f.description === relay.features[0].description && f.name === relay.features[0].name); if (reminder) onEditFeature(reminder); }} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
-  if (activeScreen === "decisions") return <DecisionsScreen initialExpandedId={storyDecisionId} decisions={decisions} scored={scored} onAdd={onAddDecision} onUpdate={onUpdateDecision} onDelete={onDeleteDecision} />;
+  if (activeScreen === "home") return <WorkspaceHome key={`${activeWsId}:${guestDemo}`} onStoryActiveChange={onStoryActiveChange} guestDemo={guestDemo} scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} isSignedIn={isSignedIn} onOpenDecision={(decisionId) => { const record = decisionId ? decisions.find(d => d.id === decisionId) : relayStoryDecision(decisions); setStoryDecisionId(record?.id || null); onScreenChange("decisions"); }} onInspectCandidate={() => { onScreenChange("priorities"); const reminder = features.find(f => f.id === relay.features[0].id) || features.find(f => f.description === relay.features[0].description && f.name === relay.features[0].name); if (reminder) onEditFeature(reminder); }} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
+  if (activeScreen === "decisions") return <DecisionsScreen key={activeWsId} signals={signals} onReview={onReviewDecision} initialExpandedId={storyDecisionId} decisions={decisions} scored={scored} onAdd={onAddDecision} onUpdate={onUpdateDecision} onDelete={onDeleteDecision} />;
   if (activeScreen === "signals") return <SignalsScreen signals={signals} scored={scored} onAdd={onAddSignal} onUpdate={onUpdateSignal} onDelete={onDeleteSignal} onImport={onImportSignals} />;
   if (activeScreen === "validate") return <ValidationWorkspace key={`${activeWsId}:${isSignedIn}`} workspaceId={activeWsId} isSignedIn={isSignedIn} isMobile={isMobile} scored={scored} signals={signals} productContext={productContext} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
   if (activeScreen === "scenarios") return <ScenariosScreen features={features} scored={scored} sorted={sorted} activeWsId={activeWsId} isSignedIn={isSignedIn} onSelect={onSelect} isMobile={isMobile} />;

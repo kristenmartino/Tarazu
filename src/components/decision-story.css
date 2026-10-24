@@ -56,3 +56,52 @@
   .tz-story-inspect { margin-top:20px; padding-top:14px; }
   .tz-story-inspect>div { flex-direction:column; }
 }
+
+/* Decision records use the same editorial hierarchy as the walkthrough. */
+.tz-record-toolbar,.tz-record-section-heading,.tz-record-actions { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+.tz-record-toolbar { padding-bottom:12px; border-bottom:1px solid var(--border); }
+.tz-record-button { min-height:44px; padding:10px 14px; border:1px solid var(--border); border-radius:7px; background:transparent; color:var(--text); font:600 13px/1.4 var(--body); cursor:pointer; }
+.tz-record-primary { border-color:var(--accent); color:var(--accent); }
+.tz-record-button:hover { background:var(--surface-sunken); }
+.tz-record-button:disabled { opacity:.55; cursor:default; }
+.tz-brief-copy { min-width:0; max-width:100%; flex:1; }
+.tz-brief-copy p:empty,.tz-decision-review p[role=status]:empty { display:none; }
+.tz-brief-copy textarea,.tz-review-form textarea,.tz-review-form input[type=date] { width:100%; box-sizing:border-box; border:1px solid var(--border); border-radius:7px; background:var(--surface-sunken); color:var(--text); padding:10px 12px; font:14px/1.6 var(--body); }
+.tz-brief-copy textarea,.tz-review-form textarea { resize:vertical; }
+.tz-brief-copy label { display:block; margin:12px 0 6px; font-size:14px; }
+.tz-decision-review { padding:8px 0 18px; border-bottom:1px solid var(--border); font-size:14px; line-height:1.65; scroll-margin-top:16px; overflow-wrap:anywhere; }
+.tz-decision-review h3 { font:700 17px/1.4 var(--display); margin:0 0 4px; }
+.tz-decision-review h4 { font-size:14px; margin:12px 0 6px; }
+.tz-decision-review h5 { font-size:13px; margin:12px 0 6px; }
+.tz-decision-review p { margin:6px 0 10px; white-space:pre-wrap; }
+.tz-review-form { display:flex; flex-direction:column; gap:10px; margin-top:18px; max-width:720px; }
+.tz-review-form>label,.tz-review-form details>label { font-weight:600; }
+.tz-review-form>label>span,.tz-review-form details>label>span { display:block; font-size:12px; font-weight:400; color:var(--text-soft); margin-top:3px; }
+.tz-review-form details>textarea { margin-top:8px; }
+.tz-review-form details>label { display:block; margin-top:12px; }
+.tz-review-form fieldset { min-width:0; padding:10px 0; margin:0; border:0; }
+.tz-review-form legend { font-size:14px; font-weight:600; }
+.tz-review-choices { display:flex; flex-wrap:wrap; gap:12px; }
+.tz-review-choices label,.tz-review-signal { display:flex; align-items:center; gap:8px; min-height:44px; cursor:pointer; }
+.tz-review-signal { border-bottom:1px solid var(--border); align-items:flex-start; padding:8px 0; }
+.tz-review-signal input { margin-top:6px; flex-shrink:0; }
+.tz-review-signal small { display:block; font-size:12px; color:var(--text-soft); }
+.tz-review-expected { border-left:3px solid var(--border); padding:2px 14px; background:var(--surface-sunken); }
+.tz-review-history { margin-top:14px; }
+.tz-review-history summary,.tz-review-form summary { cursor:pointer; min-height:36px; padding:5px 0; font-size:13px; font-weight:600; }
+.tz-review-history article { border-top:1px solid var(--border); padding:10px 0; }
+.tz-review-latest { margin-top:18px; border-left:3px solid var(--accent); padding-left:14px; }
+.tz-record-error { color:var(--danger); }
+.tz-evidence-group { border-top:1px solid var(--border); }
+.tz-evidence-group>h4 { display:flex; align-items:center; gap:10px; font:600 14px/1.5 var(--body); margin:14px 0 8px; }
+.tz-evidence-group>h4>span { font:12px/1 var(--mono); color:var(--text-soft); }
+.tz-evidence-unknowns { border-left:3px solid var(--border); padding:2px 14px; background:var(--surface-sunken); }
+.tz-evidence-unknowns h4 { margin:10px 0 6px; }
+@media(max-width:600px){
+ .tz-decisions.tz-decisions { padding-bottom:calc(100px + env(safe-area-inset-bottom,0px)) !important; scroll-padding-bottom:100px; }
+ .tz-record-section-heading { align-items:flex-start; }
+ .tz-record-section-heading .tz-record-button { width:100%; }
+ .tz-record-actions>button { flex:1; }
+ .tz-record-toolbar { align-items:flex-start; }
+ .tz-decision-review { padding-bottom:16px; }
+}

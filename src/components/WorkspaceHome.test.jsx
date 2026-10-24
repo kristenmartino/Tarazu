@@ -57,3 +57,15 @@ it("reports story focus once across steps and clears it on overview or route unm
   unmount();
   expect(active).toHaveBeenLastCalledWith(false);
 });
+
+it("opens the due decision directly and excludes retired or archived directions", () => {
+  const open=vi.fn();
+  render(<WorkspaceHome {...props} onOpenDecision={open} decisions={[
+    {id:"due",title:"Check the pilot outcome",status:"draft",review_date:"2020-01-01"},
+    {id:"retired",title:"Retired direction",status:"draft",review_date:"2020-01-01",reviews:[{id:"r",action:"retire",reviewed_at:"2026-10-24T12:00:00Z"}]},
+    {id:"archived",title:"Archived direction",status:"archived",review_date:"2020-01-01"},
+  ]}/>);
+  const due=screen.getByRole("region",{name:"Decisions due for review"});
+  expect(due.textContent).toContain("Check the pilot outcome");expect(due.textContent).not.toContain("Retired direction");expect(due.textContent).not.toContain("Archived direction");
+  fireEvent.click(screen.getByRole("button",{name:/Check the pilot outcome/}));expect(open).toHaveBeenCalledWith("due");
+});

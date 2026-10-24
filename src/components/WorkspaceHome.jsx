@@ -5,6 +5,8 @@ import { getTier } from "../utils";
 import { Pill } from "./Pill";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { trackUsage } from "../../lib/usage-events";
+import { decisionReviewState } from "../../lib/decision-record";
+import { formatDateOnly } from "../dateOnly";
 import { RelayStory, hasRelayStory, relayStoryDecision } from "./RelayStory";
 
 const StatCard = ({ label, value, color }) => {
@@ -56,6 +58,8 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
   const recentDecisions = useMemo(() =>
     decisions.filter(d => d.status !== "archived").sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 3),
   [decisions]);
+
+  const dueDecisions = decisions.filter(d => d.status !== "archived" && decisionReviewState(d).isDue).sort((a,b) => decisionReviewState(a).dueDate.localeCompare(decisionReviewState(b).dueDate));
 
   const topTier = topCandidate ? getTier(topCandidate, C) : null;
   const isRelayDemo = hasRelayStory({ guestDemo, activeWs, decisions });
@@ -148,6 +152,12 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
             )}
           </div>
         )}
+
+        {dueDecisions.length > 0 && <section className="tz-home-reviews" aria-label="Decisions due for review" style={{ borderTop: `2px solid ${C.accent}`, padding: "16px 0" }}>
+          <h3 style={{ fontSize: 17, margin: "0 0 8px" }}>Decisions due for review</h3>
+          <p style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.6 }}>Return with what happened, new evidence, and a next action.</p>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>{dueDecisions.map(d => <li key={d.id} style={{ borderBottom: `1px solid ${C.border}` }}><button type="button" onClick={() => onOpenDecision ? onOpenDecision(d.id) : onScreenChange("decisions")} style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 0", minHeight: 44, color: C.text, background: "transparent", border: 0, font: "inherit", cursor: "pointer", overflowWrap: "anywhere" }}>{d.title}<span style={{ display: "block", color: C.textMuted, fontSize: 12, marginTop: 4 }}>Review due {formatDateOnly(decisionReviewState(d).dueDate)}</span></button></li>)}</ul>
+        </section>}
 
         {/* Recent decisions */}
         {recentDecisions.length > 0 && (

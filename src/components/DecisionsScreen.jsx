@@ -3,12 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { DecisionRationale, SourceBriefReference } from "./DecisionRationale";
+import { CopyDecisionBrief, DecisionReview } from "./DecisionReview";
 import { dateOnly, localToday, serializeDateOnly, formatDateOnly } from "../dateOnly";
 
 const STATUS_OPTIONS = ["draft", "approved", "archived"];
 const emptyForm = () => ({ title: "", chosen_candidate_id: null, chosen_candidate_name: "", summary_rationale: "", final_rationale: "", framework_used: "RICE", tradeoffs_considered: "", risks_accepted: "", expected_outcome: "", owner: "", status: "draft", decision_date: localToday(), review_date: "" });
 
-export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete, initialExpandedId = null }) => {
+export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete, onReview, signals = [], initialExpandedId = null }) => {
   const C = useC();
   const STATUS_COLORS = { draft: C.warn, approved: C.accent, archived: C.textDim };
   const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "var(--mono)", outline: "none", boxSizing: "border-box" };
@@ -163,7 +164,7 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete, 
                 <input aria-label="Decision date" type="date" value={form.decision_date} onChange={e => setForm(f => ({ ...f, decision_date: e.target.value }))} style={inputStyle} />
               </div>
               <div>
-                <div style={labelStyle}>REVIEW DATE</div>
+                <div style={labelStyle}>ORIGINAL REVIEW DATE</div>
                 <input aria-label="Review date" type="date" value={form.review_date} onChange={e => setForm(f => ({ ...f, review_date: e.target.value }))} style={inputStyle} />
               </div>
             </div>
@@ -233,11 +234,13 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete, 
               {isExpanded && (
                 <div style={{ padding: "0 14px 14px", borderTop: `1px solid ${C.border}` }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingTop: 14 }}>
+                    <div className="tz-record-toolbar"><CopyDecisionBrief key={d.id} decision={d} /></div>
+                    <DecisionReview key={d.id} decision={d} signals={signals} onReview={onReview} />
                     <SourceBriefReference decision={d} />
                     <DecisionRationale decision={d} />
                     {d.review_date && (
                       <div>
-                        <div style={labelStyle}>REVIEW DATE</div>
+                        <div style={labelStyle}>ORIGINAL REVIEW DATE</div>
                         <div style={{ fontSize: 12, color: C.text }}>{formatDateOnly(d.review_date)}</div>
                       </div>
                     )}

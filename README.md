@@ -1,8 +1,8 @@
 # Tarazu
 
-**Decision intelligence for product teams. Weigh what matters.**
+**Make a product decision you can explain — and revisit when the evidence changes.**
 
-Tarazu — from the Hindi/Urdu word for a balance scale — helps product teams prioritize ideas, compare tradeoffs, capture context, and generate explainable recommendations with structured frameworks like RICE — powered by Claude.
+Tarazu — from the Hindi/Urdu word for a balance scale — helps you make a product decision you can explain and revisit when evidence changes. Compare options, preserve supporting and conflicting evidence, copy a decision brief, and record dated reviews. RICE and reviewable AI suggestions support the workflow.
 
 **[tarazu.app](https://tarazu.app)** · Free. Guest scoring runs in your browser without an account; AI requires sign-in and an internet connection.
 
@@ -155,7 +155,9 @@ Proprietary — all rights reserved. See [`LICENSE`](./LICENSE). The source is p
 
 Main app views have focusable skip-link targets. Decision disclosures use native buttons with expanded state and labelled panels; decision editing restores keyboard focus. Workspace selection uses independent buttons, and candidate child actions do not trigger the card's keyboard handler.
 
-CSV exports cover ranked candidates; the priority view can be printed to PDF. These exports do not include Signals, validation briefs, decision history, or a complete workspace backup.
+Saved decisions can be copied as Markdown briefs with complete preserved source bodies, caveats and dated reviews. CSV exports cover ranked candidates; the priority view can be printed to PDF. CSV/PDF do not include Signals, validation briefs or decision history. None of these is a complete workspace backup.
+
+Decision reviews append reported outcomes, new evidence snapshots, keep/revise/retire direction and optional next review date. They preserve a snapshot of the decision being reviewed and do not rewrite its rationale, choice or originating brief. Home surfaces due reviews; retirement clears the reminder. Browser reviews stay in local storage and signed-in reviews use the workspace-authorized append-only API. Outcomes are user reports, not independently verified results or automatic AI training.
 
 The `AI usage database checks` workflow runs against isolated PostgreSQL 17 and tests actual concurrent admission, shared budgets, failure accounting, lease expiry, legacy usage and service-role permissions. Run `scripts/check-ai-usage.mjs` only with `AI_USAGE_TEST_DATABASE=isolated` and a test database named `tarazu_quota_test`; it deliberately clears its fixture ledger. Production migrations are additive and are applied by the existing migration workflow. The migration workflow checks backend permissions and quota behavior in a rolled-back transaction. Apply the reservation migration before activating application code that uses it; an absent RPC deliberately refuses AI requests.
 

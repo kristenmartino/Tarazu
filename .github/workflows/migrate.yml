@@ -68,3 +68,7 @@ jobs:
       - name: Verify launch operations without retaining test data
         if: steps.guard.outputs.ready == 'true'
         run: supabase db query --linked --file scripts/verify-launch-production.sql
+
+      - name: Verify decision review storage without retaining test data
+        if: steps.guard.outputs.ready == 'true'
+        run: supabase db query --linked --file scripts/verify-decision-reviews-production.sql

@@ -30,8 +30,8 @@ export default function AboutPage() {
 
       <PageHero
         eyebrow="About"
-        title={<>A backlog is a spreadsheet. <span className="br">A decision is not.</span></>}
-        lede="Most teams score their backlog in a grid on the morning of sprint planning and lose the reasoning by the next one. Tarazu keeps the reasoning."
+        title={<>A product decision <span className="br">you can return to.</span></>}
+        lede="Tarazu connects a choice with its evidence, tradeoffs and next test, then keeps dated reviews alongside the original reasoning."
       />
 
       <Section id="why">
@@ -42,8 +42,9 @@ export default function AboutPage() {
             spreadsheet, plugs in reach and impact and confidence, and out comes a
             ranking everyone nods at. Three months later, someone asks why the fourth
             item shipped before the second, and nobody remembers. The numbers are still
-            there. The argument that produced them is gone, because a spreadsheet has
-            nowhere to put it.
+            there. The argument is harder to reconstruct when nobody recorded it.
+            Spreadsheets and other discovery tools can retain that context; Tarazu
+            gives the decision and its later review an explicit structure.
           </p>
           <p>
             Tarazu keeps the argument. It scores a backlog the same way most teams

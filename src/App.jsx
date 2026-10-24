@@ -25,6 +25,7 @@ import { dialog, DialogHost } from "./components/dialog";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import * as feedbackLocal from "../lib/feedback-storage";
 import { computeSummaryMetrics, buildScoreCalibration, buildAnalysisContext } from "../lib/feedback-context";
+import { makeDecisionReview } from '../lib/decision-record';
 
 const animStyles = `
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -731,8 +732,8 @@ export default function App({ guestDemo = false }) {
     if (isSignedIn && activeWsId) {
       try {
         const result = await cloud.updateDecision(activeWsId, decisionId, updates);
-        setDecisions(prev => prev.map(d => d.id === decisionId ? result : d));
-      } catch (err) { console.error("Update decision failed:", err); }
+        setDecisions(prev => prev.map(d => d.id === decisionId ? { ...result, reviews: d.reviews || [] } : d));
+      } catch (err) { console.error("Update decision failed:", err); throw err; }
     } else {
       setDecisions(prev => {
         const updated = prev.map(d => d.id === decisionId ? { ...d, ...updates, updated_at: new Date().toISOString() } : d);
@@ -741,6 +742,31 @@ export default function App({ guestDemo = false }) {
       });
     }
   }, [isSignedIn, activeWsId]);
+
+  const handleReviewDecision = useCallback(async (decisionId, input) => {
+    const scope = currentSaveScope;
+    if (!activeWsId) throw new Error('Choose a workspace first.');
+    if (isSignedIn) {
+      const review = await cloud.createDecisionReview(activeWsId, decisionId, input);
+      if (saveScopeRef.current === scope) setDecisions(prev => prev.map(d => d.id === decisionId ? { ...d, reviews: [...(d.reviews || []), review] } : d));
+      return review;
+    }
+    const append = () => {
+      const key = `prioritize-ws-${activeWsId}-decisions`;
+      const stored = localStorage.getItem(key);
+      const records = stored ? JSON.parse(stored) : decisions;
+      const decision = records.find(d => d.id === decisionId);
+      if (!decision) throw new Error('This decision is no longer available.');
+      const review = makeDecisionReview(decision, input, signals);
+      const updated = records.map(d => d.id === decisionId ? { ...d, reviews: [...(d.reviews || []), review] } : d);
+      // Write before displaying success: a full or blocked browser store must
+      // leave the review draft open and the original record untouched.
+      localStorage.setItem(key, JSON.stringify(updated));
+      if (saveScopeRef.current === scope) setDecisions(updated);
+      return review;
+    };
+    return navigator.locks ? navigator.locks.request(`tarazu-review:${activeWsId}`, append) : append();
+  }, [isSignedIn, activeWsId, currentSaveScope, decisions, signals]);
 
   const handleDeleteDecision = useCallback(async (decisionId) => {
     if (isSignedIn && activeWsId) {
@@ -1067,7 +1093,7 @@ export default function App({ guestDemo = false }) {
           onDeleteWorkspace={deleteWorkspace} onRenameWorkspace={renameWorkspace}
           isSignedIn={isSignedIn} activeWsId={activeWsId}
           decisions={decisions} signals={signals}
-          onAddDecision={handleAddDecision} onUpdateDecision={handleUpdateDecision} onDeleteDecision={handleDeleteDecision}
+          onAddDecision={handleAddDecision} onUpdateDecision={handleUpdateDecision} onDeleteDecision={handleDeleteDecision} onReviewDecision={handleReviewDecision}
           onAddSignal={handleAddSignal} onUpdateSignal={handleUpdateSignal} onDeleteSignal={handleDeleteSignal}
           onImportSignals={handleImportSignals}
           onScreenChange={handleScreenChange}

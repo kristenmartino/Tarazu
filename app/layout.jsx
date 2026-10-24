@@ -17,7 +17,7 @@ export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Tarazu — Prioritization your team can defend.",
   description:
-    "Weigh what matters. Tarazu helps product teams prioritize candidates, compare tradeoffs, and document decisions with structured frameworks and explainable AI.",
+    "Tarazu helps you make a product decision you can explain, share the evidence and tradeoffs, and revisit it when new evidence arrives.",
   // No `icons` key on purpose. An explicit metadata.icons OVERRIDES the App
   // Router file convention, so declaring one here would silently disable
   // app/icon.svg, app/favicon.ico, and app/apple-icon.png.

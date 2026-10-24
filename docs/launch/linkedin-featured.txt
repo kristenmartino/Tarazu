@@ -1,5 +1,5 @@
 FEATURED ITEM TITLE
-Tarazu — evidence and reasoning behind product decisions
+Tarazu — product decisions you can explain and revisit
 
 FEATURED ITEM DESCRIPTION
 I built Tarazu to connect product decisions with their evidence, assumptions and recorded rationale. Read the short case study on scoring context, preserved decisions and demo usability, then try the fictional example.
@@ -10,7 +10,7 @@ https://tarazu.app/case-study
 POST DRAFT — NOT PUBLISHED
 I’ve been building Tarazu around a question: when a product decision changes, can you still explain what you believed, what evidence you had, and why you chose that next step?
 
-The working product connects scoring assumptions to evidence, keeps reported facts separate from estimates and AI assumptions, and saves validation briefs and decision rationale for later review.
+The working product connects scoring assumptions to evidence, keeps reported facts separate from estimates and AI assumptions, saves validation briefs, and produces a copyable decision brief. Dated reviews record reported outcomes and new evidence without rewriting the original decision.
 
 The case study explains three choices and their tradeoffs: making scoring assumptions visible, preserving the evidence behind each decision, and showing a short story before the full editor.
 

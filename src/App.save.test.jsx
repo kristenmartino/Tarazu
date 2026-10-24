@@ -9,7 +9,7 @@ const { auth, api, localSave, network } = vi.hoisted(() => ({
     createWorkspace: vi.fn(), fetchWorkspaces: vi.fn(), fetchFeatures: vi.fn(), fetchProductContext: vi.fn(),
     fetchDecisions: vi.fn(), fetchSignals: vi.fn(), fetchWorkspaceSettings: vi.fn(),
     fetchFeedbackSummary: vi.fn(), fetchFeedbackContext: vi.fn(), upsertFeature: vi.fn(),
-    syncFeatures: vi.fn(), saveProductContext: vi.fn(), saveWorkspaceSettings: vi.fn(),
+    syncFeatures: vi.fn(), saveProductContext: vi.fn(), saveWorkspaceSettings: vi.fn(), createDecisionReview: vi.fn(),
   },
 }));
 vi.mock("./hooks/useAuth", () => ({ useAuth: () => auth }));
@@ -22,13 +22,13 @@ vi.mock("./components/LeftRail", () => ({ LeftRail: () => null }));
 vi.mock("./components/RightRail", () => ({ RightRail: () => null }));
 vi.mock("./components/ThemeMenu", () => ({ ThemeMenu: () => null }));
 vi.mock("./components/OrgSwitcher", () => ({ OrgSwitcher: () => null }));
-vi.mock("./components/CenterCanvas", () => ({ CenterCanvas: function SaveHarness({ showForm, onShowForm, onAddFeature, features, onEditingFeature, saveTarget, savePendingSync }) {
+vi.mock("./components/CenterCanvas", () => ({ CenterCanvas: function SaveHarness({ showForm, onShowForm, onAddFeature, features, onEditingFeature, saveTarget, savePendingSync, decisions, onReviewDecision }) {
   const [error, setError] = useState("");
   const [name, setName] = useState("Draft candidate");
-  return <main><p>Save target: {saveTarget}{savePendingSync ? " · pending sync" : ""}</p><input aria-label="Draft name" value={name} onChange={e => setName(e.target.value)} /><button onClick={() => onShowForm(true)}>Edit draft</button><button onClick={() => { onEditingFeature({ id: "second", name: "Another candidate" }); onShowForm(true); }}>Edit another candidate</button>{showForm && <><p>Editor draft retained</p><button onClick={() => onAddFeature({ id: "candidate", name, reach: 55, impact: 55, confidence: 20, effort: 35 }).catch(e => setError(e.message))}>Save candidate</button></>}{error && <p role="alert">{error}</p>}<p>{features.length} candidates saved</p></main>;
+  return <main><button onClick={() => onReviewDecision("decision", {action:"keep",outcome:"Unknown",next_action:"Collect evidence",signal_ids:[]}).catch(e=>setError(e.message))}>Save test review</button><p>{decisions.reduce((n,d)=>n+(d.reviews?.length || 0),0)} reviews saved</p><p>Save target: {saveTarget}{savePendingSync ? " · pending sync" : ""}</p><input aria-label="Draft name" value={name} onChange={e => setName(e.target.value)} /><button onClick={() => onShowForm(true)}>Edit draft</button><button onClick={() => { onEditingFeature({ id: "second", name: "Another candidate" }); onShowForm(true); }}>Edit another candidate</button>{showForm && <><p>Editor draft retained</p><button onClick={() => onAddFeature({ id: "candidate", name, reach: 55, impact: 55, confidence: 20, effort: 35 }).catch(e => setError(e.message))}>Save candidate</button></>}{error && <p role="alert">{error}</p>}<p>{features.length} candidates saved</p></main>;
 } }));
 import App from "./App";
-import { saveWsIndex, saveWsFeatures } from "../lib/local-storage";
+import { saveWsIndex, saveWsFeatures, saveWsDecisions } from "../lib/local-storage";
 beforeEach(() => {
   vi.clearAllMocks(); localStorage.clear();
   auth.orgId = "org"; auth.isSignedIn = true; network.online = true;
@@ -183,4 +183,31 @@ it("starts a blank decision in the signed-in workspace without replacing existin
     expect(api.createWorkspace).not.toHaveBeenCalled();
     expect(window.location.search).toBe("");
   } finally { cleanup(); window.history.replaceState(null,"","/"); }
+});
+
+
+it("keeps a failed cloud review out of the saved record and retains the original", async () => {
+  const original={id:"decision",title:"Original",final_rationale:"Do not overwrite"};
+  api.fetchDecisions.mockResolvedValue({decisions:[original]});
+  api.createDecisionReview.mockRejectedValue(new Error("Review service unavailable"));
+  render(<App />); fireEvent.click(await screen.findByRole("button",{name:"Save test review"}));
+  expect(await screen.findByRole("alert")).toHaveProperty("textContent","Review service unavailable");
+  expect(screen.getByText("0 reviews saved")).toBeTruthy();expect(original.final_rationale).toBe("Do not overwrite");
+});
+it("does not inject a completed review from another organization into the active workspace", async () => {
+  let finish;api.fetchDecisions.mockResolvedValue({decisions:[{id:"decision",title:"Original"}]});
+  api.createDecisionReview.mockImplementation(()=>new Promise(resolve=>{finish=resolve;}));
+  const {rerender}=render(<App />);fireEvent.click(await screen.findByRole("button",{name:"Save test review"}));
+  await waitFor(()=>expect(api.createDecisionReview).toHaveBeenCalledOnce());
+  auth.orgId="other-org";rerender(<App />);await waitFor(()=>expect(api.fetchWorkspaces).toHaveBeenCalledTimes(2));
+  finish({id:"r",action:"keep"});await waitFor(()=>expect(screen.getByText("0 reviews saved")).toBeTruthy());
+});
+
+it("does not acknowledge a guest review when browser storage is full", async () => {
+  auth.isSignedIn=false;saveWsIndex([{id:"workspace",name:"Browser"}]);saveWsFeatures("workspace",[]);saveWsDecisions("workspace",[{id:"decision",title:"Original"}]);
+  render(<App />);const button=await screen.findByRole("button",{name:"Save test review"});
+  const stored=localStorage.getItem("prioritize-ws-workspace-decisions");
+  const write=vi.spyOn(Storage.prototype,"setItem").mockImplementation(()=>{throw new Error("Storage full");});
+  try { fireEvent.click(button);expect(await screen.findByRole("alert")).toHaveProperty("textContent","Storage full");expect(screen.getByText("0 reviews saved")).toBeTruthy();expect(localStorage.getItem("prioritize-ws-workspace-decisions")).toBe(stored); }
+  finally { write.mockRestore(); }
 });

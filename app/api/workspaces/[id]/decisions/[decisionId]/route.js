@@ -18,7 +18,9 @@ export async function GET(request, { params }) {
       .single();
     if (error || !data)
       return NextResponse.json({ error: "Decision not found" }, { status: 404 });
-    return NextResponse.json(data);
+    const reviews = await supabase.from('decision_reviews').select('*').eq('workspace_id', id).eq('decision_id', decisionId).order('reviewed_at');
+    if (reviews.error) return NextResponse.json({ error: 'Decision reviews could not be loaded.' }, { status: 500 });
+    return NextResponse.json({ ...data, reviews: reviews.data || [] });
   });
 }
 
