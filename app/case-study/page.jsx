@@ -22,7 +22,7 @@ export default function CaseStudyPage() {
     />
     <Section id="case-study">
       <Prose>
-        <p><strong>My role:</strong> product direction, workflow design and development with AI coding assistance. <strong>Stage:</strong> working early-access product.</p>
+        <p><strong>My role:</strong> product direction, workflow design and delivery. <strong>Stage:</strong> working early-access product.</p>
         <p><Link href="/demo">Try the fictional Relay demo</Link> · <a href="https://github.com/kristenmartino/Tarazu">Explore the source</a></p>
 
         <h2>The problem I chose to explore</h2>
@@ -39,7 +39,7 @@ export default function CaseStudyPage() {
         <p>The walkthrough originally opened a long editor. Feedback exposed how easily a visitor could miss the strongest story. I changed it to four short, read-only steps: Problem, Evidence, Decision and Next test. Detailed records stay available when someone wants to inspect the work. This presents the prepared example first; independent first-use testing is still needed.</p>
 
         <h2>How I used AI in development</h2>
-        <p>I directed the priorities and acceptance decisions while AI coding tools helped draft and revise implementation, tests and fixes. In the product, AI suggests scores and reasoning for a person to review. Structured response checks, explicit acceptance and protection against stale context help bound that assistance.</p>
+        <p>I used AI coding tools for implementation, testing and debugging. I directed the product requirements, workflow choices and acceptance decisions, iterating on the working product as gaps became visible.</p>
 
         <h2>What I learned</h2>
         <p>Clearer prompts alone did not reliably stop the AI repeating answered questions. Checks against supplied answers and source excerpts became part of the workflow. They add time and can still misinterpret context. I also learned to separate software verification from evidence that the product is useful.</p>

@@ -69,8 +69,8 @@ export default function AboutPage() {
             I&apos;m{" "}
             <a href="https://linkedin.com/in/kristenmartino">Kristen Martino</a>, an
             AI-native product manager with a Master&apos;s in Business Analytics from UT
-            Dallas. I built Tarazu with AI coding assistance, directing the product
-            choices and iterating on the implementation.
+            Dallas. I built Tarazu to keep product decisions connected to their
+            evidence, assumptions and reasoning.
           </p>
           <p>
             Writing the PRD before touching the backlog UI was slower than it needed to
