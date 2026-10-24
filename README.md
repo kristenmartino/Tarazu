@@ -146,7 +146,7 @@ Proprietary — all rights reserved. See [`LICENSE`](./LICENSE). The source is p
 
 ---
 
-**Designed and built by [Kristen Martino](https://linkedin.com/in/kristenmartino)** · AI-native product manager · MS Business Analytics, UT Dallas · [About](https://tarazu.app/about)
+**Designed and built by [Kristen Martino](https://linkedin.com/in/kristenmartino)** · Product manager · MS Business Analytics, UT Dallas · [About](https://tarazu.app/about)
 
 
 ## Feedback, keyboard access and export boundaries

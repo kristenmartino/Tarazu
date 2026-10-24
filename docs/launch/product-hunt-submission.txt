@@ -28,13 +28,13 @@ Kristen Martino
 Maker first comment
 Hi Product Hunt — I’m Kristen, Tarazu’s maker.
 
-I built Tarazu to explore a problem I keep coming back to: a ranked list is easy to produce, but the evidence and assumptions behind a product decision are much harder to reconstruct later.
+I built Tarazu around the question that follows a ranked backlog: why did we choose this?
 
-Tarazu lets you compare options, connect scoring claims to supporting or conflicting evidence, save an investigation as a validation brief, and preserve the reasoning behind a draft decision. Read supporting and conflicting sources in an evidence digest, copy a decision brief, then record a dated keep/revise/retire review when you return. AI can suggest scores and questions from the context you supply; you review the output before accepting it.
+In the fictional Relay demo, a team starts with approval reminders. Notes about missing documents point to a different problem, so the team chooses a paper checklist experiment before building anything. The saved record keeps the choice and its sources together. You can copy it into a document and add a dated review later.
 
-The no-account Relay demo follows a fictional approval team considering reminders, a status dashboard and a readiness checklist. The evidence challenges the first explanation and supports investigating a smaller next test. All interviews, users, estimates and outcomes in that example are fictional. It demonstrates the workflow; it is not customer validation.
+AI can suggest scores and questions from the context you supply. You choose what to accept.
 
-This is an early product. I’m looking for feedback from product practitioners and small teams facing an actual test-or-build decision. What would help you revisit a difficult decision, and what would add unnecessary work?
+The demo research is fictional and the experiment has not been run. I’d like feedback from people making a product decision now: would this help you explain your choice, or add work?
 
 Guest work saves in your browser. Sign in first for cloud saving and live AI. AI can be slow, wrong or temporarily unavailable within shared limits; manual work remains available. Copy a decision brief with its preserved evidence and reviews. CSV and PDF cover the priority view/candidate table; none is a full workspace backup.
 

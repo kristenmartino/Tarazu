@@ -1,33 +1,33 @@
 WEBVTT
 
 00:00.000 --> 00:12.000
-Compare options, preserve the reasoning, and return when evidence changes.
-Explore the fictional Relay example without an account.
+Compare two product options and save why you chose one.
+Try the fictional Relay example without an account.
 
 00:12.000 --> 00:24.000
-One engineer, two weeks: what should the fictional Relay team test?
-Begin with the problem before committing to a build.
+Administrators say they spend time chasing approvals.
+The team starts by considering reminders.
 
 00:24.000 --> 00:36.000
-Missing documents challenge a reminder-only explanation.
-All Relay interviews and case reviews are synthetic.
+In the example, four of five delayed requests were missing documents.
+That small sample raises a question; it does not prove a checklist will work.
 
 00:36.000 --> 00:48.000
-The draft proposes testing request readiness before building reminders.
-The experiment is proposed; no completed test or business result is claimed.
+Check whether requests include an owner, date and documents.
+The team has not run this experiment yet.
 
 00:48.000 --> 01:00.000
-Scan Supports, Challenges, Context, and Unknowns in the evidence digest.
-Relationships concern the originating candidate, which may differ from the choice.
+Read what supports and challenges the reminder idea.
+The digest also shows what remains unknown.
 
 01:00.000 --> 01:12.000
-Copy a decision brief with preserved sources, caveats, and dated reviews.
-The brief is a readable handoff, not a complete workspace backup.
+Take the choice, notes and source references into a document or message.
+Full source text stays in the appendix.
 
 01:12.000 --> 01:24.000
-Record an outcome or an explicit unknown, then keep, revise, or retire the direction.
-This synthetic review demonstrates the form; it is not customer validation.
+Write what happened, or “Not tested yet”.
+Choose Keep, Revise or Retire and record the next step.
 
 01:24.000 --> 01:36.000
-Dated reviews preserve the earlier reasoning alongside reported updates.
-Try tarazu.app/demo. Live AI runs separately after sign-in and human review.
+The original decision stays alongside the dated update.
+Try tarazu.app/demo. Sign in separately to use live AI.

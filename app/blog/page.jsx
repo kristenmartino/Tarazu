@@ -83,7 +83,7 @@ export default function BlogIndexPage() {
       </Section>
 
       <CtaBand
-        title={<>Stop relitigating the <span className="br">same decisions.</span></>}
+        title={<>Return to the notes <span className="br">behind your choices.</span></>}
         body="Free, and no account needed — guest mode runs entirely in your browser."
         primaryLabel="Open Tarazu"
         primaryHref="/app"

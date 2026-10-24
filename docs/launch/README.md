@@ -29,7 +29,7 @@ The video uses still captures of the actual app, not a live screen recording or 
 
 ## Rebuild after a relevant product or copy change
 
-Use the repository's Node version from `.nvmrc`, installed dependencies, Python 3, and FFmpeg. First deploy the UI changes that the launch materials should show.
+Use the repository's Node version from `.nvmrc`, installed dependencies, Python 3, and FFmpeg. Capture from the deployed UI, or run a local production build of the committed UI changes.
 
 ```sh
 CAPTURE_LAUNCH_ASSETS=1 npx playwright test --config playwright.launch.config.js
@@ -38,7 +38,7 @@ python3 scripts/build-launch-kit.py
 python3 scripts/build-launch-kit.py --check
 ```
 
-Capture defaults to `https://tarazu.app`. For a local preview, set `LAUNCH_BASE_URL` to that server; the capture requires a healthy `/api/health` response and records its release. The capture checks that the release is unchanged across the run. Each run starts with isolated browser storage and verifies the original decision is unchanged after the synthetic review.
+Capture defaults to `https://tarazu.app`. For a local production build, set `LAUNCH_BASE_URL` to its loopback URL and start the server with `VERCEL_GIT_COMMIT_SHA` set to the committed UI revision. Local captures do not require cloud/AI configuration; a non-loopback capture requires healthy production services. The capture records the source URL and revision. The capture checks that the release is unchanged across the run. Each run starts with isolated browser storage and verifies the original decision is unchanged after the synthetic review.
 
 The ZIP builder packages the current text drafts and generated assets. Check mode compares the ZIP bytes with those source files, validates the manifest, PNG dimensions, chapter/caption timing and submission text limits. CI runs check mode to catch stale bundles. Inspect the desktop and mobile captures and watch the MP4 before publishing new media.
 

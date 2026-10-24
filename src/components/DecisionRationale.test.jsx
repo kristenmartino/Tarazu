@@ -11,7 +11,7 @@ it("recognises an exact original generated brief without treating user edits as 
 it("shows preserved problem, supporting/conflicting evidence, decision and next test as separate sections",()=>{
  const d=relay.decisions[1];const before=JSON.stringify(d);render(<DecisionRationale decision={d}/>);
  for(const name of ['Problem','Evidence','Decision','Next test']) expect(screen.getByRole('region',{name,exact:true})).toBeTruthy();
- expect(screen.getByText(/^Problem and evidence are preserved/).textContent).toContain("4/7 dimensions assessed");
+ expect(screen.getByText(/^Problem and evidence from/).textContent).toContain("4/7 dimensions assessed");
  const evidence=screen.getByRole('region',{name:'Evidence',exact:true});
  expect(within(evidence).getAllByText('Challenges the originating candidate',{exact:false}).length).toBeGreaterThan(0);
  expect(within(evidence).getAllByText('Supports the originating candidate',{exact:false}).length).toBeGreaterThan(0);
@@ -55,5 +55,5 @@ it("does not reinterpret an expected outcome as an experiment",()=>{
  expect(screen.getByText("Recorded expected outcome")).toBeTruthy();expect(screen.queryByRole("region",{name:"Next test",exact:true})).toBeNull();
  rerender(<DecisionRationale decision={{...relay.decisions[1],expected_outcome:"Reduce churn"}}/>);
  expect(screen.getByText("Recorded expected outcome")).toBeTruthy();
- const next=screen.getByRole("region",{name:"Next test",exact:true});expect(within(next).getByText(/Original proposed next action/)).toBeTruthy();expect(within(next).queryByText("Reduce churn")).toBeNull();
+ const next=screen.getByRole("region",{name:"Next test",exact:true});expect(within(next).getByText(/Proposed in the saved brief/)).toBeTruthy();expect(within(next).queryByText("Reduce churn")).toBeNull();
 });

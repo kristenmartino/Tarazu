@@ -215,7 +215,7 @@ export default function HowItWorksPage() {
 
       <CtaBand
         title={<>Bring balance to your <span className="br">roadmap.</span></>}
-        body="Start weighing what to build next — and stop relitigating the same decisions every quarter."
+        body="Compare a few options and save the notes behind your choice."
       />
     </MarketingShell>
   );

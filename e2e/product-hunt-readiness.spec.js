@@ -41,7 +41,7 @@ test('launch gallery follows the actual fictional evidence-to-decision flow',asy
  const dir=capture?path.join(process.cwd(),'public/launch'):testInfo.outputPath('gallery');await fs.mkdir(dir,{recursive:true});
  const shot=async name=>{await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:path.join(dir,name+'.png'),animations:'disabled'});};
  let sourceHealth;
- if(capture){const health=await page.request.get('/api/health');expect(health.ok()).toBe(true);sourceHealth=await health.json();expect(sourceHealth.status).toBe('ok');}
+ if(capture){const health=await page.request.get('/api/health');sourceHealth=await health.json();const local=['localhost','127.0.0.1','[::1]'].includes(new URL(testInfo.project.use.baseURL).hostname);if(!local){expect(health.ok()).toBe(true);expect(sourceHealth.status).toBe('ok');}else expect(sourceHealth.release).toMatch(/^[a-f0-9]{40}$/);}
  await page.goto('/');await expect(page.getByRole('heading',{level:1})).toContainText('Make a decision');await shot('01-home');
  await page.goto('/demo');await expect(page.getByRole('button',{name:'Start the decision walkthrough',exact:true})).toBeVisible({timeout:45000});
  await page.getByRole('button',{name:'Start the decision walkthrough',exact:true}).click();
@@ -67,11 +67,11 @@ test('launch gallery follows the actual fictional evidence-to-decision flow',asy
  const copied=await page.evaluate(()=>navigator.clipboard.readText());expect(copied).toContain('SYNTHETIC');expect(copied).toContain('revision 5');
  await fs.writeFile(path.join(dir,'decision-brief.md'),copied);await align(toggle);await shot('07-copyable-brief');
  await record.getByRole('button',{name:'Review decision',exact:true}).click();
- await record.getByLabel(/What happened/).fill('SYNTHETIC walkthrough exercise: no experiment has been run and the outcome is still unknown.');
+ await record.getByLabel(/What happened/).fill('Fictional example: not tested yet.');
  await record.getByRole('radio',{name:'Revise',exact:true}).check();
- await record.getByLabel('Revised direction and next action',{exact:true}).fill('SYNTHETIC proposal: narrow the paper checklist test before committing engineering.');
+ await record.getByLabel('Revised direction and next action',{exact:true}).fill('Try a smaller paper checklist before committing engineering.');
  await record.getByText('Add new evidence (optional)',{exact:true}).click();
- await record.getByLabel(/What did you learn/).fill('SYNTHETIC illustration only. The saved source is fictional; no new customer evidence was collected.');
+ await record.getByLabel(/What did you learn/).fill('No new results. The attached case review is part of the fictional example.');
  await record.getByRole('checkbox').first().check();
  await record.getByText('Add new evidence (optional)',{exact:true}).click();
  await align(record.getByRole('heading',{name:'Revisit this decision',exact:true}));await shot('08-decision-review');

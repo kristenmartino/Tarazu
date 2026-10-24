@@ -24,8 +24,7 @@ export function SiteFooter() {
               Tarazu
             </Link>
             <p>
-              The balance scale for product decisions. Weigh what matters, ship what counts,
-              and learn from every call.
+              Compare product options and keep the notes behind your choice.
             </p>
           </div>
 
