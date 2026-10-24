@@ -18,7 +18,7 @@ const fakeSupabase = (count = 0) => ({
   rpc: name => ({ abortSignal: async () => name === "reserve_ai_request"
     ? {data:count >= 50 ? {allowed:false,reason:"quota_exceeded",retry_after:60}
       : {allowed:true,reservation_id:"52b723bd-1ef5-43cb-8f1e-d6a10fb1b576",global_used:count+1},error:null}
-    : {data:null,error:null} }),
+    : name === "reserve_ai_spend" ? {data:{allowed:true,reserved:1000000},error:null} : {data:null,error:null} }),
 });
 
 const makeRequest = (body) => ({ json: () => Promise.resolve(body) });

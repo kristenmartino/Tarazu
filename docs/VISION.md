@@ -147,3 +147,7 @@ Any future change to ownership, access or retention needs its own explicit scope
 The [archived August planning draft](history/VISION-2026-08.md) preserves earlier
 assumptions, comparisons, dated metrics and a Slack-first proposal. It is retained
 for context, not as a current factual source or roadmap commitment.
+
+## Public launch preparation (October 24, 2026)
+
+The privacy page describes actual storage/provider boundaries and optional anonymous daily action counts, disabled until opted in. Those counts are not unique-user adoption or retention evidence. The operator has approved a $10 rolling daily conservative provider-spending envelope, enforced before every provider attempt in addition to request/concurrency limits. The health monitor uses assigned GitHub incidents and the account's configured GitHub notification emails, with deduplication, recovery and a labelled delivery test. Scheduled checks are best effort. The launch kit contains a draft submission, LinkedIn copy and fictional-demo media; preparation does not mean a public launch was submitted or demand was validated. See `docs/launch/OPERATIONS.md` for operating boundaries.

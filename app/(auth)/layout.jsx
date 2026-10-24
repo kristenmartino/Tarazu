@@ -49,6 +49,7 @@ export default function AuthLayout({ children }) {
         Tarazu
       </a>
       {children}
+      <a href="/privacy" style={{ color: "var(--text-muted)", fontSize: 14 }}>Privacy &amp; data</a>
     </div>
   );
 

@@ -29,3 +29,4 @@ reports/
 
 # macOS
 .DS_Store
+public/launch/video-*.png

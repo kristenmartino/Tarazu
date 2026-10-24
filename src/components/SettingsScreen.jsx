@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useC, useTheme } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { OrgScopeRow } from "./OrgScopeRow";
+import { UsageMeasurement } from "./UsageMeasurement";
 
 export const SettingsScreen = ({
   activeWs, onRenameWorkspace, onClear, onDeleteWorkspace,
@@ -123,6 +124,7 @@ export const SettingsScreen = ({
         </div>
 
         <p style={{ fontSize: 13, lineHeight: 1.6, color: C.textMuted }}>Need help or want to share feedback? <Link href="/contact" style={{ color: C.accent }}>Contact Tarazu</Link>. CSV and PDF exports cover candidates and the priority view; they do not back up Signals, validation briefs or decisions.</p>
+        <p><Link href="/privacy" style={{ color: C.accent }}>Privacy and data</Link> explains storage, providers and retention.</p><UsageMeasurement />
 
         {/* About */}
         <div style={sectionStyle}>

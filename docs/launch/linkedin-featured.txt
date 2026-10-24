@@ -1,0 +1,21 @@
+FEATURED ITEM TITLE
+Tarazu — evidence and reasoning behind product decisions
+
+FEATURED ITEM DESCRIPTION
+I designed and built Tarazu to connect prioritization scores with their evidence, assumptions and decision rationale. Explore a fictional workflow with saved validation briefs and decision history. Live AI suggestions require sign-in and human review.
+
+LINK
+https://tarazu.app/demo
+
+POST DRAFT — NOT PUBLISHED
+I’ve been building Tarazu around a question: when a product decision changes, can you still explain what you believed, what evidence you had, and why you chose that next step?
+
+The working product connects scoring assumptions to evidence, keeps reported facts separate from estimates and AI assumptions, and saves validation briefs and decision rationale for later review.
+
+I’ve made a complete fictional example available without signing in. It follows a team investigating approval delays and comparing what to test before committing to a build.
+
+I’m looking for product, design and business feedback, especially from people with a recent difficult test-or-build decision. Where would this help, and where would it add work?
+
+Try it: https://tarazu.app/demo
+
+The example is synthetic. I’m testing the usefulness of the workflow; it does not establish customer adoption or measured business results.

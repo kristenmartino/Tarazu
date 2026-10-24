@@ -323,7 +323,8 @@ export function Landing() {
                 <h4>More</h4>
                 <a href="#why">Why Tarazu</a>
                 <Link href="/faq">FAQ</Link>
-                <Link href="/contact">Feedback &amp; contact</Link>
+              <Link href="/contact">Feedback &amp; contact</Link>
+              <Link href="/privacy">Privacy &amp; data</Link>
                 <Link href="/about">About</Link>
                 <Link href="/sign-in">Sign in</Link>
               </div>

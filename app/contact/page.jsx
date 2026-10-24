@@ -23,6 +23,7 @@ export default function ContactPage() {
         <li><a href={contactHref("Tarazu data help or deletion request")}>Ask for data help or deletion</a> — for signed-in data, contact me from the account email so I can verify the request before making changes.</li>
       </ul>
       <p>No workspace content or diagnostic logs are attached automatically. Include only the details you want to share; omit passwords, API keys and private research notes.</p>
+      <p>See <Link href="/privacy">Privacy and data</Link> for storage, AI providers, retention and optional usage-measurement controls.</p>
     </Prose></Section>
     <Section id="your-work" alt><Prose>
       <h2>Your work and the demo stay separate</h2>

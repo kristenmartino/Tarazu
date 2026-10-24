@@ -1,6 +1,5 @@
 import { Bricolage_Grotesque, Figtree, JetBrains_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/react";
-import Script from "next/script";
+import { UsageLinks } from "../src/components/UsageMeasurement";
 import { SITE_URL } from "../lib/site";
 import { graph, organization, website, person, webApplication } from "../lib/schema";
 import { JsonLd } from "../src/components/JsonLd";
@@ -76,21 +75,7 @@ export default function RootLayout({ children }) {
           data={graph(organization(), website(), person(), webApplication())}
         />
         {children}
-        <Analytics />
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga" strategy="afterInteractive">{`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
-            `}</Script>
-          </>
-        )}
+        <UsageLinks />
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import { exportCSV, parseCSV, mapCSVToFeatures } from "./utils";
 import { load, saveWsIndex, loadWsIndex, saveWsFeatures, saveWsFeaturesChecked, loadWsFeatures, removeWsFeatures, saveWsContext, loadWsContext, removeWsContext, getActiveWsId, setActiveWsId as storeActiveWsId, STORAGE_KEY, saveWsDecisions, loadWsDecisions, removeWsDecisions, saveWsSignals, loadWsSignals, removeWsSignals, saveWsSettings, loadWsSettings, removeWsSettings } from "../lib/local-storage";
 import * as cloud from "../lib/cloud-storage";
 import { prepareRelayDemo, RELAY_DEMO_ID, RELAY_DEMO_WORKSPACE } from "../lib/relay-demo";
+import { trackUsage } from "../lib/usage-events";
 import { useMedia } from "./hooks/useMedia";
 import { useScored } from "./hooks/useScored";
 import { useAuth } from "./hooks/useAuth";
@@ -61,6 +62,8 @@ export default function App({ guestDemo = false }) {
   const [editingFeature, setEditingFeature] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [demoError, setDemoError] = useState("");
+  const demoMeasured = useRef(false);
+  useEffect(() => { if (guestDemo && loaded && !demoMeasured.current) { demoMeasured.current = true; trackUsage("demo_opened", "demo"); } }, [guestDemo, loaded]);
   const [workspaces, setWorkspaces] = useState([]);
   const [activeWsId, setActiveWsId] = useState(null);
   const [sortMode, setSortMode] = useState("rice");
@@ -809,6 +812,7 @@ export default function App({ guestDemo = false }) {
     const url = new URL(window.location.href);
     if (url.searchParams.get("start") !== "decision") return;
     ownDecisionStarted.current = true;
+    trackUsage("personal_started");
     setActiveScreen("priorities"); setSelectedId(null); setEditingFeature(null); setShowForm(true);
     url.searchParams.delete("start");
     window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);

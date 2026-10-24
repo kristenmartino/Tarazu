@@ -8,6 +8,7 @@ import "./scoring-ui.css";
 import { buildScoringContext } from "../../lib/scoring-context";
 import { ProductContext } from "./ProductContext";
 import { AIContextDetails } from "./AIContextDetails";
+import { trackUsage } from "../../lib/usage-events";
 
 import { normalizeCandidateBasis } from "../../lib/scoring-basis";
 import { CandidateScoringBasis } from "./ScoringBasis";
@@ -92,6 +93,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
         body: JSON.stringify({ featureName: name.trim(), featureDescription: desc.trim(), scoringBasis, candidateId: editFeature?.id, productContext, dimensions, features, signals, decisions, workspaceId }),
       });
       const data = await res.json();
+      trackUsage(res.ok ? "ai_completed" : "ai_refused");
       if (requestId !== sequence.current || current.current !== requestedSignature) return;
       if (!res.ok) throw new Error(data.error || "AI scoring failed");
       setAccepted({});
