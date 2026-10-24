@@ -43,8 +43,8 @@
       "sha256": "5542e6e6019f7d071d66f8e83c2940dcc8caa68573fb23d016ce6fd27cf343a2"
     },
     "README.md": {
-      "bytes": 3821,
-      "sha256": "b42d9299c873ca42a999bb1e60f8ed0416783276396127899e875bcec6de3e49"
+      "bytes": 4576,
+      "sha256": "5151cddb259d42e5e94d405fbd0e59501747a859f4f38b951bcc008579c1ea8b"
     },
     "capture.json": {
       "bytes": 288,
@@ -58,9 +58,33 @@
       "bytes": 1143,
       "sha256": "55a3ddb8248aa263ecb708150b9a84a80b21e89e8da1af7390272eae6e25e420"
     },
+    "ph-01-positioning.png": {
+      "bytes": 428817,
+      "sha256": "cb59c67c8220a79350e5fa251536e401b0f7314a6d96b27ebdd985a1cee5ab6a"
+    },
+    "ph-02-evidence.png": {
+      "bytes": 155227,
+      "sha256": "a4f3a4df9368d76e4c160a0edfffeb703dad0d12a60b1849383884c6fd2ca475"
+    },
+    "ph-03-brief.png": {
+      "bytes": 151429,
+      "sha256": "0166509301a5245120a44527f323e8d9e4ae96fb1b79e18df7a6940e3147724e"
+    },
+    "ph-04-review.png": {
+      "bytes": 128838,
+      "sha256": "daa9abe2ed22129165a6b1af8bf359b2b6eaa3414e7f6ebeee2e04eb193098c3"
+    },
+    "ph-05-history.png": {
+      "bytes": 157896,
+      "sha256": "c1c635033432b9475f8a788dada2e4326d9f05070efa060514c970ac05b57568"
+    },
+    "product-hunt-gallery.json": {
+      "bytes": 1307,
+      "sha256": "6435984bf017c222b7b062d7b7757b975b1f3e883c5c30f2b98538a2a0144bf5"
+    },
     "product-hunt-submission.txt": {
-      "bytes": 4312,
-      "sha256": "351248809685461b761304535e7577f1526c76ff22d2ab5c3c3c377e0d0252ca"
+      "bytes": 4520,
+      "sha256": "ad15e3fe742b96327557454906131b42a57cc7824609b7aae145b1cb76e6e16e"
     },
     "tarazu-walkthrough.mp4": {
       "bytes": 1575495,

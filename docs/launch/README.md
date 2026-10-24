@@ -25,6 +25,10 @@ These are draft launch materials, not a submitted or scheduled Product Hunt laun
 
 Suggested gallery: homepage → evidence digest → copyable brief → review form → dated history. The other screenshots provide context or a mobile alternative.
 
+For Product Hunt, upload `ph-01-positioning.png` through `ph-05-history.png` in that order. These are 1270 × 760 exports with the complete verified screenshot fitted inside each frame. No source labels or caveats are cropped out. `product-hunt-gallery.json` records the source captures and captions. The square thumbnail remains 240 × 240.
+
+Product Hunt's current video field accepts a full YouTube URL, not this MP4 URL. Upload the captioned MP4 to the maker's chosen YouTube channel, keep it non-private, and verify playback in the draft before treating the video field as complete. Saving a draft does not authorize scheduling or launching it.
+
 The video uses still captures of the actual app, not a live screen recording or a live AI demonstration. All Relay research, people and case reviews are fictional. The additional review is explicitly a synthetic walkthrough exercise: no experiment was run and no customer or business outcome is claimed. Captures use a fresh guest browser; no signed-in workspace is changed and no paid AI call is made. A copied brief is a readable handoff, not a complete workspace backup.
 
 ## Rebuild after a relevant product or copy change
@@ -34,12 +38,13 @@ Use the repository's Node version from `.nvmrc`, installed dependencies, Python 
 ```sh
 CAPTURE_LAUNCH_ASSETS=1 npx playwright test --config playwright.launch.config.js
 node scripts/build-launch-video.mjs
+node scripts/build-product-hunt-gallery.mjs
 python3 scripts/build-launch-kit.py
 python3 scripts/build-launch-kit.py --check
 ```
 
 Capture defaults to `https://tarazu.app`. For a local production build, set `LAUNCH_BASE_URL` to its loopback URL and start the server with `VERCEL_GIT_COMMIT_SHA` set to the committed UI revision. Local captures do not require cloud/AI configuration; a non-loopback capture requires healthy production services. The capture records the source URL and revision. The capture checks that the release is unchanged across the run. Each run starts with isolated browser storage and verifies the original decision is unchanged after the synthetic review.
 
-The ZIP builder packages the current text drafts and generated assets. Check mode compares the ZIP bytes with those source files, validates the manifest, PNG dimensions, chapter/caption timing and submission text limits. CI runs check mode to catch stale bundles. Inspect the desktop and mobile captures and watch the MP4 before publishing new media.
+The ZIP builder packages the current text drafts and generated assets, including the five Product Hunt exports. Check mode compares the ZIP bytes with those source files, validates the manifest, PNG dimensions, chapter/caption timing and submission text limits. CI runs check mode to catch stale bundles. Inspect the desktop and mobile captures, Product Hunt gallery previews and MP4 before publishing new media.
 
-Deploy the updated public assets, then download `/launch/tarazu-launch-kit.zip` and compare it with the checked local ZIP. Product Hunt may require a supported video-host URL; this kit does not publish or host a video on a third-party platform.
+Deploy updated public assets, then download `/launch/tarazu-launch-kit.zip` and compare it with the checked local ZIP. Product Hunt requirements: https://help.producthunt.com/en/articles/479557-how-to-post-a-product (checked October 24, 2026).

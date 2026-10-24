@@ -14,9 +14,12 @@ SOURCES = {
     'product-hunt-submission.txt': ROOT / 'docs/launch/product-hunt-submission.txt',
     'linkedin-featured.txt': ROOT / 'docs/launch/linkedin-featured.txt',
     'walkthrough.json': ROOT / 'docs/launch/walkthrough.json',
+    'product-hunt-gallery.json': ROOT / 'docs/launch/product-hunt-gallery.json',
 }
+GALLERY = json.loads((ROOT / 'docs/launch/product-hunt-gallery.json').read_text())
 ASSETS = ['thumbnail.png', '01-home.png', '02-priorities.png', '03-signals.png', '04-brief.png', '05-decisions.png', '06-evidence-digest.png', '07-copyable-brief.png', '08-decision-review.png', '09-review-history.png', '10-mobile-review.png', 'decision-brief.md', 'tarazu-walkthrough.mp4', 'tarazu-walkthrough.vtt', 'capture.json']
 SOURCES.update({name: PUBLIC / name for name in ASSETS})
+SOURCES.update({item['file']: PUBLIC / item['file'] for item in GALLERY['images']})
 
 def require(condition, message):
     if not condition:
@@ -46,7 +49,7 @@ def main():
         if name.endswith('.png'):
             require(content[:8] == b'\x89PNG\r\n\x1a\n', f'{name} is not PNG')
             size = struct.unpack('>II', content[16:24])
-            expected = (240, 240) if name == 'thumbnail.png' else (390, 844) if name == '10-mobile-review.png' else (1440, 960)
+            expected = (GALLERY['width'], GALLERY['height']) if name.startswith('ph-') else (240, 240) if name == 'thumbnail.png' else (390, 844) if name == '10-mobile-review.png' else (1440, 960)
             require(size == expected, f'{name} has unexpected size {size}')
     manifest = {
         'captureRelease': capture['release'],
