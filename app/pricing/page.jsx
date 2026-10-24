@@ -72,8 +72,8 @@ export default function PricingPage() {
 
       <PageHero
         eyebrow="Pricing"
-        title={<>Free, and <span className="br">honestly so.</span></>}
-        lede="Everything Tarazu can do today, it does for nothing. No card, no trial clock, no feature held back to create a reason to upgrade."
+        title={<>Free during <span className="br">early access.</span></>}
+        lede="Use the current features without a card or trial clock. AI is subject to per-account and shared usage limits."
       />
 
       <Section id="whats-free">
@@ -139,10 +139,11 @@ export default function PricingPage() {
             server-side. The full detail is in the <Link href="/faq">FAQ</Link>.
           </p>
 
-          <h3>If a paid tier arrives</h3>
+          <h3>How pricing may change</h3>
           <p>
-            What is free today stays free. Adding a price to something you already rely
-            on is the fastest way to make a free tier worthless as a promise.
+            Tarazu is free during early access. Pricing and feature availability may
+            change as the product develops. We&apos;ll explain any future pricing
+            changes before they take effect.
           </p>
         </Prose>
       </Section>

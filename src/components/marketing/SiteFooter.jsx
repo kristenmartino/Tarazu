@@ -42,6 +42,7 @@ export function SiteFooter() {
             ))}
             <div className="foot-col">
               <h4>Get started</h4>
+              <Link href="/case-study">Portfolio case study</Link>
               <Link href="/app">Start prioritizing</Link>
               <Link href="/sign-in">Open the app</Link>
             </div>

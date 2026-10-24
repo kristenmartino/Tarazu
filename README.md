@@ -126,6 +126,8 @@ Share [the complete Relay guest demo](https://tarazu.app/demo) for a no-account 
 
 “Start the decision walkthrough” opens a short, read-only Problem → Evidence → Decision → Next test story. The editor and full records are optional deeper actions. Opening its saved decision shows the same four sections from the preserved brief, with the full recorded rationale available in a disclosure. Walking through the story leaves the visitor's records unchanged.
 
+The [portfolio case study](https://tarazu.app/case-study) explains the product choices, tradeoffs, AI-assisted development and lessons so far. The current offer is free during early access; pricing and feature availability may change, with future pricing changes explained before taking effect.
+
 Tarazu multiplies band scores rather than raw user counts, outcome changes and person-days. The resulting index ranks the supplied judgments; a score twice as large does not mean twice the benefit. Confidence is an evidence band, not a probability. Current band definitions and a user-selected existing claim appear beside each score. Selection does not verify the claim or automatically change the score; custom values between anchors remain custom.
 
 The fictional Relay walkthrough compares scoped next learning steps, including a paper checklist exercise and software pilots. These are different scopes, not equivalent production builds. See [the current demo narrative](docs/product-demo-walkthrough.txt) and [evaluation limits](docs/ai-evaluation/README.md). Historical decision snapshots preserve earlier estimates.

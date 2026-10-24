@@ -39,12 +39,14 @@ test("demo handoff opens a blank candidate while keeping both demo and ordinary 
   await expect(page.getByRole("region",{name:"Your own decision",exact:true})).toContainText("Existing candidates stay in place");
   await expect(page.getByRole("textbox",{name:"Candidate name",exact:true})).toHaveValue("");
   await expect(page.getByRole("textbox",{name:"Candidate name",exact:true})).toBeFocused();
+  await expect(page).toHaveURL(/\/app$/);
   const saved = await page.evaluate(() => ({mine:JSON.parse(localStorage.getItem("prioritize-ws-default")),demo:JSON.parse(localStorage.getItem("prioritize-ws-relay-demo-v1"))}));
   expect(saved.mine.features.map(f=>f.name)).toEqual(["Existing guest idea"]);
   expect(saved.demo.features).toHaveLength(3);
   await page.getByRole("textbox",{name:"Candidate name",exact:true}).fill("My next decision");
   await page.getByRole("button",{name:"Add Candidate",exact:true}).click();
   await expect(page.getByText("My next decision",{exact:true}).first()).toBeVisible();
+  await expect(page).toHaveURL(/\/app$/);
   await page.reload(); await nav(page,"Priorities").click();
   await expect(page.getByText("Existing guest idea",{exact:true}).first()).toBeVisible();
   await expect(page.getByText("My next decision",{exact:true}).first()).toBeVisible();

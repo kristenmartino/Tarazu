@@ -1,0 +1,30 @@
+import { test, expect } from '@playwright/test';
+
+test('a portfolio visitor can find the case study and reach the demo from a phone', async ({ page }, testInfo) => {
+  await page.goto('/about');
+  await page.getByRole('link', { name: 'short portfolio case study', exact: true }).click();
+  await expect(page).toHaveURL(/\/case-study$/);
+  const menu = page.locator('details.nav-mobile > summary');
+  await expect(menu).toBeVisible();
+  await menu.click();
+  await expect(page.getByRole('navigation', { name: 'Primary mobile', exact: true })).toBeVisible();
+  await menu.click();
+  await page.setViewportSize({ width: 1440, height: 960 });
+  const primary = page.getByRole('navigation', { name: 'Primary', exact: true });
+  await expect(primary).toBeVisible();
+  const brand = await page.getByRole('link', { name: 'Tarazu home', exact: true }).boundingBox();
+  const navigation = await primary.boundingBox();
+  const action = await page.locator('header').getByRole('link', { name: 'Start prioritizing', exact: false }).boundingBox();
+  expect(brand.x + brand.width + 24).toBeLessThanOrEqual(navigation.x);
+  expect(navigation.x + navigation.width + 24).toBeLessThanOrEqual(action.x);
+  await page.screenshot({ path: testInfo.outputPath('case-study-desktop.png'), fullPage: true });
+  await page.setViewportSize({ width: 320, height: 780 });
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('case-study-mobile.png'), fullPage: true });
+  const demo = page.getByRole('link', { name: 'Try the fictional Relay demo', exact: true });
+  await demo.focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/demo$/);
+  await expect(page.getByRole('button', { name: 'Start the decision walkthrough', exact: true })).toBeVisible();
+});
