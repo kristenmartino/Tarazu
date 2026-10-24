@@ -3,6 +3,16 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 const nav=(page,name)=>page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name,exact:true});
 
+test('browser privacy signals keep measurement off while saved permission remains revocable',async({page})=>{
+ await page.addInitScript(()=>Object.defineProperty(navigator,'doNotTrack',{value:'1',configurable:true}));
+ const requests=[];page.on('request',r=>{if(r.url().endsWith('/api/usage'))requests.push(r.url());});
+ await page.goto('/privacy');await page.getByRole('button',{name:'Allow anonymous usage counts',exact:true}).click();
+ await expect(page.getByRole('status')).toContainText('browser privacy signal keeps measurement off');
+ await page.getByRole('button',{name:'Revoke saved usage permission',exact:true}).click();
+ expect(await page.evaluate(()=>localStorage.getItem('tarazu-usage-measurement'))).toBe('no');
+ await page.goto('/demo');await expect(nav(page,'Home')).toBeVisible();expect(requests).toEqual([]);
+});
+
 test('privacy is available before sign-in, and measurement is off until chosen and can be revoked',async({page})=>{
  const bodies=[];await page.route('**/api/usage',async route=>{bodies.push(route.request().postDataJSON());await route.fulfill({status:204});});
  await page.goto('/demo');await expect(nav(page,'Home')).toBeVisible({timeout:45000});expect(bodies).toEqual([]);
