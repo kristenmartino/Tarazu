@@ -2,10 +2,10 @@ name: AI usage database checks
 on:
   pull_request:
     branches: [main]
-    paths: ["lib/ai-usage*", "lib/ai-spend*", "scripts/check-launch-operations.mjs", "scripts/verify-launch-production.sql", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
+    paths: ["lib/ai-usage*", "lib/ai-spend*", "scripts/check-launch-operations.mjs", "scripts/verify-launch-production.sql", "scripts/verify-decision-reviews-production.sql", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
   push:
     branches: [main]
-    paths: ["lib/ai-usage*", "lib/ai-spend*", "scripts/check-launch-operations.mjs", "scripts/verify-launch-production.sql", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
+    paths: ["lib/ai-usage*", "lib/ai-spend*", "scripts/check-launch-operations.mjs", "scripts/verify-launch-production.sql", "scripts/verify-decision-reviews-production.sql", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
   workflow_dispatch: {}
 concurrency:
   group: ai-usage-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
@@ -45,6 +45,12 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024040000_atomic_ai_usage.sql
           psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024060000_launch_operations.sql
           psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024060000_launch_operations.sql
+      - name: Verify additive decision review migration and permissions in isolation
+        run: |
+          psql -v ON_ERROR_STOP=1 -f supabase/migrations/20260529130001_baseline_schema.sql
+          psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024180000_decision_reviews.sql
+          psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024180000_decision_reviews.sql
+          psql -v ON_ERROR_STOP=1 -f scripts/verify-decision-reviews-production.sql
       - name: Verify production smoke script also rolls back in isolation
         run: psql -v ON_ERROR_STOP=1 -f scripts/verify-ai-usage-production.sql
       - name: Verify concurrency, budgets, leases, failures and permissions
