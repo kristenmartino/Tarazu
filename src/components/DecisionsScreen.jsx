@@ -2,12 +2,13 @@ import "./ui/ui.css";
 import { useState, useRef, useEffect } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
+import { DecisionRationale, SourceBriefReference } from "./DecisionRationale";
 import { dateOnly, localToday, serializeDateOnly, formatDateOnly } from "../dateOnly";
 
 const STATUS_OPTIONS = ["draft", "approved", "archived"];
 const emptyForm = () => ({ title: "", chosen_candidate_id: null, chosen_candidate_name: "", summary_rationale: "", final_rationale: "", framework_used: "RICE", tradeoffs_considered: "", risks_accepted: "", expected_outcome: "", owner: "", status: "draft", decision_date: localToday(), review_date: "" });
 
-export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }) => {
+export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete, initialExpandedId = null }) => {
   const C = useC();
   const STATUS_COLORS = { draft: C.warn, approved: C.accent, archived: C.textDim };
   const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 12, fontFamily: "var(--mono)", outline: "none", boxSizing: "border-box" };
@@ -15,14 +16,20 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
   const selectStyle = { ...inputStyle, cursor: "pointer" };
   const [showForm, setShowForm] = useState(false);
   const [editingDecision, setEditingDecision] = useState(null);
-  const [expandedId, setExpandedId] = useState(null);
+  const [expandedId, setExpandedId] = useState(initialExpandedId);
   const editorRef = useRef(null);
   const returnFocusRef = useRef(null);
   useEffect(() => {
     if (showForm) editorRef.current?.querySelector("input")?.focus();
     else returnFocusRef.current?.focus();
   }, [showForm]);
-  const [filterStatus, setFilterStatus] = useState("current");
+  const [filterStatus, setFilterStatus] = useState(() => decisions.find(d => d.id === initialExpandedId)?.status === "archived" ? "all" : "current");
+  useEffect(() => {
+    if (!initialExpandedId) return;
+    const toggle = document.getElementById(`decision-toggle-${initialExpandedId}`);
+    toggle?.focus({ preventScroll: true });
+    toggle?.scrollIntoView?.({ block: "start", behavior: "instant" });
+  }, [initialExpandedId]);
   const [form, setForm] = useState(emptyForm);
 
   const filtered = filterStatus === "current" ? decisions.filter(d => d.status !== "archived") : filterStatus === "all" ? decisions : decisions.filter(d => d.status === filterStatus);
@@ -187,7 +194,7 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
           return (
             <div key={d.id} style={{ border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface, overflow: "hidden" }}>
               {/* Card header */}
-              <button type="button" id={`decision-toggle-${d.id}`} aria-label={`Decision: ${d.title}`} aria-expanded={isExpanded} aria-controls={`decision-detail-${d.id}`} onClick={() => setExpandedId(isExpanded ? null : d.id)} style={{ display: "block", width: "100%", textAlign: "left", font: "inherit", color: "inherit", background: "transparent", border: 0, padding: 14, cursor: "pointer" }}>
+              <button type="button" id={`decision-toggle-${d.id}`} aria-label={`Decision: ${d.title}`} aria-expanded={isExpanded} aria-controls={`decision-detail-${d.id}`} onClick={() => setExpandedId(isExpanded ? null : d.id)} style={{ scrollMarginTop: 60, display: "block", width: "100%", textAlign: "left", font: "inherit", color: "inherit", background: "transparent", border: 0, padding: 14, cursor: "pointer" }}>
                 <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                   <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{d.title}</span>
@@ -226,31 +233,8 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
               {isExpanded && (
                 <div style={{ padding: "0 14px 14px", borderTop: `1px solid ${C.border}` }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingTop: 14 }}>
-                    {d.recommendation_snapshot?.validation_brief && <p style={{ fontSize: 12, color: C.textMuted, margin: 0 }}>Source brief: {d.recommendation_snapshot.validation_brief.draft?.ideaName} · Revision {d.recommendation_snapshot.validation_brief.revision}. This decision keeps the brief as it was when recorded.</p>}
-                    {d.final_rationale && (
-                      <div>
-                        <div style={labelStyle}>FINAL RATIONALE</div>
-                        <div style={{ fontSize: 12, color: C.text, lineHeight: 1.6 }}>{d.final_rationale}</div>
-                      </div>
-                    )}
-                    {d.tradeoffs_considered && (
-                      <div>
-                        <div style={labelStyle}>TRADEOFFS CONSIDERED</div>
-                        <div style={{ fontSize: 12, color: C.text, lineHeight: 1.6 }}>{d.tradeoffs_considered}</div>
-                      </div>
-                    )}
-                    {d.risks_accepted && (
-                      <div>
-                        <div style={labelStyle}>RISKS ACCEPTED</div>
-                        <div style={{ fontSize: 12, color: C.text, lineHeight: 1.6 }}>{d.risks_accepted}</div>
-                      </div>
-                    )}
-                    {d.expected_outcome && (
-                      <div>
-                        <div style={labelStyle}>EXPECTED OUTCOME</div>
-                        <div style={{ fontSize: 12, color: C.text, lineHeight: 1.6 }}>{d.expected_outcome}</div>
-                      </div>
-                    )}
+                    <SourceBriefReference decision={d} />
+                    <DecisionRationale decision={d} />
                     {d.review_date && (
                       <div>
                         <div style={labelStyle}>REVIEW DATE</div>

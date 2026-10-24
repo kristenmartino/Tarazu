@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useC } from "../ThemeProvider";
 import { getTier } from "../utils";
 import { Pill } from "./Pill";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { trackUsage } from "../../lib/usage-events";
+import { RelayStory, hasRelayStory, relayStoryDecision } from "./RelayStory";
 
 const StatCard = ({ label, value, color }) => {
   const C = useC();
@@ -30,8 +31,12 @@ const ShortcutButton = ({ label, icon, color, onClick }) => (
   </button>
 );
 
-export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate, isSignedIn, onInspectCandidate, guestDemo = false }) => {
+export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate, isSignedIn, onInspectCandidate, onOpenDecision, onStoryActiveChange, guestDemo = false }) => {
   const C = useC();
+  const [storyStep, setStoryStep] = useState(null);
+  const startButton = useRef(null);
+  const storyOpened = useRef(false);
+  useEffect(() => { if (storyStep === null && storyOpened.current) startButton.current?.focus(); }, [storyStep]);
 
   const avgConfidence = useMemo(() => {
     if (scored.length === 0) return 0;
@@ -53,8 +58,13 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
   [decisions]);
 
   const topTier = topCandidate ? getTier(topCandidate, C) : null;
-  const isRelayDemo = scored.some(f => /Approval reminders/i.test(f.name) && /synthetic/i.test(f.name)) && scored.some(f => /Request readiness checklist/i.test(f.name) && /synthetic/i.test(f.name));
-  const startReview = () => { if (isRelayDemo && onInspectCandidate) { trackUsage("walkthrough_started", guestDemo ? "demo" : "personal"); onInspectCandidate(); } else onScreenChange("priorities"); };
+  const isRelayDemo = hasRelayStory({ guestDemo, activeWs, decisions });
+  const storyActive = isRelayDemo && storyStep !== null;
+  useEffect(() => {
+    onStoryActiveChange?.(storyActive);
+    return () => { if (storyActive) onStoryActiveChange?.(false); };
+  }, [storyActive, onStoryActiveChange]);
+  const startReview = (step = 0) => { if (isRelayDemo) { trackUsage("walkthrough_started", guestDemo ? "demo" : "personal"); storyOpened.current = true; setStoryStep(step); } else onScreenChange("priorities"); };
 
   const statusColor = (s) => {
     switch (s) {
@@ -64,6 +74,8 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
       default: return C.textDim;
     }
   };
+
+  if (isRelayDemo && storyStep !== null) return <RelayStory savedDecisionAvailable={Boolean(relayStoryDecision(decisions))} step={storyStep} onStep={setStoryStep} onClose={() => setStoryStep(null)} onInspectCandidate={onInspectCandidate} onScreenChange={onScreenChange} onOpenDecision={() => onOpenDecision ? onOpenDecision() : onScreenChange("decisions")} />;
 
   return (
     <div role="main" id="main-content" tabIndex={-1} style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
@@ -79,13 +91,13 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
         {scored.length > 0 && <section aria-label="Decision walkthrough" style={{ padding: "22px 20px", borderLeft: `3px solid ${C.brass || C.accent}`, background: C.surface, borderRadius: 8 }}>
           {isRelayDemo && <Pill color={C.warn} dimColor={C.warn + "20"} small>Fictional demo</Pill>}
           <h3 style={{ fontSize: 25, lineHeight: 1.25, letterSpacing: "-0.025em", margin: "12px 0", maxWidth: 630 }}>{isRelayDemo ? "One engineer, two weeks—which option should we test first?" : "Make your next product decision easier to defend."}</h3>
-          <p style={{ fontSize: 15, lineHeight: 1.6, color: C.textMuted, margin: "0 0 18px", maxWidth: 650 }}>{isRelayDemo ? "Start with the reminder hypothesis. Inspect the evidence that challenges it, compare what to test next, and return to the saved reasoning." : "Compare your options, inspect the evidence behind the scores, and save the reasoning you want to return to."}</p>
+          <p style={{ fontSize: 15, lineHeight: 1.6, color: C.textMuted, margin: "0 0 18px", maxWidth: 650 }}>{isRelayDemo ? "Follow a short, read-only story: the problem, conflicting evidence, a draft choice, and the next test. Explore the full records when you want more detail." : "Compare your options, inspect the evidence behind the scores, and save the reasoning you want to return to."}</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            <button onClick={startReview} style={{ padding: "10px 16px", border: 0, borderRadius: 7, background: C.accent, color: C.bg, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>{isRelayDemo ? "Start the decision walkthrough" : "Review your priorities"}</button>
+            <button ref={startButton} onClick={() => startReview()} style={{ padding: "10px 16px", border: 0, borderRadius: 7, background: C.accent, color: C.bg, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>{isRelayDemo ? "Start the decision walkthrough" : "Review your priorities"}</button>
             <button onClick={() => onScreenChange("validate")} style={{ padding: "10px 16px", border: `1px solid ${C.border}`, borderRadius: 7, background: "transparent", color: C.text, fontSize: 14, cursor: "pointer" }}>Continue a validation brief</button>
           </div>
           <ol style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,180px),1fr))", gap: 12, padding: "18px 0 0", margin: 0, listStyle: "none" }}>
-            {[["1. Inspect the assumption", "priorities"], ["2. Find conflicting evidence", "signals"], ["3. Compare what to test", "priorities"], ["4. Reopen saved reasoning", "decisions"]].map(([label, route]) => <li key={label}><button onClick={() => label.startsWith("1.") ? startReview() : onScreenChange(route)} style={{ background: "transparent", border: 0, borderBottom: `1px solid ${C.border}`, color: C.textMuted, fontSize: 13, lineHeight: 1.5, textAlign: "left", padding: "8px 0", cursor: "pointer", width: "100%" }}>{label}</button></li>)}
+            {[["1. Inspect the assumption", "priorities"], ["2. Find conflicting evidence", "signals"], ["3. Compare what to test", "priorities"], ["4. Reopen saved reasoning", "decisions"]].map(([label, route]) => <li key={label}><button onClick={() => isRelayDemo ? startReview(Number(label[0])-1) : onScreenChange(route)} style={{ background: "transparent", border: 0, borderBottom: `1px solid ${C.border}`, color: C.textMuted, fontSize: 13, lineHeight: 1.5, textAlign: "left", padding: "8px 0", cursor: "pointer", width: "100%" }}>{label}</button></li>)}
           </ol>
         </section>}
         {guestDemo && <section aria-label="Use Tarazu for your own decision" style={{ border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px 20px", background: C.surface }}>

@@ -14,6 +14,10 @@ test("a fresh visitor can follow Relay's complete evidence, brief and decision s
   await openDemo(page);
   await expect(page.getByRole("button", { name: "Start the decision walkthrough", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Start the decision walkthrough", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Problem", exact: true })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Candidate name", exact: true })).toHaveCount(0);
+  await page.getByText("Explore the original records", { exact: true }).click();
+  await page.getByRole("button", { name: "Inspect scoring assumptions", exact: true }).click();
   await expect(page.getByRole("button", { name: /AI Suggest Scores/ })).toBeDisabled();
   await expect(page.getByRole("slider", { name: "Reach", exact: true })).toHaveValue("55");
   await page.getByRole("button", { name: "Cancel", exact: true }).click();

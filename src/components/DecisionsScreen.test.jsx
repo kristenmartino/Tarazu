@@ -50,3 +50,19 @@ it("exposes decision details as a labelled disclosure with a stable controlled p
   expect(screen.getByRole("region",{name:"Decision: Revisit the test"}).textContent).toContain("Keep the original reasoning");
   fireEvent.click(toggle);expect(panel.hidden).toBe(true);
 });
+
+it("focuses and brings the requested preserved decision into view, including an archived record", () => {
+  const scroll = vi.fn();
+  const originalScroll = HTMLElement.prototype.scrollIntoView;
+  HTMLElement.prototype.scrollIntoView = scroll;
+  try {
+    render(<DecisionsScreen decisions={[{id:"first",title:"Earlier round",status:"draft"},{id:"saved",title:"Preserved round",status:"archived"}]} initialExpandedId="saved" scored={[]} onAdd={vi.fn()} onUpdate={vi.fn()} onDelete={vi.fn()} />);
+    const toggle = screen.getByRole("button", {name:"Decision: Preserved round",exact:true});
+    expect(document.activeElement).toBe(toggle);
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+    expect(scroll).toHaveBeenCalledWith({block:"start",behavior:"instant"});
+    expect(toggle.style.scrollMarginTop).toBe("60px");
+  } finally {
+    HTMLElement.prototype.scrollIntoView = originalScroll;
+  }
+});

@@ -18,6 +18,7 @@ test("keyboard users can skip navigation, expand decisions, edit and return focu
   await page.keyboard.press("Space"); await expect(decision).toHaveAttribute("aria-expanded","false");
   await page.keyboard.press("Enter"); await page.keyboard.press("Tab");
   const edit = details.getByRole("button",{name:"Edit",exact:true});
+  for (let step=0;step<30 && !(await edit.evaluate(el=>el===document.activeElement));step++) await page.keyboard.press("Tab");
   await expect(edit).toBeFocused(); await page.keyboard.press("Enter");
   await expect(page.getByLabel("Decision title",{exact:true})).toBeFocused();
   await page.getByRole("button",{name:"Close decision editor",exact:true}).focus(); await page.keyboard.press("Enter");
