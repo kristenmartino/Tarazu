@@ -1,6 +1,6 @@
 /* @vitest-environment jsdom */
 import React from 'react';
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup, within } from '@testing-library/react';
 import { afterEach, it, expect, vi } from 'vitest';
 import { Form } from './Form';
 vi.mock('../ThemeProvider', () => ({ useC: () => ({}) }));
@@ -204,4 +204,62 @@ it('shows an existing locally saved candidate as pending cloud sync when reopene
   render(<Form editFeature={candidate} onAdd={()=>{}} saveTarget="browser" savePendingSync />);
   expect(screen.getByText('Saved in this browser · pending sync')).toBeTruthy();
   expect(screen.queryByText('Saved to cloud')).toBeNull();
+});
+
+const unitsClaim = { id: 'reach-basis', dimension: 'reach', text: 'Forecast: 60 of 100 pilot users over 30 days; synthetic, not measured.', kind: 'estimate', origin: 'user', sources: [] };
+
+it('requires an explicit basis selection, saves the reference and restores its current claim text', async () => {
+  const save = vi.fn().mockResolvedValue({ savedTo: 'cloud' });
+  const props = { editFeature: { ...candidate, reach: 55, scoringBasis: { claims: [unitsClaim] } }, onAdd: save };
+  const { unmount } = render(<Form {...props} />);
+  const reach = within(screen.getByRole('region', { name: 'Reach score' }));
+  expect(reach.getByLabelText('Recorded basis for reach').value).toBe('');
+  expect(reach.getByText(/No recorded basis selected/)).toBeTruthy();
+  fireEvent.change(reach.getByLabelText('Recorded basis for reach'), { target: { value: unitsClaim.id } });
+  expect(reach.getByText(unitsClaim.text, { selector: 'summary span' })).toBeTruthy();
+  expect(screen.getByText('Unsaved changes')).toBeTruthy();
+  fireEvent.click(screen.getByText('Save Changes'));
+  await screen.findByText('Saved to cloud');
+  const saved = save.mock.calls[0][0];
+  expect(saved.scoringBasis.basisClaimIds).toEqual({ reach: unitsClaim.id });
+  expect(saved.scoringBasis.claims[0].text).toBe(unitsClaim.text);
+  unmount();
+  render(<Form editFeature={saved} onAdd={save} />);
+  expect(screen.getByLabelText('Recorded basis for reach').value).toBe(unitsClaim.id);
+});
+
+it('reflects claim edits by reference and clears the selected basis when its claim is removed or reassigned', async () => {
+  const save = vi.fn().mockResolvedValue({ savedTo: 'browser' });
+  render(<Form editFeature={{ ...candidate, scoringBasis: { claims: [unitsClaim], basisClaimIds: { reach: unitsClaim.id } } }} onAdd={save} />);
+  fireEvent.change(screen.getByLabelText('Claim 1'), { target: { value: 'Updated forecast: 30 of 100; still unmeasured.' } });
+  const reach = within(screen.getByRole('region', { name: 'Reach score' }));
+  expect(reach.getByText('Updated forecast: 30 of 100; still unmeasured.', { selector: 'summary span' })).toBeTruthy();
+  fireEvent.change(screen.getByLabelText('Scoring input for claim 1'), { target: { value: 'impact' } });
+  expect(reach.getByLabelText('Recorded basis for reach').value).toBe('');
+  fireEvent.change(screen.getByLabelText('Recorded basis for impact'), { target: { value: unitsClaim.id } });
+  fireEvent.click(screen.getByText('Remove claim'));
+  fireEvent.click(screen.getByText('Save Changes'));
+  await waitFor(() => expect(save).toHaveBeenCalled());
+  expect(save.mock.calls[0][0].scoringBasis).toMatchObject({ claims: [], basisClaimIds: {} });
+});
+
+it('uses the current score and workspace definition while AI suggestions await explicit acceptance', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ effort: { ...result(75).reach } }) }));
+  render(<Form editFeature={{ ...candidate, effort: 35 }} productContext={{ scoring: { effortBands: { 35: 'Over one and up to three total person-days for the pilot', 75: 'More than ten person-days' } } }} onAdd={() => {}} />);
+  const effort = within(screen.getByRole('region', { name: 'Effort score' }));
+  expect(effort.getByText(/Over one and up to three total person-days/)).toBeTruthy();
+  fireEvent.click(screen.getByText('✦ AI Suggest Scores'));
+  await effort.findByText('AI suggests 75/100');
+  expect(effort.queryByText(/More than ten person-days/)).toBeNull();
+  fireEvent.click(effort.getByText('Accept effort suggestion'));
+  expect(effort.getByText(/More than ten person-days/)).toBeTruthy();
+});
+
+it('preserves manual values between bands and does not assign them a neighboring definition', () => {
+  render(<Form editFeature={candidate} onAdd={() => {}} />);
+  const reach = within(screen.getByRole('region', { name: 'Reach score' }));
+  expect(reach.getByText('Custom score')).toBeTruthy();
+  expect(reach.queryByText(/About 10%/)).toBeNull();
+  expect(reach.getByText('Reach value 23')).toBeTruthy();
+  expect(screen.getByText('Evidence strength, not a probability of success.')).toBeTruthy();
 });

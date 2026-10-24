@@ -317,7 +317,7 @@ export const CenterCanvas = ({
 
         {!showForm && features.some(f => /Approval reminders/i.test(f.name) && /synthetic/i.test(f.name)) && <section aria-label="Fictional decision walkthrough" style={{ padding: 16, borderLeft: `3px solid ${C.brass || C.accent}`, background: C.surface, borderRadius: 8 }}>
           <h3 style={{ margin: "0 0 8px", fontSize: 18 }}>One engineer, two weeks—what should we test first?</h3>
-          <p style={{ margin: "0 0 12px", color: C.textMuted, fontSize: 14, lineHeight: 1.6 }}>Fictional demo · Reminders are the initial hypothesis. A conflicting source suggests missing request context may matter more. Inspect the assumptions, then compare the next test with the advisor.</p>
+          <p style={{ margin: "0 0 12px", color: C.textMuted, fontSize: 14, lineHeight: 1.6 }}>Fictional demo · Reminders are the initial hypothesis. A conflicting source suggests missing request context may matter more. Compare the next learning steps—a paper checklist exercise versus software pilots—then inspect their assumptions with the advisor.</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}><button style={headerBtnStyle} onClick={() => onEditFeature(features.find(f => /Approval reminders/i.test(f.name)))}>Inspect reminder assumptions</button><button style={headerBtnStyle} onClick={() => onScreenChange("signals")}>Read conflicting evidence</button><button style={headerBtnStyle} onClick={() => onScreenChange("validate")}>Continue saved validation</button></div>
         </section>}
         {!showForm && features.some(f => f.description?.startsWith("Fictional example")) && (

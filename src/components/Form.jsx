@@ -64,6 +64,13 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   const setters = { reach: setR, impact: setI, confidence: setC, effort: setE };
   const availableSignals = workspaceSignals(signals, workspaceId);
   const addClaim = claim => setScoringBasis(prev => prev.claims.length < MAX_CLAIMS ? { ...prev, claims: [...prev.claims, claim] } : prev);
+  const updateBasis = next => setScoringBasis({ ...next, basisClaimIds: Object.fromEntries(Object.entries(next.basisClaimIds || {}).filter(([dimension, id]) => next.claims.some(claim => claim.id === id && claim.dimension === dimension))) });
+  const chooseBasisClaim = (dimension, id) => setScoringBasis(prev => {
+    const basisClaimIds = { ...prev.basisClaimIds };
+    if (id) basisClaimIds[dimension] = id;
+    else delete basisClaimIds[dimension];
+    return { ...prev, basisClaimIds };
+  });
   const context = buildScoringContext({ productContext, features, signals, decisions, workspaceId, candidateId: editFeature?.id, featureName: name, featureDescription: desc, scoringBasis });
   const signature = JSON.stringify(context);
   const current = useRef(signature); current.current = signature;
@@ -145,16 +152,16 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
         {stale && <p role="status" style={{ fontSize: 14, margin: 0 }}>Context changed. Refresh AI before accepting previous suggestions.</p>}
         {aiError && <p role="alert" style={{ fontSize: 14, color: C.danger, margin: 0 }}>{aiError}</p>}
         <div className="tz-score-cards">
-          {['reach', 'impact', 'confidence', 'effort'].map(dim => <ScoreCard key={dim} dimension={dim} value={{reach:r,impact:i,confidence:c,effort:e}[dim]} onChange={value => {setters[dim](value);setAccepted(prev => ({...prev,[dim]:false}));}} result={aiResults[dim]} loading={aiLoading} stale={stale} accepted={accepted[dim]} onAccept={() => acceptSuggestion(dim)} context={usedContext} claims={scoringBasis.claims} signals={availableSignals} onAddClaim={addClaim} />)}
+          {['reach', 'impact', 'confidence', 'effort'].map(dim => <ScoreCard key={dim} dimension={dim} value={{reach:r,impact:i,confidence:c,effort:e}[dim]} onChange={value => {setters[dim](value);setAccepted(prev => ({...prev,[dim]:false}));}} result={aiResults[dim]} loading={aiLoading} stale={stale} accepted={accepted[dim]} onAccept={() => acceptSuggestion(dim)} context={usedContext} claims={scoringBasis.claims} signals={availableSignals} onAddClaim={addClaim} settings={productContext?.scoring} basis={scoringBasis} onBasisClaimChange={id => chooseBasisClaim(dim, id)} />)}
         </div>
-        <CandidateScoringBasis basis={scoringBasis} onChange={setScoringBasis} signals={availableSignals} />
+        <CandidateScoringBasis basis={scoringBasis} onChange={updateBasis} signals={availableSignals} />
         <details style={{ fontSize: 14, lineHeight: 1.6 }}><summary style={{ cursor: 'pointer' }}>AI context & data sharing</summary><p>{6 - context.missing.length}/6 Strategy Brief fields and {context.evidence.length} linked signals available. Running AI shares the brief, score definitions, candidate claims, competing options, Signals and related decisions with Tarazu and Anthropic.</p><AIContextDetails context={usedContext} showAssessments={false} /></details>
         <details style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.6 }}>
           <summary style={{ cursor: "pointer", fontWeight: 600 }}>What scores mean</summary>
-          <p>These are relative 1–100 estimates. Reach describes the size of the affected audience, impact the benefit per user, confidence the strength of your evidence, and effort the work required. Agree on the same audience, time horizon, and score definitions when comparing candidates; a shared scale alone does not align different teams’ estimates.</p>
+          <p>Each number is a band score on a 1–100 scale, not a user count, number of person-days, dollar value or probability. Reach describes the size of the affected audience, impact the benefit per user, confidence the strength of your evidence, and effort the work required. Agree on the same audience, time horizon, and score definitions when comparing candidates; a shared scale alone does not align different teams’ estimates.</p>
           <p>Use the shared scoring basis and candidate answers to record the audience, period, delivery scope and assumptions. Capture supporting or conflicting evidence in Signals. The initial 50s are placeholders to review. AI suggestions are editable estimates; inspect their justification before accepting them.</p>
         </details>
-        <div style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.6 }}>Current ranking: <strong style={{ color: C.text }}>#{previewRank} of {previewTotal}</strong> · RICE {preview.toLocaleString()}<br />A comparison aid based on your estimates.</div>
+        <div style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.6 }}>Current ranking: <strong style={{ color: C.text }}>#{previewRank} of {previewTotal}</strong> · RICE {preview.toLocaleString()}<br />Band-based prioritization index, not measured return or financial value.</div>
         <div className="tz-candidate-save" style={{ background: C.surface, borderTop: `1px solid ${C.border}` }}>
           <div style={{ flex: '1 1 180px', fontSize: 14 }}><strong role="status">{saving ? 'Saving…' : dirty ? 'Unsaved changes' : savedTo === 'cloud' ? 'Saved to cloud' : pendingSync ? 'Saved in this browser · pending sync' : 'Saved in this browser'}</strong><p style={{ margin: '3px 0 0', color: C.textMuted, fontSize: 13 }}>{saving ? 'Keeping your reasoning and scores together.' : dirty ? 'Answers and accepted suggestions stay in this draft until saved.' : savedTo === 'cloud' ? 'Your candidate is saved to this workspace.' : 'Available on this device.'}</p>{saveError && <p role="alert" style={{ color: C.danger, margin: '6px 0 0' }}>{saveError}</p>}</div>
           <button type="button" onClick={submit} disabled={!name.trim() || saving} style={{ padding: '11px 16px', border: 'none', borderRadius: 7, background: name.trim() ? C.accent : C.border, color: C.bg, fontSize: 14, fontWeight: 700, cursor: saving ? 'wait' : 'pointer' }}>{saving ? 'Saving…' : editFeature ? 'Save Changes' : 'Add Candidate'}</button>

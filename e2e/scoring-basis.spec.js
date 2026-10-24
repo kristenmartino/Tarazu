@@ -64,6 +64,12 @@ test('candidate questions and editable anchors fit on mobile', async ({page}, te
   await editor.getByRole('button',{name:'Add scoring claim',exact:true}).click();
   await editor.getByLabel('Claim 1',{exact:true}).fill('A long source-linked audience forecast that should wrap cleanly within the mobile editor');
   await editor.getByLabel('Claim type for claim 1',{exact:true}).selectOption('estimate');
+  const reach = editor.getByRole('region',{name:'Reach score',exact:true});
+  await reach.getByText('Choose recorded basis',{exact:true}).click();
+  await reach.getByLabel('Recorded basis for reach',{exact:true}).selectOption({index:1});
+  await expect(reach.getByText('Recorded basis · User estimate',{exact:true})).toBeVisible();
+  await reach.getByText('Read full claim & caveats',{exact:true}).click();
+  await expect(reach.getByText(/Selecting a basis does not verify it/)).toBeVisible();
   await expect(save).toBeInViewport();
   const bounds = await save.boundingBox();
   expect(bounds.y + bounds.height).toBeLessThanOrEqual(844 - 56);

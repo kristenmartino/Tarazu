@@ -2,14 +2,12 @@ name: Mutation
 
 # Coverage tells you a line RAN. Mutation testing tells you the line is
 # actually ASSERTED: Stryker injects bugs into the source one at a time and
-# checks whether the test suite notices. A surviving mutant is a real bug your
-# tests would ship. This is the deterministic answer to "are these
-# LLM-generated tests any good?" — you read a score, not the test code.
+# checks whether the test suite notices. Surviving mutants identify assertions
+# to inspect; some are equivalent behavior rather than real faults.
 #
-# Deliberately NOT part of CI on every push: it takes minutes rather than
-# seconds and grows with the codebase. Weekly plus on-demand keeps the signal
-# without taxing the PR loop. Non-blocking for now (thresholds.break is null in
-# stryker.config.json) — set a break threshold once the score stops moving.
+# Runs for relevant pull requests, weekly, and on demand. The configured
+# break threshold is 90. The score measures the selected deterministic modules;
+# it does not measure AI accuracy or guarantee that surviving mutants are bugs.
 
 on:
   schedule:

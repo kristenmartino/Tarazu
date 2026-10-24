@@ -64,11 +64,11 @@ export default function HowItWorksPage() {
               <code>score = round((reach × impact × confidence) ÷ max(effort, 1))</code>
             </p>
             <p style={{ marginTop: 10 }}>
-              All four inputs use the same 1–100 scale. Normalizing them this way makes
-              candidates comparable across teams and quarters, and removes the unit-mismatch
-              errors that make classic RICE spreadsheets disagree with each other. The
-              trade-off is that you give up the literal &ldquo;reach in users per
-              quarter&rdquo; reading — the number becomes a rank, not a measurement.
+              Tarazu uses a band-based adaptation of RICE on a 1–100 scale.
+              Shared audience, timeframe and band definitions give those numbers meaning.
+              Each score can point to a recorded claim with its actual units and caveats.
+              The result is a relative index, not raw users per person-day or ROI;
+              confidence is an evidence band, not a probability.
             </p>
           </KeyFact>
 
@@ -119,8 +119,8 @@ export default function HowItWorksPage() {
             rather than just the answer.
           </p>
           <p>
-            Without an API key configured, the advisor runs in demo mode against locally
-            generated analysis, so the flow is explorable before you commit anything.
+            AI requires sign-in and an internet connection. If a request fails or the service
+            is unavailable, Tarazu shows an error; it does not substitute a local recommendation.
           </p>
         </Prose>
       </Section>
@@ -194,9 +194,9 @@ export default function HowItWorksPage() {
           <KeyFact label="Requirements">
             <p>
               Nothing. Tarazu runs in guest mode with no account: your workspace is stored
-              in your browser&apos;s local storage. Sign in for cloud sync and score history.
+              in your browser&apos;s local storage. Sign in for cloud sync, score history, and online AI features.
               Running AI sends relevant candidate content, Strategy Brief fields, competing candidates, linked signals, and related decision
-              summaries through Tarazu to Anthropic, including in guest mode.
+              summaries through Tarazu to Anthropic after sign-in.
             </p>
           </KeyFact>
           <p>

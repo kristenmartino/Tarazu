@@ -74,10 +74,17 @@ export async function POST(request, { params }) {
         .eq("workspace_id", id)
         .single();
       if (found) {
+        const mergedBasis = basis.success ? {
+          ...basis.data,
+          ...(basis.data.claims === undefined && found.scoring_basis?.claims ? { claims: found.scoring_basis.claims } : {}),
+          ...(basis.data.basisClaimIds === undefined && found.scoring_basis?.basisClaimIds ? { basisClaimIds: found.scoring_basis.basisClaimIds } : {}),
+        } : (found.scoring_basis || {});
+        if (!candidateBasisSchema.safeParse(mergedBasis).success)
+          return NextResponse.json({ error: "Invalid candidate scoring basis reference" }, { status: 400 });
         const incoming = {
           name: feature.name,
           description: feature.description || "",
-          scoring_basis: basis.success ? { ...basis.data, ...(basis.data.claims === undefined && found.scoring_basis?.claims ? { claims: found.scoring_basis.claims } : {}) } : (found.scoring_basis || {}),
+          scoring_basis: mergedBasis,
           reach: feature.reach,
           impact: feature.impact,
           confidence: feature.confidence,
@@ -117,6 +124,9 @@ export async function POST(request, { params }) {
       }
     }
 
+    // A new record has no saved claims to resolve a partial reference against.
+    if (basis.success && !candidateBasisSchema.safeParse({ ...basis.data, claims: basis.data.claims || [] }).success)
+      return NextResponse.json({ error: "Invalid candidate scoring basis reference" }, { status: 400 });
     // Insert new
     const { data, error } = await supabase
       .from("features")
