@@ -26,7 +26,7 @@ export async function POST(request, { params }) {
     }
     const actor = await resolveActor(userId);
     let review;
-    try { review = makeDecisionReview(decision, input, signals, { reviewed_by_name: actor.name }); }
+    try { review = makeDecisionReview(decision, input, signals, { reviewed_by_name: actor.name || 'Signed-in user' }); }
     catch (error) { return NextResponse.json({ error: error.message }, { status: 400 }); }
     const { data, error } = await supabase.from('decision_reviews').insert({ ...review, workspace_id: id, decision_id: decisionId, reviewed_by: actor.id }).select('*').single();
     if (error) return NextResponse.json({ error: 'Review could not be saved. Your original decision is unchanged.' }, { status: 500 });
