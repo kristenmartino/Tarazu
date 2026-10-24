@@ -1,7 +1,7 @@
 {
-  "origin": "https://tarazu.app",
-  "release": "96e766d8eb04b6197ae9264436faa43dacc60db5",
-  "capturedAt": "2026-10-24T06:33:08.757Z",
+  "origin": "http://localhost:3101",
+  "release": "cbe955bce4b0b3d0321a356ac4d8e183d9968d40",
+  "capturedAt": "2026-10-24T07:03:00.760Z",
   "scenario": "Fictional Relay example; synthetic review exercise; no customer results",
   "storage": "Isolated guest browser",
   "aiUsed": false
