@@ -82,10 +82,9 @@ flowchart LR
 ```
 
 Guest mode supports local scoring and decision exploration against `localStorage`.
-Both AI and data API routes verify the Clerk session. AI routes check per-user
-usage in Supabase before calling Anthropic; the default is 50 successful requests
-in a rolling 24-hour period, configurable with `AI_DAILY_QUOTA_PER_USER`. This is
-an application usage check, not an atomic reservation or a hard billing cap.
+Both AI and data API routes verify the Clerk session. Before AI work starts, a service-role-only database function atomically reserves usage across both AI routes. Defaults are 50 admitted requests per account and 100 across the app in a rolling 24-hour window, one active request per account, three across the app, and a five-second repeat cooldown. `AI_DAILY_QUOTA_PER_USER`, `AI_GLOBAL_DAILY_QUOTA` and `AI_GLOBAL_CONCURRENCY` configure bounded server limits; `AI_REQUESTS_ENABLED=false` pauses new AI work.
+
+Provider failures, timeouts and malformed outputs retain their reservation; input-validation rejections return quota. Completed work releases concurrency. A 240-second lease recovers crashed functions after the routes' 180-second maximum lifetime. Missing controls or invalid configuration fail closed. Database cleanup has a bounded deadline and cannot discard a valid AI response; its retained reservation remains counted until the concurrency lease expires. Shared usage at 80% or more and refusals produce structured server log warnings without workspace content. These are admitted-route limits, not an exact dollar billing cap: a route can make bounded provider generation, repair and question-review attempts.
 Data routes verify workspace ownership and organization access before using the
 server-side service-role key. RLS is defense in depth, not a substitute for those
 checks. API keys never reach the browser.
@@ -123,7 +122,7 @@ Adding a public page means adding one row to [`lib/routes.js`](./lib/routes.js) 
 
 ## Scoring and demonstration
 
-Share [the complete Relay guest demo](https://tarazu.app/demo) for a no-account walkthrough. It includes three fictional candidates, five Signals, a saved revision-5 validation brief, and two draft decisions preserving revisions 4 and 5. Visitors can edit, save and reopen their browser copy. Restart demo restores this reserved example without replacing their ordinary guest workspaces or account data. Live AI requires opening their own workspace and signing in.
+Share [the complete Relay guest demo](https://tarazu.app/demo) for a no-account walkthrough. It includes three fictional candidates, five Signals, a saved revision-5 validation brief, and two draft decisions preserving revisions 4 and 5. Visitors can edit, save and reopen their browser copy. “Start your own decision” opens a blank candidate in their own current workspace while keeping its existing candidates; the Relay copy is never automatically imported. Restart demo restores this reserved example without replacing their ordinary guest workspaces or account data. Live AI requires opening their own workspace and signing in.
 
 Tarazu multiplies band scores rather than raw user counts, outcome changes and person-days. The resulting index ranks the supplied judgments; a score twice as large does not mean twice the benefit. Confidence is an evidence band, not a probability. Current band definitions and a user-selected existing claim appear beside each score. Selection does not verify the claim or automatically change the score; custom values between anchors remain custom.
 
@@ -140,3 +139,14 @@ Proprietary — all rights reserved. See [`LICENSE`](./LICENSE). The source is p
 ---
 
 **Designed and built by [Kristen Martino](https://linkedin.com/in/kristenmartino)** · AI-native product manager · MS Business Analytics, UT Dallas · [About](https://tarazu.app/about)
+
+
+## Feedback, keyboard access and export boundaries
+
+[Feedback and contact](https://tarazu.app/contact) uses the maker's existing public business address. Links open email drafts for product feedback, problem reports or data help/deletion requests; no workspace content is attached or sent automatically. The same route is linked in the app and public footers.
+
+Main app views have focusable skip-link targets. Decision disclosures use native buttons with expanded state and labelled panels; decision editing restores keyboard focus. Workspace selection uses independent buttons, and candidate child actions do not trigger the card's keyboard handler.
+
+CSV exports cover ranked candidates; the priority view can be printed to PDF. These exports do not include Signals, validation briefs, decision history, or a complete workspace backup.
+
+The `AI usage database checks` workflow runs against isolated PostgreSQL 17 and tests actual concurrent admission, shared budgets, failure accounting, lease expiry, legacy usage and service-role permissions. Run `scripts/check-ai-usage.mjs` only with `AI_USAGE_TEST_DATABASE=isolated` and a test database named `tarazu_quota_test`; it deliberately clears its fixture ledger. Production migrations are additive and are applied by the existing migration workflow. The migration workflow checks backend permissions and quota behavior in a rolled-back transaction. Apply the reservation migration before activating application code that uses it; an absent RPC deliberately refuses AI requests.

@@ -38,3 +38,15 @@ it("keeps archived records available behind an explicit filter while current dec
   expect(screen.getByText("Archived QA record")).toBeTruthy();
   expect(screen.queryByText("Current draft")).toBeNull();
 });
+
+
+it("exposes decision details as a labelled disclosure with a stable controlled panel", () => {
+  render(<DecisionsScreen decisions={[{id:"saved",title:"Revisit the test",status:"draft",final_rationale:"Keep the original reasoning"}]} scored={[]} onAdd={vi.fn()} onUpdate={vi.fn()} onDelete={vi.fn()} />);
+  const toggle=screen.getByRole("button",{name:"Decision: Revisit the test",exact:true});
+  const panel=document.getElementById(toggle.getAttribute("aria-controls"));
+  expect(toggle.getAttribute("aria-expanded")).toBe("false"); expect(panel.hidden).toBe(true);
+  fireEvent.click(toggle);
+  expect(toggle.getAttribute("aria-expanded")).toBe("true");expect(panel.hidden).toBe(false);
+  expect(screen.getByRole("region",{name:"Decision: Revisit the test"}).textContent).toContain("Keep the original reasoning");
+  fireEvent.click(toggle);expect(panel.hidden).toBe(true);
+});

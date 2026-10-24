@@ -6,7 +6,7 @@ const { auth, api, localSave, network } = vi.hoisted(() => ({
   localSave: vi.fn(),
   network: { online: true },
   api: {
-    fetchWorkspaces: vi.fn(), fetchFeatures: vi.fn(), fetchProductContext: vi.fn(),
+    createWorkspace: vi.fn(), fetchWorkspaces: vi.fn(), fetchFeatures: vi.fn(), fetchProductContext: vi.fn(),
     fetchDecisions: vi.fn(), fetchSignals: vi.fn(), fetchWorkspaceSettings: vi.fn(),
     fetchFeedbackSummary: vi.fn(), fetchFeedbackContext: vi.fn(), upsertFeature: vi.fn(),
     syncFeatures: vi.fn(), saveProductContext: vi.fn(), saveWorkspaceSettings: vi.fn(),
@@ -168,4 +168,19 @@ it("forces the public demo into its isolated browser workspace even with a signe
   expect(localStorage.getItem("prioritize-active-workspace")).toBe("own-workspace");
   expect(localStorage.getItem("prioritize-workspaces")).toBeNull();
   for (const call of Object.values(api)) expect(call).not.toHaveBeenCalled();
+});
+
+
+it("starts a blank decision in the signed-in workspace without replacing existing candidates", async () => {
+  window.history.replaceState(null,"","/app?start=decision");
+  api.fetchFeatures.mockResolvedValue({features:[{id:"existing",name:"Keep existing work",reach:55,impact:55,confidence:20,effort:35}],manualOrder:[]});
+  try {
+    render(<App />);
+    expect(await screen.findByText("Editor draft retained")).toBeTruthy();
+    expect(screen.getByText("1 candidates saved")).toBeTruthy();
+    expect(screen.getByRole("region",{name:"Your own decision"}).textContent).toContain("New candidate in Workspace");
+    expect(api.upsertFeature).not.toHaveBeenCalled();
+    expect(api.createWorkspace).not.toHaveBeenCalled();
+    expect(window.location.search).toBe("");
+  } finally { cleanup(); window.history.replaceState(null,"","/"); }
 });

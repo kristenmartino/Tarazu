@@ -13,12 +13,12 @@ vi.mock("../../../lib/supabase", () => ({ getSupabase: mockGetSupabase }));
 
 import { POST } from "./route";
 
-/** Chainable Supabase stub: the quota count query always returns `count`, and insert is a no-op success. Mirrors fakeQuotaSupabase in lib/api-auth.test.js, which covers the quota mechanism itself exhaustively — this file only needs enough to keep the AI-response tests unblocked and to prove the route is actually wired to it. */
+// Exercise the real admission wrapper while provider responses are mocked.
 const fakeSupabase = (count = 0) => ({
-  from: () => ({
-    select: () => ({ eq: () => ({ gte: async () => ({ count, error: null }) }) }),
-    insert: async () => ({ error: null }),
-  }),
+  rpc: name => ({ abortSignal: async () => name === "reserve_ai_request"
+    ? {data:count >= 50 ? {allowed:false,reason:"quota_exceeded",retry_after:60}
+      : {allowed:true,reservation_id:"52b723bd-1ef5-43cb-8f1e-d6a10fb1b576",global_used:count+1},error:null}
+    : {data:null,error:null} }),
 });
 
 const makeRequest = (body) => ({ json: () => Promise.resolve(body) });

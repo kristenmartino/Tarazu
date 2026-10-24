@@ -103,7 +103,7 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
     || "Standard RICE";
 
   return (
-    <div style={{ padding: "0 24px 24px" }}>
+    <div role="main" id="main-content" tabIndex={-1} style={{ padding: "0 24px 24px" }}>
       <div style={{ padding: "16px 0" }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: "0 0 4px" }}>Scenarios</h2>
         <p style={{ fontSize: 12, color: C.textDim, margin: 0 }}>Explore alternate ranking logic before you commit.</p>
@@ -145,7 +145,7 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
                   }}>
                     <div style={{ fontSize: 11, fontWeight: 600, color: activeKey === s.id ? C.blue : C.text }}>{s.name}</div>
                   </button>
-                  <button onClick={() => deleteCustomScenario(s.id)} style={{ background: "none", border: "none", color: C.textDim, cursor: "pointer", fontSize: 12, padding: 4 }}>&#10005;</button>
+                  <button aria-label={`Delete scenario: ${s.name}`} onClick={() => deleteCustomScenario(s.id)} style={{ background: "none", border: "none", color: C.textDim, cursor: "pointer", fontSize: 12, padding: 4 }}>&#10005;</button>
                 </div>
               ))}
             </>
@@ -208,14 +208,15 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
                     )}
                     {m.movement === 0 && <span style={{ fontSize: 10, color: C.textDim }}>=</span>}
                   </div>,
-                  <div key={`s-${i}`} onClick={() => onSelect(m.id)} style={{
+                  <button type="button" aria-label={`Inspect candidate: ${m.name}`} key={`s-${i}`} onClick={() => onSelect(m.id)} style={{
+                    border: 0, color: "inherit", textAlign: "left", font: "inherit", width: "100%",
                     padding: "6px 8px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 6, cursor: "pointer",
                     background: Math.abs(m.movement) >= 2 ? moveColor + "08" : "transparent",
                   }}>
                     <span style={{ fontSize: 10, fontWeight: 700, color: moveColor, fontFamily: "var(--mono)", width: 20, textAlign: "right" }}>#{m.scenarioRank}</span>
                     <span style={{ fontSize: 11, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.name}</span>
                     <span title="Normalized 0–100 index relative to the top-ranked candidate" style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", marginLeft: "auto" }}>{m.scenarioIndex}</span>
-                  </div>,
+                  </button>,
                 ];
               })}
             </div>

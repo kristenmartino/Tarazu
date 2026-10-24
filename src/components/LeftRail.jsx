@@ -92,8 +92,8 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
       gap: 8, flexShrink: 0, boxSizing: "border-box",
     }}>
       {/* Workspace switcher */}
-      {!guestDemo && <div ref={dropdownRef} style={{ position: "relative", width: "100%" }}>
-        <button onClick={() => setWsDropdownOpen(!wsDropdownOpen)} title={activeWs?.name || "Workspace"} style={{
+      {!guestDemo && <div ref={dropdownRef} onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); setWsDropdownOpen(false); dropdownRef.current?.querySelector("button")?.focus(); } }} style={{ position: "relative", width: "100%" }}>
+        <button onClick={() => setWsDropdownOpen(!wsDropdownOpen)} aria-expanded={wsDropdownOpen} title={activeWs?.name || "Workspace"} style={{
           width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
           padding: "10px 0", border: "none",
           background: wsDropdownOpen ? C.surface : "transparent",
@@ -116,8 +116,8 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
                 display: "flex", alignItems: "center", gap: 6, padding: "8px 12px",
                 borderBottom: `1px solid ${C.border}`,
                 background: w.id === activeWs?.id ? C.accentGlow : "transparent", cursor: "pointer",
-              }} onClick={() => { if (w.id !== activeWs?.id) onSwitchWorkspace(w.id); setWsDropdownOpen(false); }}>
-                <span style={{ flex: 1, fontSize: 12, color: w.id === activeWs?.id ? C.accent : C.text, fontWeight: w.id === activeWs?.id ? 700 : 400 }}>{w.name}</span>
+              }}>
+                <button aria-label={`Switch to workspace: ${w.name}`} aria-pressed={w.id === activeWs?.id} onClick={() => { if (w.id !== activeWs?.id) onSwitchWorkspace(w.id); setWsDropdownOpen(false); dropdownRef.current?.querySelector("button")?.focus(); }} style={{ flex: 1, padding: "4px 0", background: "transparent", border: 0, textAlign: "left", fontSize: 12, color: w.id === activeWs?.id ? C.accent : C.text, fontWeight: w.id === activeWs?.id ? 700 : 400, cursor: "pointer" }}>{w.name}</button>
                 <button onClick={e => { e.stopPropagation(); onRenameWorkspace(w.id); }} style={{ padding: "2px 5px", border: "none", background: "transparent", color: C.textMuted, fontSize: 10, cursor: "pointer" }} title="Rename">✎</button>
                 {workspaces.length > 1 && <button onClick={e => { e.stopPropagation(); onDeleteWorkspace(w.id); }} style={{ padding: "2px 5px", border: "none", background: "transparent", color: "color-mix(in srgb, var(--danger) 50%, transparent)", fontSize: 10, cursor: "pointer" }} title="Delete">✕</button>}
               </div>

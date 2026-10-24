@@ -1,5 +1,5 @@
 import "./ui/ui.css";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { dateOnly, localToday, serializeDateOnly, formatDateOnly } from "../dateOnly";
@@ -16,12 +16,19 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
   const [showForm, setShowForm] = useState(false);
   const [editingDecision, setEditingDecision] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
+  const editorRef = useRef(null);
+  const returnFocusRef = useRef(null);
+  useEffect(() => {
+    if (showForm) editorRef.current?.querySelector("input")?.focus();
+    else returnFocusRef.current?.focus();
+  }, [showForm]);
   const [filterStatus, setFilterStatus] = useState("current");
   const [form, setForm] = useState(emptyForm);
 
   const filtered = filterStatus === "current" ? decisions.filter(d => d.status !== "archived") : filterStatus === "all" ? decisions : decisions.filter(d => d.status === filterStatus);
 
   const openForm = (decision = null) => {
+    returnFocusRef.current = document.activeElement;
     if (decision) {
       setForm({
         title: decision.title || "", chosen_candidate_id: decision.chosen_candidate_id || null,
@@ -71,7 +78,7 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
   };
 
   return (
-    <div className="tz-decisions" style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "0 24px 24px" }}>
+    <div role="main" id="main-content" tabIndex={-1} className="tz-decisions" style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "0 24px 24px" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 0", flexWrap: "wrap", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -92,10 +99,10 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
 
       {/* Form */}
       {showForm && (
-        <div style={{ padding: 20, border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, marginBottom: 16 }}>
+        <div ref={editorRef} style={{ padding: 20, border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, marginBottom: 16 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <span style={{ fontSize: 13, fontWeight: 700, color: C.text }}>{editingDecision ? "Edit Decision" : "New Decision"}</span>
-            <button onClick={() => { setShowForm(false); setEditingDecision(null); }} style={{ background: "none", border: "none", color: C.textMuted, cursor: "pointer", fontSize: 14 }}>✕</button>
+            <button aria-label="Close decision editor" onClick={() => { setShowForm(false); setEditingDecision(null); }} style={{ background: "none", border: "none", color: C.textMuted, cursor: "pointer", fontSize: 14 }}>✕</button>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <div>
@@ -180,27 +187,27 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
           return (
             <div key={d.id} style={{ border: `1px solid ${C.border}`, borderRadius: 10, background: C.surface, overflow: "hidden" }}>
               {/* Card header */}
-              <div onClick={() => setExpandedId(isExpanded ? null : d.id)} style={{ padding: 14, cursor: "pointer" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <button type="button" id={`decision-toggle-${d.id}`} aria-label={`Decision: ${d.title}`} aria-expanded={isExpanded} aria-controls={`decision-detail-${d.id}`} onClick={() => setExpandedId(isExpanded ? null : d.id)} style={{ display: "block", width: "100%", textAlign: "left", font: "inherit", color: "inherit", background: "transparent", border: 0, padding: 14, cursor: "pointer" }}>
+                <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 14, fontWeight: 700, color: C.text }}>{d.title}</span>
                     <Pill color={statusColor} dimColor={statusColor + "20"} small>{d.status?.toUpperCase()}</Pill>
-                  </div>
+                  </span>
                   <span style={{ fontSize: 12, color: C.textMuted, fontFamily: "var(--mono)" }}>
                     {d.decision_date ? formatDateOnly(d.decision_date) : ""}
                   </span>
-                </div>
+                </span>
                 {d.chosen_candidate_name && (
-                  <div style={{ fontSize: 11, color: C.blue, marginBottom: 4 }}>
+                  <span style={{ display: "block", fontSize: 11, color: C.blue, marginBottom: 4 }}>
                     Chosen: {d.chosen_candidate_name}
-                  </div>
+                  </span>
                 )}
                 {d.summary_rationale && (
-                  <div style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  <span style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                     {d.summary_rationale}
-                  </div>
+                  </span>
                 )}
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
                   {d.framework_used && <span style={{ fontSize: 12, color: C.textMuted, fontFamily: "var(--mono)" }}>{d.framework_used}</span>}
                   {d.owner && <span style={{ fontSize: 12, color: C.textMuted }}>{d.owner}</span>}
                   {/* Distinct from owner above: owner is who is accountable
@@ -211,10 +218,11 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
                       recorded by {d.created_by_name}
                     </span>
                   )}
-                </div>
-              </div>
+                </span>
+              </button>
 
               {/* Expanded detail */}
+              <div id={`decision-detail-${d.id}`} role="region" aria-labelledby={`decision-toggle-${d.id}`} hidden={!isExpanded}>
               {isExpanded && (
                 <div style={{ padding: "0 14px 14px", borderTop: `1px solid ${C.border}` }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingTop: 14 }}>
@@ -256,6 +264,7 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete }
                   </div>
                 </div>
               )}
+              </div>
             </div>
           );
         })}
