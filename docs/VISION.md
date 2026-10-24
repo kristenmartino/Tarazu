@@ -58,10 +58,10 @@ customer adoption or commercial readiness.
 | Questions and research | Supplied answers, including explicit unknowns, can be acknowledged with source excerpts. New research steps describe a proposed collection method and measure; they are not observations or completed work. Ambiguous or unavailable review withholds unchecked output. |
 | Validation briefs | Investigations can be saved, reopened and revised independently of decisions, including unassessed areas and reviewed evidence. Partial ratings or weak evidence do not establish customer validation. |
 | Decisions | Draft decisions can preserve the originating brief revision, sources and reasoning. Revising a brief does not rewrite an earlier decision snapshot. A saved draft is not an approved build or an observed outcome. |
-| Persistence and identity | Guest work stays in the current browser. Signed-in work uses workspace-scoped cloud storage, with personal and organization access paths. Revision and decision records include creator attribution where implemented. The prepared cloud demo contains synthetic records. The public /demo link seeds a separate browser-only Relay copy with its evidence, saved brief and frozen draft decisions, even for a signed-in visitor; restarting it preserves personal workspaces. |
+| Persistence and identity | Guest work stays in the current browser. Signed-in work uses workspace-scoped cloud storage, with personal and organization access paths. Revision and decision records include creator attribution where implemented. The prepared cloud demo contains synthetic records. The public /demo link seeds a separate browser-only Relay copy with its evidence, saved brief and frozen draft decisions, even for a signed-in visitor; restarting it preserves personal workspaces. Starting a personal decision opens a blank candidate in the current workspace without importing Relay or replacing existing work. |
 | Review records | Score edits and recommendation feedback can be reviewed. These records are not automatic model training or a system that learns from shipped outcomes. |
 
-AI requires sign-in, network access and server-side usage checks. Provider or
+AI requires sign-in, network access and atomic server-side usage reservations. Per-user and shared request budgets, concurrency limits and crash-recovery leases bound admitted requests; these are not a currency-denominated billing cap. Provider or
 validation failures display an explicit error; the app does not invent a local
 substitute recommendation. Automated tests verify software behaviour, and live
 AI checks are individual sanity checks rather than a general accuracy benchmark.
@@ -106,6 +106,8 @@ Questions for review:
 - What does the existing workflow already do well, and what would Tarazu add?
 - What support effort, AI usage and infrastructure cost would a repeat workflow require?
 - What evidence would justify a paid offering without contradicting the free promise?
+
+Feedback and data-help requests have a public contact path at /contact. CSV/PDF exports cover candidates and the priority view; they do not include Signals, validation briefs or decision history. No full workspace backup export is claimed.
 
 ## Next milestone: observed use
 

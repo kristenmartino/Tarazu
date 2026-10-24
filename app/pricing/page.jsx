@@ -26,7 +26,7 @@ const TIERS = [
       "Unlimited candidates in your workspace",
       "Band-based RICE scoring on a 1–100 scale",
       "Effort × impact tradeoff map",
-      "AI suggestions and analysis — sign-in and internet required; per-user usage checks apply",
+      "AI suggestions and analysis — sign-in and internet required; per-user and shared usage limits apply",
       "Saved scenarios",
       "CSV import and CSV/PDF export",
       "Guest mode — no account required",
@@ -82,7 +82,7 @@ export default function PricingPage() {
             <p>
               <strong>$0.</strong> There is no paid tier to buy right now, so nothing on
               this page requires payment. No account is needed to try guest mode.
-              Signing in enables cloud sync and score history; AI requires sign-in and an online request, subject to per-user usage checks.
+              Signing in enables cloud sync and score history; AI requires sign-in and an online request, subject to per-user and shared usage limits.
             </p>
           </KeyFact>
           <p>

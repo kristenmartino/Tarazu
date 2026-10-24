@@ -85,7 +85,7 @@ test("demo initialization and restart preserve ordinary guest work and preferenc
   await restarted;
   await expect(page.getByRole("button", { name: "Start the decision walkthrough", exact: true })).toBeVisible();
   expect(await page.evaluate(keys => keys.map(k => localStorage.getItem(k)), ownKeys)).toEqual(before);
-  await page.getByRole("region", { name: "Guest demo", exact: true }).getByRole("link", { name: "Open your workspace", exact: true }).click();
+  await page.getByRole("region", { name: "Guest demo", exact: true }).getByRole("link", { name: "Open saved work", exact: true }).click();
   await expect(page.getByRole("heading", { name: "My actual work", exact: true })).toBeVisible();
   await nav(page, "Priorities").click();
   await expect(page.getByText("Keep my idea", { exact: true }).first()).toBeVisible();

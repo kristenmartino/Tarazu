@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import { useC, useTheme } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { OrgScopeRow } from "./OrgScopeRow";
@@ -27,7 +28,7 @@ export const SettingsScreen = ({
   };
 
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "0 24px 24px" }}>
+    <div role="main" id="main-content" tabIndex={-1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "0 24px 24px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0" }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: 0 }}>Settings</h2>
       </div>
@@ -120,6 +121,8 @@ export const SettingsScreen = ({
             </div>
           </div>
         </div>
+
+        <p style={{ fontSize: 13, lineHeight: 1.6, color: C.textMuted }}>Need help or want to share feedback? <Link href="/contact" style={{ color: C.accent }}>Contact Tarazu</Link>. CSV and PDF exports cover candidates and the priority view; they do not back up Signals, validation briefs or decisions.</p>
 
         {/* About */}
         <div style={sectionStyle}>

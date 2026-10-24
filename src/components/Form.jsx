@@ -122,7 +122,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   return (
     <div className="tz-candidate-form" role="form" aria-label={editFeature ? "Edit candidate" : "New candidate"} style={{ padding: 20, minWidth: 0, border: `1px solid ${C.borderActive}`, borderRadius: 12, background: C.surface, animation: "slideUp 0.25s ease" }}>
       <fieldset disabled={saving} style={{ border: 0, padding: 0, margin: 0, minWidth: 0, display: "flex", flexDirection: "column", gap: 14 }}>
-        <input value={name} onChange={ev => setName(ev.target.value)} placeholder="Candidate name" aria-label="Candidate name" style={{ ...inputStyle, fontSize: 14 }} onFocus={ev => ev.target.style.borderColor = C.accent} onBlur={ev => ev.target.style.borderColor = C.border} />
+        <input autoFocus={!editFeature} value={name} onChange={ev => setName(ev.target.value)} placeholder="Candidate name" aria-label="Candidate name" style={{ ...inputStyle, fontSize: 14 }} onFocus={ev => ev.target.style.borderColor = C.accent} onBlur={ev => ev.target.style.borderColor = C.border} />
         <textarea value={desc} onChange={ev => setDesc(ev.target.value)} placeholder="Brief description (optional)" aria-label="Candidate description" rows={2} style={{ ...inputStyle, fontSize: 15, resize: "vertical" }} onFocus={ev => ev.target.style.borderColor = C.accent} onBlur={ev => ev.target.style.borderColor = C.border} />
         <details><summary style={{ cursor: "pointer", fontSize: 14 }}>Owner, theme & status</summary><div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10, marginTop: 10 }}>
           <div>

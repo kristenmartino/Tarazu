@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import Link from "next/link";
 import { useC } from "../ThemeProvider";
 import { getTier } from "../utils";
 import { Pill } from "./Pill";
@@ -64,7 +65,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
   };
 
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+    <div role="main" id="main-content" tabIndex={-1} style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
       <div style={{ padding: "16px 20px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 10 }}>
         <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{activeWs?.name || "Workspace"}</h2>
         <Pill color={C.textMuted} dimColor={C.border} small>HOME</Pill>
@@ -85,6 +86,11 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
           <ol style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,180px),1fr))", gap: 12, padding: "18px 0 0", margin: 0, listStyle: "none" }}>
             {[["1. Inspect the assumption", "priorities"], ["2. Find conflicting evidence", "signals"], ["3. Compare what to test", "priorities"], ["4. Reopen saved reasoning", "decisions"]].map(([label, route]) => <li key={label}><button onClick={() => label.startsWith("1.") ? startReview() : onScreenChange(route)} style={{ background: "transparent", border: 0, borderBottom: `1px solid ${C.border}`, color: C.textMuted, fontSize: 13, lineHeight: 1.5, textAlign: "left", padding: "8px 0", cursor: "pointer", width: "100%" }}>{label}</button></li>)}
           </ol>
+        </section>}
+        {guestDemo && <section aria-label="Use Tarazu for your own decision" style={{ border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px 20px", background: C.surface }}>
+          <h3 style={{ fontSize: 17, margin: "0 0 8px" }}>Ready to work on your own decision?</h3>
+          <p style={{ margin: "0 0 12px", color: C.textMuted, fontSize: 14, lineHeight: 1.6 }}>Start with a blank candidate, add your context and evidence, then save your reasoning. You can work in this browser without an account. <Link href="/sign-in?start=decision" style={{ color: C.accent }}>Sign in first</Link> if you want cloud saving and AI. The Relay example stays separate; nothing is copied into your workspace.</p>
+          <Link href="/app?start=decision" style={{ color: C.accent, fontWeight: 600, fontSize: 14 }}>Start your own decision →</Link>
         </section>}
         {/* Supporting workspace context */}
         {scored.length > 0 && <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>

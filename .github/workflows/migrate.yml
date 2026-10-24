@@ -60,3 +60,7 @@ jobs:
       - name: Apply migrations
         if: steps.guard.outputs.ready == 'true'
         run: supabase db push
+
+      - name: Verify AI usage controls without retaining test data
+        if: steps.guard.outputs.ready == 'true'
+        run: supabase db query --linked --file scripts/verify-ai-usage-production.sql

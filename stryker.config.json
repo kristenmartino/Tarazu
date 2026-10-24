@@ -15,6 +15,7 @@
   "coverageAnalysis": "perTest",
   "mutate": [
     "lib/api-auth.js",
+    "lib/ai-usage.js",
     "lib/revisions.js",
     "lib/local-storage.js",
     "lib/ai.js",

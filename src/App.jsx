@@ -803,6 +803,17 @@ export default function App({ guestDemo = false }) {
   }, [isSignedIn, activeWsId]);
 
   const activeWs = workspaces.find(w => w.id === activeWsId);
+  const ownDecisionStarted = useRef(false);
+  useEffect(() => {
+    if (guestDemo || !loaded || ownDecisionStarted.current) return;
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("start") !== "decision") return;
+    ownDecisionStarted.current = true;
+    setActiveScreen("priorities"); setSelectedId(null); setEditingFeature(null); setShowForm(true);
+    url.searchParams.delete("start");
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+  }, [guestDemo, loaded]);
+
 
   const handleScreenChange = useCallback((screen) => {
     setActiveScreen(screen);
@@ -891,6 +902,7 @@ export default function App({ guestDemo = false }) {
     <div className="tz-app" style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
       <style>{printStyles}</style>
       <style>{animStyles}</style>
+      <style>{`.tz-app :is(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid ${C.accent} !important; outline-offset: 3px; }`}</style>
       <style>{`.skip-link { position: absolute; top: -40px; left: 0; padding: 8px 16px; background: ${C.accent}; color: ${C.bg}; font-size: 12px; font-weight: 700; z-index: 1000; text-decoration: none; border-radius: 0 0 8px 0; } .skip-link:focus { top: 0; }`}</style>
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <input ref={fileInputRef} type="file" accept=".csv,text/csv" onChange={handleImportFile} style={{ display: "none" }} />
@@ -913,7 +925,7 @@ export default function App({ guestDemo = false }) {
           </Link>
           {!isMobile && <span style={{ fontSize: 9, color: C.textDim, fontFamily: "var(--mono)", letterSpacing: "0.06em" }}>DEFENSIBLE PRIORITIZATION</span>}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 6 : 10 }}>
           {!isMobile && (
             <a href="/pricing" target="_blank" rel="noopener noreferrer"
               style={{ fontSize: 11, color: C.textMuted, fontFamily: "var(--mono)", textDecoration: "none" }}>
@@ -927,15 +939,16 @@ export default function App({ guestDemo = false }) {
             </a>
           )}
           {!isMobile && !guestDemo && <OrgSwitcher />}
+          <Link href="/contact" aria-label="Feedback and contact" style={{ color: C.textMuted, fontSize: 12 }}>{isMobile ? "Help" : "Feedback"}</Link>
           <ThemeMenu compact={isMobile} />
           {isMobile && !guestDemo && (
-          <div ref={mobileWsRef} style={{ position: "relative" }}>
-            <button onClick={() => setMobileWsOpen(!mobileWsOpen)} style={{
+          <div ref={mobileWsRef} onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); setMobileWsOpen(false); mobileWsRef.current?.querySelector("button")?.focus(); } }} style={{ position: "relative" }}>
+            <button aria-expanded={mobileWsOpen} onClick={() => setMobileWsOpen(!mobileWsOpen)} style={{
               padding: "4px 10px", border: `1px solid ${C.border}`, borderRadius: 6,
               background: "transparent", color: C.textMuted, fontSize: 11, cursor: "pointer",
               fontFamily: "var(--mono)", display: "flex", alignItems: "center", gap: 4,
             }}>
-              <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{activeWs?.name || "Workspace"}</span>
+              <span style={{ maxWidth: 75, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{activeWs?.name || "Workspace"}</span>
               <span style={{ fontSize: 8, color: C.textDim }}>{mobileWsOpen ? "▲" : "▼"}</span>
             </button>
             {mobileWsOpen && (
@@ -972,10 +985,15 @@ export default function App({ guestDemo = false }) {
       </header>
 
       {guestDemo && <section data-no-print aria-label="Guest demo" style={{ padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.surface, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-        <div style={{ flex: "1 1 280px", fontSize: 13, lineHeight: 1.5 }}><strong>Relay · fictional guest demo</strong><br /><span style={{ color: C.textMuted }}>Explore, edit and reopen in this browser. No account needed. Live AI requires signing in to your own workspace.</span></div>
-        <Link href="/app" style={{ color: C.accent, fontSize: 13 }}>Open your workspace</Link>
+        <div style={{ flex: "1 1 280px", fontSize: 13, lineHeight: 1.5 }}><strong>Relay · fictional guest demo</strong><br /><span style={{ color: C.textMuted }}>Explore the fictional example in this browser. Start your own decision with a blank candidate; your existing work is kept. <Link href="/sign-in?start=decision" style={{ color: C.accent }}>Sign in first</Link> for cloud saving and AI.</span></div>
+        <Link href="/app?start=decision" style={{ color: C.accent, fontSize: 13, fontWeight: 700 }}>Start your own decision</Link>
+        <Link href="/app" style={{ color: C.textMuted, fontSize: 13 }}>Open saved work</Link>
         <button onClick={restartDemo} style={{ padding: "8px 12px", borderRadius: 6, border: `1px solid ${C.border}`, background: "transparent", color: C.text, cursor: "pointer", fontSize: 13 }}>Restart demo</button>
         {demoError && <p role="alert" style={{ width: "100%", color: C.danger, margin: 0 }}>{demoError}</p>}
+      </section>}
+
+      {!guestDemo && ownDecisionStarted.current && showForm && !editingFeature && <section aria-label="Your own decision" style={{ padding: "12px 20px", borderBottom: `1px solid ${C.border}`, background: C.surface, fontSize: 14, lineHeight: 1.6 }}>
+        <strong>New candidate in {activeWs?.name || "your workspace"}.</strong> Existing candidates stay in place. {isSignedIn ? "Save your candidate when it’s ready." : <>You’re working in this browser. <Link href="/sign-in?start=decision" style={{ color: C.accent }}>Sign in first</Link> for cloud saving and AI.</>} <Link href="/demo" style={{ color: C.accent }}>Return to the Relay demo</Link>
       </section>}
 
       {isSignedIn && <OfflineBanner isOnline={isOnline} isSyncing={pendingSync && isOnline} />}
@@ -1000,7 +1018,7 @@ export default function App({ guestDemo = false }) {
 
         <ErrorBoundary name="Content">
         {(isMobile || isTablet) && activeScreen === "advisor" ? (
-          <div role="main" id="main-content" style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "20px 20px 88px" }}>
+          <div role="main" id="main-content" tabIndex={-1} style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "20px 20px 88px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: 0 }}>Advisor</h2>
             </div>

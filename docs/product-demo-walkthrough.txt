@@ -30,6 +30,9 @@ The guest example includes only the two story decisions.
 Optional live AI
 Open your own workspace at /app, sign in and request scores from the candidate edit form, or generate an advisor recommendation. Review the selected bands, supplied claim references, source relationships, uncertainties and targeted follow-up questions. AI values require explicit acceptance; changed context makes old results stale. Allow for a slow response: the advisor permits up to two provider attempts within its route budget, and can return an explicit error. This is a live sanity check, not a comprehensive model-quality evaluation. The demo has no generated local fallback recommendation.
 
+Move into personal use
+“Start your own decision” opens a blank candidate in the visitor’s current workspace; existing candidates stay in place and Relay remains separate. Guest work stays in this browser. Sign in before adding work when cloud saving and live AI are wanted. The app header and /contact provide email-draft links for feedback, problem reports and data help. CSV/PDF exports cover candidates and the priority view, not a full workspace backup.
+
 Close with one question
 “Think of your last difficult product decision: which part of this would have helped, and where would it have added work?”
 

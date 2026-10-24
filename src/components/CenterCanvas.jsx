@@ -278,7 +278,7 @@ export const CenterCanvas = ({
   );
 
   return (
-    <div role="main" id="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+    <div role="main" id="main-content" tabIndex={-1} style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
       {/* Header bar */}
       <div style={{ padding: "12px 20px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Priorities</h2>

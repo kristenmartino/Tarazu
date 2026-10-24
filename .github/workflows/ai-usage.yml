@@ -1,0 +1,49 @@
+name: AI usage database checks
+on:
+  pull_request:
+    branches: [main]
+    paths: ["lib/ai-usage*", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
+  push:
+    branches: [main]
+    paths: ["lib/ai-usage*", "lib/api-auth*", "supabase/migrations/**", "scripts/check-ai-usage.mjs", "scripts/verify-ai-usage-production.sql", ".github/workflows/ai-usage.yml"]
+  workflow_dispatch: {}
+concurrency:
+  group: ai-usage-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  postgres-usage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: isolated-test-password
+          POSTGRES_DB: tarazu_quota_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d tarazu_quota_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: isolated-test-password
+      PGDATABASE: tarazu_quota_test
+      AI_USAGE_TEST_DATABASE: isolated
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Apply additive usage migrations to an isolated database
+        run: |
+          psql -v ON_ERROR_STOP=1 -c 'create role anon; create role authenticated; create role service_role bypassrls;'
+          psql -v ON_ERROR_STOP=1 -f supabase/migrations/20260820210000_ai_call_quota.sql
+          psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024040000_atomic_ai_usage.sql
+          psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261024040000_atomic_ai_usage.sql
+      - name: Verify production smoke script also rolls back in isolation
+        run: psql -v ON_ERROR_STOP=1 -f scripts/verify-ai-usage-production.sql
+      - name: Verify concurrency, budgets, leases, failures and permissions
+        run: node scripts/check-ai-usage.mjs
