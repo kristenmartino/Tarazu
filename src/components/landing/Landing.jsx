@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { BrandMark } from "../marketing/BrandMark";
+import { RicePreview } from "./RicePreview";
 import "./landing.css";
 
 export function Landing() {
@@ -241,7 +242,7 @@ export function Landing() {
                     </span>
                     <h3>Scoring that's consistent</h3>
                   </div>
-                  <p>Weigh each option against the criteria and weights that matter to you — the same way, every time.</p>
+                  <p>Use shared Reach, Impact, Confidence and Effort definitions to compare options consistently.</p>
                 </div>
                 <div className="feat">
                   <div className="ftop">
@@ -268,37 +269,7 @@ export function Landing() {
                 </div>
               </div>
 
-              {/* scorecard mock */}
-              <div className="card" data-reveal role="img" aria-label="Preview of the Tarazu priority scorecard, ranking initiatives by a weighted score">
-                <div className="card-bar">
-                  <span className="ttl">Priority scorecard</span>
-                  <span className="live">Q3 board</span>
-                </div>
-                <div className="sc-head">
-                  <span>Initiative</span>
-                  <span>Impact</span>
-                  <span className="h-eff">Effort</span>
-                  <span className="h-conf">Confid.</span>
-                  <span style={{ textAlign: "right" }}>Score</span>
-                </div>
-                <div className="sc-row top">
-                  <span className="name"><span className="rank">1</span> Self-serve onboarding</span>
-                  <span className="met">9</span><span className="met c-eff">3</span><span className="met c-conf">8</span><span className="score">8.4</span>
-                </div>
-                <div className="sc-row">
-                  <span className="name"><span className="rank">2</span> Usage-based billing</span>
-                  <span className="met">8</span><span className="met c-eff">6</span><span className="met c-conf">7</span><span className="score">6.1</span>
-                </div>
-                <div className="sc-row">
-                  <span className="name"><span className="rank">3</span> SSO &amp; SCIM</span>
-                  <span className="met">6</span><span className="met c-eff">5</span><span className="met c-conf">9</span><span className="score">5.7</span>
-                </div>
-                <div className="sc-row">
-                  <span className="name"><span className="rank">4</span> Mobile companion app</span>
-                  <span className="met">7</span><span className="met c-eff">9</span><span className="met c-conf">5</span><span className="score">3.9</span>
-                </div>
-                <div className="sc-foot"><span className="w">weights:</span> Impact ×3 · Effort ×2 · Confidence ×1 — edit anytime</div>
-              </div>
+              <RicePreview />
             </div>
           </div>
         </section>
