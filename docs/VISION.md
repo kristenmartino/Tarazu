@@ -1,348 +1,147 @@
 # Tarazu: Product Vision
 
-**Status:** Draft. Not validated with customers.
+**Status:** Product and business hypotheses under review. The working demo is
+not evidence of customer demand or measured customer outcomes.
 **Owner:** Kristen Martino
-**Last updated:** 2026-08-20
-**Reviewers:** none yet
-
----
-
-## 1. Context
-
-Tarazu is a prioritization tool for product teams. It scores a backlog with
-RICE, plots effort against impact, and uses an LLM to draft scores and analyze
-the resulting ranking. It has been live at tarazu.app since February 2026.
-
-Current state:
-
-| | |
-|---|---|
-| Users | Fewer than 5, all personal contacts |
-| Cloud data | **None.** Measured 2026-08-23: every table in the production database holds 0 rows — workspaces, features, decisions, signals, scenarios, feature_revisions, ai_call_log. Cloud rows only appear when a signed-in user saves; guest mode writes to localStorage and never touches Supabase. So the accounts above have produced no persisted data, and any plan premised on migrating existing rows has nothing to migrate |
-| Revenue | $0. No payment integration exists |
-| Pricing page | One tier available (Free, $0). Pro, Team, Enterprise marked "Planned" |
-| Stack | Next.js 14, Clerk, Supabase, Anthropic API, Vercel |
-| Marketing | 7 SEO pages and 7 posts, indexed, no measurable traffic. `llms.txt`/`llms-full.txt` shipped and tested (`e2e/seo.spec.js`) — AI-answer-engine discoverability (ChatGPT, Perplexity, Claude), not yet leaned on as a deliberate content strategy |
-
-The product works and is not adopted. This document proposes why, and what to
-change.
-
----
-
-## 2. Problem
-
-Prioritization tools assume the decision is made inside the tool. In practice
-the decision is made in a discussion — a Slack thread, a planning meeting, a
-doc comment — and the tool is opened afterward to record a conclusion that has
-already been reached.
-
-Three observable consequences:
-
-1. **Scores are fitted to the decision.** A reach estimate produced in the same
-   meeting as the score, by the person advocating for the item, is not an
-   independent input. It gets treated as data anyway, because it appears in the
-   same column as numbers that came from analytics.
-2. **Decision logs are not maintained.** Industry write-ups on decision-log
-   adoption consistently identify the same cause: logging is duplicate work
-   when the decision happened elsewhere. Teams abandon the log, or maintain it
-   for compliance while real decisions live in a spreadsheet.
-3. **The same decision is re-argued.** One published estimate puts the cost of
-   re-litigating settled decisions at roughly $180K/year for a five-PM team. We
-   have not independently verified this figure and are not relying on it.
-
-This also explains Tarazu's adoption problem so far. The current product asks one
-person to score a backlog alone, and prioritization only becomes a discussion
-worth structuring once more than one person has a stake in the answer.
-
----
-
-## 3. What we know vs. what we are assuming
-
-Separating these matters because the plan below is mostly built on the second
-column.
-
-| Claim | Basis | Confidence |
-|---|---|---|
-| Incumbents do not offer a decision log | Reviewed Productboard, Airfocus, Jira Product Discovery feature docs | High |
-| Decision-log tools fail on maintenance burden | Multiple independent industry write-ups agree on the cause | Medium-high |
-| A competitor occupies this positioning | IdeaLift markets "decision intelligence," captures from 13+ chat channels, publishes to Jira/Linear/GitHub | High |
-| Paid acquisition is not viable at our price | B2B SaaS non-brand CPC $8.50–14.00; PPC averages $341/customer. At $39/mo and 12-month retention, LTV:CAC ≈ 1.4:1 against a 3:1 threshold | High |
-| PMs feel this as a top-three pain | **None. Zero customer conversations have occurred.** | **Unvalidated** |
-| Teams want prioritization to be defensible rather than fast | **None. Every stage in §8 depends on this being true.** | **Unvalidated** |
-
-The last two rows are the risk. Everything downstream depends on them and
-neither has been tested. §5 covers how they get tested.
-
----
-
-## 4. Target customer
-
-A product lead on a team of five to thirty people, where prioritization is
-genuinely contested and no one has the authority to mandate a process for
-resolving it.
-
-Team size is doing specific work here. Past roughly a hundred people,
-organizations often have a product-ops function — someone whose job is
-standardizing how these decisions get made, with a required template and a
-review cadence. Where that role exists, adoption is a decision made by
-whoever holds it. That is a sales motion, and it is the one this plan
-explicitly avoids (§7).
-
-Below that size, nothing enforces a process. If people do not like the
-spreadsheet, no one makes them use it, so prioritization gets argued out
-informally in Slack threads and standups instead. Stage 1 in §8 is built for
-that specific gap.
-
-"Contested" matters as much as team size. A single founder just decides;
-there is no argument to capture. A large enterprise resolves priority
-through hierarchy and procurement more than open argument, which mostly
-routes around what this product does. The target is the middle: more than
-one person with a real say, and no structural authority settling it for
-them.
-
----
-
-## 5. Validation plan
-
-The two unvalidated rows in §3 gate everything from §8 onward. Before more
-of that roadmap gets built, both need direct evidence, not more analysis.
-
-This is not a survey. Stated intent is unreliable — nearly everyone agrees a
-demo sounds useful. The method is a real conversation: post something worth
-responding to where PMs already are, then follow up with anyone who engages.
-
-Draft outreach, ready to post as-is. First person, no claimed professional
-history, consistent with the About page rewrite:
-
-> I've been building a prioritization tool, which means staring at a lot of
-> RICE scores. The thing I keep getting stuck on: three of those four
-> numbers are openly judgment calls, but reach is supposed to be the
-> measurement. From what I can tell it's the one people most often just
-> make up.
->
-> Maybe that's fine in practice? But reach is the only unbounded one.
-> Impact sits on a fixed ladder, nobody writes confidence above 90. Reach
-> you can double and nobody blinks, and the whole ranking moves with it.
->
-> Is this a real problem, or am I overthinking a number that mostly works
-> out?
-
-Where to post: r/ProductManagement, the Lenny's Newsletter community, Mind
-the Product's Slack, LinkedIn (posted directly, not as a link out), and
-existing network first.
-
-What counts as engagement: a reply that agrees or disagrees with a
-specific claim, a DM, or someone volunteering their own example. A generic
-positive comment does not count.
-
-Timeline: 30 days, matching Goal 2 below. Track replies against the
-five-of-twenty threshold in §10.
-
-Output: the Confidence column in §3 moves from Unvalidated to Confirmed or
-Refuted, with the evidence noted next to it. This step runs manually — it
-depends on real conversations under Kristen's own identity and cannot be
-delegated or automated.
-
----
-
-## 6. Goals
-
-1. Reach 25 teams running at least two prioritization decisions per month
-   within 90 days.
-2. Validate or kill the two unvalidated assumptions in §3, per the plan in §5,
-   within 30 days.
-3. Establish a monetization path that does not depend on paid acquisition.
-
-## 7. Non-goals
-
-Explicitly out of scope for the next two quarters. Each is a plausible adjacent
-market that would consume the roadmap without serving the goals above.
-
-| Not doing | Rationale |
-|---|---|
-| Roadmapping | Productboard owns this segment and sells enterprise. Requires a sales motion we do not have. |
-| Feedback aggregation | Canny and BuildBetter are established. Different job: input to a decision, not the decision. |
-| General-purpose decision logging | IdeaLift's positioning. Broader scope, and the breadth removes the quantitative model that differentiates us. |
-| Work tracking | Jira and Linear hold the work. A second backlog is an immediate rejection. |
-| Enterprise sales | 6–18 month cycles, SOC 2 (~$20–50K and several months), security review. Incompatible with the 90-day goal and with a single-person team. |
-| Microsoft Teams integration | Teams admin policy allows orgs to disable user app installation, which blocks self-serve adoption. Requires the top-down motion above. |
-
----
-
-## 8. Proposal
-
-Three stages. Each depends on the output of the previous one.
-
-### Stage 1 — Capture (0–3 months)
-
-Make Tarazu invocable from inside the discussion where prioritization is
-actually argued. Slack first: a user invokes Tarazu on a thread, selects the
-candidate items, and Tarazu drafts scores using the thread as context, runs the
-analysis, and posts a decision summary back to the channel.
-
-Rationale for Slack over alternatives:
-
-- Product teams of 5–30 people skew heavily to Slack.
-- The Slack API (Bolt SDK, Block Kit) is substantially cheaper to build against
-  than the Teams stack (Bot Framework, Adaptive Cards, Azure AD registration).
-- A summary posted to a shared channel is seen by everyone in it. Given that
-  paid acquisition is closed to us (§3), a format with built-in visibility is
-  the only growth mechanism available.
-
-**Output:** decision volume, and organic exposure per decision.
-
-### Stage 2 — Record (3–9 months)
-
-Every captured decision becomes a permanent, retrievable record: the ranking,
-what it beat, the margin, the participants, and the stated reason. Records
-accumulate as a by-product of Stage 1 rather than through separate data entry,
-which addresses the maintenance failure identified in §2.
-
-Per-person attribution is required, not optional. A record that cannot identify
-who supplied a given estimate and who revised it does not support the review use
-case that justifies the feature.
-
-The blocking half of this shipped on 2026-08-23. A workspace can now belong to a
-Clerk organization: `workspaces.org_id` exists (#113), `verifyWorkspaceOwner`
-authorizes by active org **or** personal ownership (#114), and the switcher and
-invite surface are in the product (#115). More than one identity can act inside
-the same workspace, which is what attribution needed to mean anything.
-
-What remains is the attribution columns themselves, and they are still real work
-rather than a view over existing data: `feature_revisions` has no author column,
-and `decisions.owner` is free text with no link to a real identity. The shape is
-a `created_by` on `feature_revisions`, written where `change_summary` already is,
-plus an `owner_user_id` on `decisions` kept **alongside** the free-text `owner`
-rather than replacing it — crediting someone who has no account is still worth
-supporting.
-
-**Output:** a corpus of decisions paired with their stated reasoning.
-
-### Stage 3 — Calibrate (9–18 months)
-
-With sufficient recorded decisions and their outcomes, report on estimate
-quality: whether a team's reach figures are systematically high, whether their
-confidence scores correlate with anything, whether top-ranked items ship on the
-timelines assumed.
-
-This is the only piece that is genuinely difficult to copy. It depends on the
-accumulated data that Stages 1 and 2 produce, so it cannot be built on demand.
-Outcome capture needs to be instrumented starting in Stage 2, well before it
-pays off.
-
-**Output:** a capability no competitor currently offers, which is what makes it
-a switching cost.
-
----
-
-## 9. Alternatives considered
-
-**Stay a single-player scoring tool.** Free spreadsheet and Notion templates
-already do this adequately — the six months with no paying users is consistent
-with that. Rejected.
-
-**Reposition on "decision intelligence."** IdeaLift already holds this
-positioning, with a stronger capture mechanism (automatic, from chat) and more
-distribution behind it. Competing for a category term against better-funded
-distribution is not where a single-person team should spend the next quarter.
-Rejected.
-
-**Target enterprise directly.** Probably the largest prize on this list — the
-pain is likely more acute at scale, and willingness to pay is 10 to 50 times
-higher. It is also incompatible with the 90-day goal: the sales cycle alone runs
-longer than that, and the self-serve distribution mechanism in Stage 1 does not
-function inside admin-controlled workspaces. Bottom-up first, with the product
-kept enterprise-compatible (per-user identity, audit history, row-level
-security, data export) so the option stays open. Revisit in year two.
-
-**Build the feedback-tool integration first.** Pulling reach data from Canny or
-Productboard would replace the most frequently invented input in the model with
-a measured one — probably the single highest-value integration available. It
-does not solve distribution, though, which is the actual constraint right now.
-Deferred to Stage 2, not dropped.
-
----
-
-## 10. Success metrics and kill criteria
-
-Thresholds set before data collection.
-
-| Hypothesis | Metric | Threshold | Action if missed |
-|---|---|---|---|
-| The pain is real | Teams engaging after direct outreach | ≥5 of 20 approached | Stop. Reconsider problem. |
-| This is a workflow, not a novelty | Decisions per team, first 30 days | ≥2 | Stop. |
-| Distribution mechanism works | Decision summaries receiving in-channel replies | ≥30% | Growth model invalid. Revisit GTM. |
-| Records are consulted | Past records reopened | Any, by month 3 | Stages 2 and 3 are invalid. Product is a scoring tool. |
-| Defensibility beats speed | Week-6 retention | >40% | Core assumption in §3 is wrong. |
-
-Row 4 should be instrumented first. It is inexpensive to measure and Stages 2
-and 3 both depend on it.
-
----
-
-## 11. Risks and open questions
-
-**R1 — The core assumption may be wrong.** Some teams want prioritization to be
-fast, not defensible. For those teams, structure applied during a discussion is
-friction. If they are the majority, the addressable market is materially smaller
-than assumed. Mitigation: metric 5 above, and 20 customer conversations before
-any significant build.
-
-**R2 — Thread parsing quality.** Extracting clean candidates from an unstructured
-40-message discussion is difficult, and a poor first result is likely to end the
-trial. Mitigation: do not attempt full automation. Let the user select the
-relevant messages or enter candidates directly, and use the thread only as
-scoring context. The existing `/api/suggest-scores` endpoint already implements
-this shape.
-
-**R3 — Cold start.** A decision record has no value in the first session and
-accrues over months, which is the inverse of the current product's 60-second
-value delivery. Free tier must carry immediate value; paid tier carries the
-compounding value.
-
-**R4 — Single-person team.** No engineering redundancy, no design, no sales.
-Sequencing assumes one person and the plan should not be read as achievable
-faster with more hands, since the binding constraint is customer evidence rather
-than build capacity.
-
-**R5 — Unbounded API cost. Resolved 2026-08-20, before outreach began.** A
-50-call/day/user quota now gates both AI endpoints, enforced server-side via
-`ai_call_log` (`supabase/migrations/20260820210000_ai_call_quota.sql`), fails
-closed if usage can't be verified. Left in as the record of why this mattered:
-authenticated users had no volume limit on LLM calls, a cost exposure that
-would have scaled directly with any marketing success, and the two tables
-that looked like they already covered this (`ai_score_events`,
-`ai_analysis_events`) didn't — both are written client-side, after the fact,
-not server-side at call time.
-
-### Open questions
-
-1. Which single tracker integration is disqualifying if absent — Linear or Jira?
-2. Is the buyer the individual PM or the team? This determines whether Pro or
-   Team is the first real tier, and the current build order assumes Pro.
-3. Does the existing SEO traffic (`/vs/spreadsheets`, `/frameworks/rice`)
-   convert better than decision-record positioning? Both should run before
-   either is removed.
-4. What is the minimum viable outcome-capture mechanism for Stage 3, and can it
-   be instrumented without asking users to report outcomes manually?
-5. ~~How does a workspace go from single-owner to multi-user?~~ **Answered
-   2026-08-23: Clerk Organizations**, not a custom `workspace_members` table.
-   Clerk already owns invites, roles, and membership UI, which is the wrong
-   thing for a one-person team to rebuild. Shipped as #113 (column), #114
-   (dual-path authorization), #115 (switcher + invite surface).
-
-   What replaced it: **should every workspace be required to belong to an
-   organization?** The staged plan assumed a final step that deletes the
-   personal-ownership branch in `verifyWorkspaceOwner` once existing rows were
-   backfilled. That step is now understood to be wrong as framed. There were
-   never any rows to backfill (§1), so that branch is not migration debt — it
-   is the **personal-workspace path**, and Clerk's Personal Account mode is an
-   ongoing state rather than a transitional one. Deleting it would permanently
-   break working outside an org, not clean up history.
-
-   So the real question is a product one: force org membership (hide personal
-   mode, require org selection) and gain a single uniform ownership model, or
-   keep both paths permanently. Current lean is **keep both** — trying the
-   product alone before inviting anyone is a reasonable path in, and the
-   dual-path check costs one comparison. Revisit if the two paths start
-   accumulating divergent behavior rather than just divergent scope.
+**Updated:** October 23, 2026
+**Review basis:** Current repository implementation and the fictional Relay demo.
+This update is not a fresh customer, revenue, traffic or production-database audit.
+
+## Purpose
+
+Help a person making a product decision compare options, inspect the evidence
+and assumptions behind them, choose a useful next test, and return to the
+reasoning when new information arrives.
+
+The proposed value is less time reconstructing a decision and a clearer basis
+for changing course. Time saved, better decisions and willingness to pay still
+need to be demonstrated with real users.
+
+## The problem to test
+
+Product decisions can combine observations, forecasts, missing information and
+personal judgment. A ranked list alone can hide those differences. When evidence
+changes, a team may struggle to explain why it chose one option or whether the
+original reasoning still applies.
+
+These are problem hypotheses for discovery, not findings from the synthetic
+demo. Ask reviewers about a recent real decision and their existing process
+before treating this problem as important to them.
+
+## Initial audience and buyer hypotheses
+
+The primary review audience is a product lead or practitioner in a small team
+who has competing options, some customer or operational evidence, and a real
+choice about what to test or build next. This is a proposed starting audience,
+not a validated market segment or a requirement for a particular team size.
+
+A founder with a shipped prototype and active customer feedback is an adjacent
+hypothesis to test separately. Neither the smallest team nor the largest
+organization should be assumed to have the same workflow or buying process.
+
+The user, beneficiary and buyer may differ. Whether an individual, team lead
+or organization would pay is unresolved. Existing spreadsheets, notes and
+product tools are the practical alternatives to understand in interviews;
+this document makes no current competitor feature or price claims.
+
+## What works today
+
+The following describes the current implementation and prepared demo, not
+customer adoption or commercial readiness.
+
+| Capability | Current behaviour and boundary |
+| --- | --- |
+| Shared scoring context | Strategy Brief fields, audience, scoring period, target outcome and shared anchors supply context for comparing candidates. |
+| Candidate scoring | Reach, impact, confidence and effort use 1–100 bands. The resulting RICE adaptation is a relative prioritization index, not ROI, measured return or a success probability. Scope and human judgment affect rankings. |
+| Claims and Signals | Recorded claims distinguish reported facts, user estimates and AI assumptions. Sources can support, conflict with or provide context for a claim. Labels and matching excerpts do not independently verify truth. |
+| AI assistance | Signed-in requests use supplied context to draft scores and reasoning. Unknowns can stay null. The user explicitly accepts suggestions; context changes block accepting stale results. AI can still misinterpret evidence. |
+| Questions and research | Supplied answers, including explicit unknowns, can be acknowledged with source excerpts. New research steps describe a proposed collection method and measure; they are not observations or completed work. Ambiguous or unavailable review withholds unchecked output. |
+| Validation briefs | Investigations can be saved, reopened and revised independently of decisions, including unassessed areas and reviewed evidence. Partial ratings or weak evidence do not establish customer validation. |
+| Decisions | Draft decisions can preserve the originating brief revision, sources and reasoning. Revising a brief does not rewrite an earlier decision snapshot. A saved draft is not an approved build or an observed outcome. |
+| Persistence and identity | Guest work stays in the current browser. Signed-in work uses workspace-scoped cloud storage, with personal and organization access paths. Revision and decision records include creator attribution where implemented. The prepared cloud demo contains synthetic records. |
+| Review records | Score edits and recommendation feedback can be reviewed. These records are not automatic model training or a system that learns from shipped outcomes. |
+
+AI requires sign-in, network access and server-side usage checks. Provider or
+validation failures display an explicit error; the app does not invent a local
+substitute recommendation. Automated tests verify software behaviour, and live
+AI checks are individual sanity checks rather than a general accuracy benchmark.
+
+## What the demo demonstrates
+
+Relay is a fictional approval workflow with three options: reminders, a status
+dashboard and a request-readiness checklist. Its users, interviews, case reviews,
+baselines and forecasts are synthetic.
+
+The walkthrough starts with a reminder hypothesis. Conflicting case notes suggest
+missing information could be another cause of delay. The team proposes a smaller
+readiness experiment, records the reasoning and reopens it later.
+
+This demonstrates how to inspect and revisit a decision. It does not demonstrate
+that a checklist works, that reminders fail, or that any customer obtained a
+business benefit. Current calibrated rankings and older frozen decision scores
+reflect different scopes and judgments; evidence alone did not mathematically
+cause a reranking.
+
+Use [the product-demo walkthrough](product-demo-walkthrough.txt) for the prepared
+sequence and [AI evaluation notes](ai-evaluation/README.md) for verification limits.
+
+## Business state and open questions
+
+The current public offering is Free. Pro, Team and Enterprise tiers are labelled
+Planned and are not available to purchase. The public promise that existing free
+functionality stays free constrains future paid packaging; any paid proposal
+must identify additional value or clearly separate a service from software.
+
+There is no newly verified customer count, revenue, retention, acquisition cost,
+traffic level or willingness-to-pay result in this update. The prepared signed-in demo
+contains saved synthetic records; these demonstrate persistence and do not
+establish customer adoption. Historical counts and market
+estimates must not be substituted for a fresh business audit.
+
+Questions for review:
+
+- Which real decision would make someone return with new evidence?
+- Is preserving reasoning useful enough to justify entering and maintaining it?
+- Who needs to read the decision, and who could authorize payment?
+- What does the existing workflow already do well, and what would Tarazu add?
+- What support effort, AI usage and infrastructure cost would a repeat workflow require?
+- What evidence would justify a paid offering without contradicting the free promise?
+
+## Next milestone: observed use
+
+Run a small set of relevant product, design and business feedback sessions with
+the current workflow. Start with a recent real decision, then ask the participant
+to find conflicting evidence, choose a next test and reopen the reasoning with
+minimal coaching. Keep their actual observations separate from interpretation.
+
+Record task completion, assistance needed, confusing wording, whether the decision
+or next action became clearer, and a voluntary return with new evidence. A useful
+next milestone is repeated evidence-to-decision use with little assistance.
+Compliments, one synthetic walkthrough and technical test counts do not establish
+that milestone. Agree on pilot success criteria before evaluating the results.
+
+Use product reviews to test decision usefulness; design reviews to observe
+comprehension and effort; business reviews to test recurring need, buyer and
+packaging hypotheses. A reviewer is not automatically a prospective customer.
+
+## Priorities and limits
+
+1. Keep the demonstrated workflow understandable, reviewable and reliable.
+2. Observe first-time use and a return visit before expanding scope.
+3. Prioritize a change when a specific observed obstacle prevents the next useful decision.
+
+Slack capture, tracker integrations, autonomous research, additional roadmap
+features, automated outcome collection and model calibration are possible future
+work. They are not implemented promises or a committed sequence. No automatic
+learning or improvement in decision quality is claimed. Keep execution tracking
+outside Tarazu unless observed user needs justify changing that boundary.
+
+Personal and organization workspaces remain supported. A historical proposal to
+remove the personal path is not migration cleanup or an approved product decision.
+Any future change to ownership, access or retention needs its own explicit scope.
+
+## History
+
+The [archived August planning draft](history/VISION-2026-08.md) preserves earlier
+assumptions, comparisons, dated metrics and a Slack-first proposal. It is retained
+for context, not as a current factual source or roadmap commitment.

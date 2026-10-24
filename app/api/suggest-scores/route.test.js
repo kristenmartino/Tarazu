@@ -223,8 +223,31 @@ describe('POST /api/suggest-scores — supplied-answer review', () => {
   });
   it('preserves a different timeframe question after a new-information review', async () => {
     const followUp={...proposed.followUp,question:'How many of the 100 users qualify over 90 days rather than 30?'};
-    fetch.mockResolvedValueOnce(okText({reach:{...proposed,followUp}})).mockResolvedValueOnce(raw({reviews:['followUp','nextAction'].map(field=>({id:`reach:${field}`,status:'new',sourceId:null,quote:null}))}));
+    fetch.mockResolvedValueOnce(okText({reach:{...proposed,followUp}})).mockResolvedValueOnce(raw({reviews:['followUp','nextAction'].map(field=>({id:`reach:${field}`,status:'new',sourceId:null,quote:null,...(field === 'nextAction' ? {researchAction:'Track unique affected users prospectively during the new 90-day period.'} : {})}))}));
     const response = await POST(makeRequest(body));
     expect((await response.json()).reach.followUp).toEqual(followUp);
+  });
+  it('acknowledges an unavailable count and returns a reviewed method instead of asking ops for that count again', async () => {
+    const originalAction='Ask ops teams: how many of the 100 pilot users had at least one overdue request last month?';
+    const researchAction='Review event records if available; otherwise track unique affected users during the shared scoring period.';
+    fetch.mockResolvedValueOnce(okText({reach:{...proposed,nextAction:originalAction}})).mockResolvedValueOnce(raw({reviews:[
+      {id:'reach:followUp',status:'answered',sourceId:'claim:saved',quote:'No measured count exists.'},
+      {id:'reach:nextAction',status:'new',sourceId:null,quote:null,researchAction},
+    ]}));
+    const response = await POST(makeRequest(body));
+    const data = await response.json();
+    expect(response.status).toBe(200);
+    expect(data.reach).toMatchObject({score:55,followUp:null,followUpResolution:{status:'answered'},nextAction:`Suggested research: ${researchAction}`});
+    expect(data.reach.nextAction).not.toContain(originalAction);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+  it('withholds a new action without a collection method after bounded review repair', async () => {
+    fetch.mockResolvedValueOnce(okText({reach:proposed})).mockResolvedValue(raw({reviews:[
+      {id:'reach:followUp',status:'answered',sourceId:'claim:saved',quote:'No measured count exists.'},
+      {id:'reach:nextAction',status:'new',sourceId:null,quote:null},
+    ]}));
+    const response = await POST(makeRequest(body));
+    expect(await response.json()).toMatchObject({reach:{score:55,nextAction:'Review the supplied context before choosing the next research step.'}});
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 });

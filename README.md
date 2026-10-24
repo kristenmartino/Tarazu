@@ -129,7 +129,7 @@ The fictional Relay walkthrough compares scoped next learning steps, including a
 
 ## Design Record
 
-The historical PRD — competitive analysis, proposed requirements, architecture and launch plan, which may differ from the current implementation — is in [`docs/Tarazu_PRD.pdf`](./docs/Tarazu_PRD.pdf). The brand system and product design spec is in [`tarazu-brand-system-spec.md`](./tarazu-brand-system-spec.md), and the forward plan for the Validate feature is in [`docs/tarazu-validate-roadmap.md`](./docs/tarazu-validate-roadmap.md).
+The current product vision, implemented boundaries and open business hypotheses are in [`docs/VISION.md`](./docs/VISION.md). The historical PRD — competitive analysis, proposed requirements, architecture and launch plan, which may differ from the current implementation — is in [`docs/Tarazu_PRD.pdf`](./docs/Tarazu_PRD.pdf). The brand system and product design spec is in [`tarazu-brand-system-spec.md`](./tarazu-brand-system-spec.md), and the forward plan for the Validate feature is in [`docs/tarazu-validate-roadmap.md`](./docs/tarazu-validate-roadmap.md).
 
 ## License
 

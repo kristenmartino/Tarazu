@@ -45,3 +45,20 @@ The October 23 live scoring check repeated a recorded unknown: it changed “wha
 The scoring route now separately reviews proposed follow-ups and next actions against the current candidate's supplied answers, shared context and Signals. Exact recorded questions retain a deterministic shortcut. The semantic review distinguishes supplied information (including estimates, fiction and explicit unknowns) from new audience, denominator, timing, outcome or scope questions. An acknowledgement must cite an available source with an exact answer-text excerpt; the app removes the repeated editor and shows that excerpt with its original uncertainty. It does not change scores, claims, sources or saved answers, and it does not treat an excerpt as independently verified evidence.
 
 Generation and repair share a 25-second review deadline within the existing 180-second route budget (two 75-second scoring attempts plus 25 seconds for review). A live demo check reached the safe fallback for every dimension under the original ten-second per-attempt limit; this is not evidence that the questions were answered. Unavailable reviews log only an error category, never context or model output. When review is unavailable or ambiguous, the app withholds the unchecked question, explains that it needs review, and retains valid scores (including null). It does not retry or replace the scoring result. This adds a small review request when answer context is supplied. Semantic classification can still be wrong; deterministic tests prove boundaries and UI behavior, while live checks are individual sanity checks rather than a general accuracy benchmark.
+
+## Research actions after an answered question
+
+A later live result acknowledged that an eligible-user measurement did not exist,
+but still recommended asking ops for that same historical count. The acknowledgement
+worked; the next action did not clearly describe how to obtain new evidence.
+
+The scoring prompt now requests a proposed collection method and measure. The same
+bounded question review returns separate research wording for each new next action;
+the application labels it “Suggested research” rather than reusing the original
+question. A new action without this wording is rejected by the review schema and
+withheld if bounded repair fails. Conditional record review or prospective measurement
+can fill an explicitly unavailable baseline; a larger sample review can add evidence
+without erasing the known sample. These are proposed methods, not collected results.
+Acknowledgements, new follow-up questions, original uncertainty and manual acceptance
+remain separate. Tests cover the observed ask-ops wording and missing research steps;
+they do not establish the quality or feasibility of every model-generated method.

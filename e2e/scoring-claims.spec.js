@@ -32,7 +32,7 @@ test('source-linked claims and targeted answers survive reopening; assumptions r
     if (iteration) expect(body.scoringBasis.claims).toEqual(expect.arrayContaining([expect.objectContaining({question:'Is the pilot population 100 accounts?',kind:'estimate'})]));
     const followUp = {question:iteration === 2 ? 'How many accounts are eligible over 90 days rather than 30?' : 'Is the pilot population 100 accounts?',whyItChangesScore:'A different denominator or period changes the reach band.',claimIds:[]};
     const answer = body.scoringBasis.claims.find(claim => claim.question);
-    await route.fulfill({json:{reach:{score:35,justification:'Segment band from a forecast',evidence:[],assumptions:['All eligible accounts adopt'],gaps:[],nextAction:'Verify audience coverage',claimReviews:[],followUp:iteration === 1 ? null : followUp,...(iteration === 1 ? {followUpResolution:{status:'answered',sourceId:`claim:${answer.id}`,label:'Recorded claim · User estimate',text:answer.text}} : {})}}});
+    await route.fulfill({json:{reach:{score:35,justification:'Segment band from a forecast',evidence:[],assumptions:['All eligible accounts adopt'],gaps:[],nextAction:'Suggested research: Track unique affected accounts prospectively during the shared scoring period.',claimReviews:[],followUp:iteration === 1 ? null : followUp,...(iteration === 1 ? {followUpResolution:{status:'answered',sourceId:`claim:${answer.id}`,label:'Recorded claim · User estimate',text:answer.text}} : {})}}});
   });
   await page.getByRole('button', { name: '✦ AI Suggest Scores', exact: true }).click();
   await page.getByText('Review reasoning & next question', { exact: true }).click();
@@ -45,6 +45,7 @@ test('source-linked claims and targeted answers survive reopening; assumptions r
   await expect(page.getByRole('button', { name: 'Accept reach suggestion', exact: true })).toBeEnabled();
   await expect(reachCard.getByText('Already in your context',{exact:true})).toBeVisible();
   await expect(page.getByLabel('Answer reach follow-up',{exact:true})).toHaveCount(0);
+  await expect(reachCard.getByText('Suggested research: Track unique affected accounts prospectively during the shared scoring period.',{exact:true})).toBeVisible();
   await page.setViewportSize({width:390,height:844});
   await page.getByRole('button', { name: '✦ AI Suggest Scores', exact: true }).click();
   await expect(reachCard.getByText('How many accounts are eligible over 90 days rather than 30?',{exact:true})).toBeVisible();
