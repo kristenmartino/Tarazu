@@ -53,4 +53,6 @@ if(test && incident) {
 }
 const summary=categories.length?`Attention: ${signature}. ${incident?.html_url||""}`:"Public routes, AI capacity, database health and retention cleanup passed.";
 if(process.env.GITHUB_STEP_SUMMARY) await fs.appendFile(process.env.GITHUB_STEP_SUMMARY,summary+"\n");
-if(categories.length && !test) process.exitCode=1;
+// Unchanged warnings keep the existing incident visible without a new failed-
+// Actions email every 15 minutes. New/changed incidents still fail visibly.
+if(categories.length && !test && (!existing || !existing.body?.includes(`<!-- tarazu-monitor:${signature} -->`))) process.exitCode=1;

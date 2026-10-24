@@ -21,7 +21,10 @@ it('opens an assigned incident containing fixed categories only',async()=>{
  health={status:'attention',problems:['ai_spend_warning']};await import('./monitor-launch.mjs');expect(issues[0]).toMatchObject({assignees:['kristenmartino']});expect(issues[0].body).toContain('ai_spend_warning');expect(JSON.stringify(issues)).not.toContain('secret-token');expect(process.exitCode).toBe(1);
 });
 it('deduplicates unchanged warnings',async()=>{
- health={status:'attention',problems:['ai_spend_warning']};existing=[{number:7,title:'[Tarazu operations] Production needs attention',body:'<!-- tarazu-monitor:ai_spend_warning -->'}];await import('./monitor-launch.mjs');expect(issues).toHaveLength(0);
+ health={status:'attention',problems:['ai_spend_warning']};existing=[{number:7,title:'[Tarazu operations] Production needs attention',body:'<!-- tarazu-monitor:ai_spend_warning -->'}];await import('./monitor-launch.mjs');expect(issues).toHaveLength(0);expect(process.exitCode||0).toBe(0);
+});
+it('notifies once when an existing incident changes categories',async()=>{
+ health={status:'attention',problems:['ai_failures']};existing=[{number:7,title:'[Tarazu operations] Production needs attention',body:'<!-- tarazu-monitor:ai_spend_warning -->'}];await import('./monitor-launch.mjs');expect(issues).toHaveLength(2);expect(issues[1].body).toContain('ai_failures');expect(process.exitCode).toBe(1);
 });
 it('closes only the workflow incident after recovery',async()=>{
  existing=[{number:7,title:'[Tarazu operations] Production needs attention'}];await import('./monitor-launch.mjs');expect(issues.at(-1)).toEqual({state:'closed',state_reason:'completed'});
