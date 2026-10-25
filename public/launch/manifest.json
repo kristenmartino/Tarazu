@@ -42,9 +42,13 @@
       "bytes": 74720,
       "sha256": "5542e6e6019f7d071d66f8e83c2940dcc8caa68573fb23d016ce6fd27cf343a2"
     },
+    "FAQ.md": {
+      "bytes": 5150,
+      "sha256": "74e174d7e2b46781cd32e8ac1f9295af7f8ee5aa0aa8471afa99172d2a0478f7"
+    },
     "README.md": {
-      "bytes": 4576,
-      "sha256": "5151cddb259d42e5e94d405fbd0e59501747a859f4f38b951bcc008579c1ea8b"
+      "bytes": 5022,
+      "sha256": "31fbca31eb939689fbc5e0dfe324f9b25a075215450e7e00b5a4d05988e6127a"
     },
     "capture.json": {
       "bytes": 288,
@@ -83,8 +87,8 @@
       "sha256": "6435984bf017c222b7b062d7b7757b975b1f3e883c5c30f2b98538a2a0144bf5"
     },
     "product-hunt-submission.txt": {
-      "bytes": 4520,
-      "sha256": "ad15e3fe742b96327557454906131b42a57cc7824609b7aae145b1cb76e6e16e"
+      "bytes": 4871,
+      "sha256": "3a3a064882a073b1e904e2ca670a882fb7db80612ebb2fd6286730827ada7819"
     },
     "tarazu-walkthrough.mp4": {
       "bytes": 1575495,

@@ -1,5 +1,6 @@
 TARAZU — PRODUCT HUNT SUBMISSION DRAFT
 Prepared October 24, 2026. Not submitted or scheduled.
+Media and launch-day replies updated October 25, 2026. The saved draft remains unscheduled.
 
 Name
 Tarazu
@@ -55,7 +56,9 @@ Supplemental context: 02-priorities.png, 03-signals.png, 04-brief.png, 05-decisi
 Copied example brief: public/launch/decision-brief.md
 Asset guide and rebuild instructions: docs/launch/README.md
 Captioned walkthrough: public/launch/tarazu-walkthrough.mp4
+Hosted walkthrough: https://www.youtube.com/watch?v=AgdAIZlUxr8 (Tarazu @tarazuapp; Unlisted; not made for kids). Saved in the Product Hunt draft and embedded playback verified October 25, 2026.
 Captions: public/launch/tarazu-walkthrough.vtt
+Launch-day FAQ: docs/launch/FAQ.md (also in the ZIP as FAQ.md).
 These screenshots and the 96-second, eight-chapter video use the fictional Relay scenario, including an explicitly synthetic review exercise with no completed experiment or measured outcome. The captioned video uses still captures of the actual app; it is not a live screen recording or live AI demonstration. The ZIP contains the current drafts and a SHA-256 manifest; rebuild/check it after relevant UI or copy changes. Product Hunt accepts a full, non-private YouTube video URL. The MP4 is the upload source; do not paste its tarazu.app URL into the YouTube field. Verify the saved YouTube URL plays before treating that field as complete.
 
 Launch goal (proposal, not a result)

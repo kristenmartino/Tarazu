@@ -8,6 +8,7 @@ These are draft launch materials, not a submitted or scheduled Product Hunt laun
 
 - `product-hunt-submission.txt`: current tagline, description, maker comment and launch notes.
 - `linkedin-featured.txt`: portfolio link and post draft.
+- `FAQ.md`: suggested launch-day answers to adapt before posting.
 - `thumbnail.png`: square Tarazu mark.
 - `01-home.png`: current homepage positioning.
 - `02-priorities.png` / `03-signals.png` / `04-brief.png`: scoring, fictional evidence and the saved investigation.
@@ -27,7 +28,9 @@ Suggested gallery: homepage → evidence digest → copyable brief → review fo
 
 For Product Hunt, upload `ph-01-positioning.png` through `ph-05-history.png` in that order. These are 1270 × 760 exports with the complete verified screenshot fitted inside each frame. No source labels or caveats are cropped out. `product-hunt-gallery.json` records the source captures and captions. The square thumbnail remains 240 × 240.
 
-Product Hunt's current video field accepts a full YouTube URL, not this MP4 URL. Upload the captioned MP4 to the maker's chosen YouTube channel, keep it non-private, and verify playback in the draft before treating the video field as complete. Saving a draft does not authorize scheduling or launching it.
+Hosted walkthrough: https://www.youtube.com/watch?v=AgdAIZlUxr8 on Tarazu's `@tarazuapp` channel. It is Unlisted and marked not made for kids. The full URL was saved in the Product Hunt draft and embedded playback verified on October 25, 2026. Product Hunt's video field needs the full hosted URL, rather than the MP4 URL. Recheck playback after replacing the video. Saving a draft does not authorize scheduling or launching it.
+
+The repository also has `docs/launch/RESPONSE-PLAN.md` for coverage and incident handling, and `docs/launch/FINAL-CHECKS.md` for the verification record and remaining scheduling decisions. These internal operating notes are not included in the public ZIP.
 
 The video uses still captures of the actual app, not a live screen recording or a live AI demonstration. All Relay research, people and case reviews are fictional. The additional review is explicitly a synthetic walkthrough exercise: no experiment was run and no customer or business outcome is claimed. Captures use a fresh guest browser; no signed-in workspace is changed and no paid AI call is made. A copied brief is a readable handoff, not a complete workspace backup.
 
