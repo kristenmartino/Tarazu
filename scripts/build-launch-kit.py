@@ -13,6 +13,7 @@ SOURCES = {
     'README.md': ROOT / 'docs/launch/README.md',
     'product-hunt-submission.txt': ROOT / 'docs/launch/product-hunt-submission.txt',
     'linkedin-featured.txt': ROOT / 'docs/launch/linkedin-featured.txt',
+    'FAQ.md': ROOT / 'docs/launch/FAQ.md',
     'walkthrough.json': ROOT / 'docs/launch/walkthrough.json',
     'product-hunt-gallery.json': ROOT / 'docs/launch/product-hunt-gallery.json',
 }
