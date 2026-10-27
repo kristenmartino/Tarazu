@@ -4,6 +4,7 @@ import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { DecisionRationale, SourceBriefReference } from "./DecisionRationale";
 import { CopyDecisionBrief, DecisionReview } from "./DecisionReview";
+import { DecisionAtGlance } from "./DecisionAtGlance";
 import { dateOnly, localToday, serializeDateOnly, formatDateOnly } from "../dateOnly";
 
 const STATUS_OPTIONS = ["draft", "approved", "archived"];
@@ -205,12 +206,12 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete, 
                     {d.decision_date ? formatDateOnly(d.decision_date) : ""}
                   </span>
                 </span>
-                {d.chosen_candidate_name && (
+                {!isExpanded && d.chosen_candidate_name && (
                   <span style={{ display: "block", fontSize: 11, color: C.blue, marginBottom: 4 }}>
                     Chosen: {d.chosen_candidate_name}
                   </span>
                 )}
-                {d.summary_rationale && (
+                {!isExpanded && d.summary_rationale && (
                   <span style={{ fontSize: 12, color: C.textMuted, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                     {d.summary_rationale}
                   </span>
@@ -234,10 +235,13 @@ export const DecisionsScreen = ({ decisions, scored, onAdd, onUpdate, onDelete, 
               {isExpanded && (
                 <div style={{ padding: "0 14px 14px", borderTop: `1px solid ${C.border}` }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingTop: 14 }}>
+                    <DecisionAtGlance decision={d} recordId={`preserved-record-${d.id}`} />
                     <div className="tz-record-toolbar"><CopyDecisionBrief key={d.id} decision={d} /></div>
                     <DecisionReview key={d.id} decision={d} signals={signals} onReview={onReview} />
-                    <SourceBriefReference decision={d} />
-                    <DecisionRationale decision={d} />
+                    <div id={`preserved-record-${d.id}`} className="tz-preserved-record" tabIndex={-1}>
+                      <SourceBriefReference decision={d} />
+                      <DecisionRationale decision={d} />
+                    </div>
                     {d.review_date && (
                       <div>
                         <div style={labelStyle}>ORIGINAL REVIEW DATE</div>

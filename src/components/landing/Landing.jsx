@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { BrandMark } from "../marketing/BrandMark";
 import { RicePreview } from "./RicePreview";
+import { RelayDecisionPreview } from "./RelayDecisionPreview";
 import "./landing.css";
 
 export function Landing() {
@@ -108,31 +109,7 @@ export function Landing() {
               <div className="hero-foot"><span className="pip" /> Keep the notes behind your choice</div>
             </div>
 
-            {/* balance scale */}
-            <div className="scale-stage" role="img" aria-label="A balance scale weighing two options, settling into balance">
-              <div className="scale-glow" aria-hidden="true" />
-              <svg className="scale" viewBox="0 0 440 360" fill="none" aria-hidden="true">
-                {/* base + post */}
-                <path d="M220 70 V300" stroke="#ECEAE4" strokeWidth="3" strokeLinecap="round" opacity="0.85" />
-                <path d="M180 300 h80" stroke="#ECEAE4" strokeWidth="4" strokeLinecap="round" opacity="0.85" />
-                <ellipse cx="220" cy="312" rx="58" ry="9" fill="rgba(226,172,77,0.12)" />
-                {/* rotating beam group */}
-                <g className="scale-beam">
-                  <path d="M70 92 H370" stroke="#E2AC4D" strokeWidth="4" strokeLinecap="round" />
-                  <circle cx="220" cy="92" r="6" fill="#E2AC4D" />
-                  {/* left pan (heavier) */}
-                  <path d="M70 92 L48 168 M70 92 L92 168" stroke="#9b8a63" strokeWidth="1.5" />
-                  <path d="M30 168 a40 22 0 0 0 80 0 Z" fill="rgba(226,172,77,0.14)" stroke="#E2AC4D" strokeWidth="1.8" />
-                  <circle cx="70" cy="158" r="13" fill="rgba(226,172,77,0.30)" stroke="#E2AC4D" strokeWidth="1.5" />
-                  <text className="opt" x="70" y="200" textAnchor="middle">Option A</text>
-                  {/* right pan (lighter) */}
-                  <path d="M370 92 L352 150 M370 92 L388 150" stroke="#9b8a63" strokeWidth="1.5" />
-                  <path d="M335 150 a35 19 0 0 0 70 0 Z" fill="rgba(236,234,228,0.05)" stroke="#9b8a63" strokeWidth="1.6" />
-                  <circle cx="370" cy="142" r="8" fill="rgba(236,234,228,0.10)" stroke="#9b8a63" strokeWidth="1.4" />
-                  <text className="opt" x="370" y="182" textAnchor="middle">Option B</text>
-                </g>
-              </svg>
-            </div>
+            <RelayDecisionPreview compact />
           </div>
         </section>
 
@@ -155,54 +132,21 @@ export function Landing() {
               <h2>From a request <span className="br">to a decision.</span></h2>
               <p>Add what you know, compare the options, and save why you chose one. Return to the record when something changes.</p>
             </div>
-            <div className="loop" data-reveal>
-              <div className="stage">
-                <div className="node">
-                  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M3 12a9 9 0 0 1 9-9M7 12a5 5 0 0 1 5-5" />
-                    <circle cx="12" cy="12" r="1.6" />
-                  </svg>
-                </div>
-                <div className="step-n">01</div><h3>Listen</h3>
-                <p>Pull requests, feedback, data, and ideas into one place.</p>
-              </div>
-              <div className="stage">
-                <div className="node">
-                  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 21V10M12 21V4M19 21v-7" />
-                  </svg>
-                </div>
-                <div className="step-n">02</div><h3>Score</h3>
-                <p>Weigh each option against the criteria your team cares about.</p>
-              </div>
-              <div className="stage">
-                <div className="node">
-                  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12l5 5L19 7" />
-                  </svg>
-                </div>
-                <div className="step-n">03</div><h3>Decide</h3>
-                <p>Rank with a clear, shared rationale anyone can trace.</p>
-              </div>
-              <div className="stage">
-                <div className="node">
-                  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M12 3l8 4v6c0 4-3.5 7-8 8-4.5-1-8-4-8-8V7z" />
-                    <path d="M9.5 12l2 2 3.5-4" />
-                  </svg>
-                </div>
-                <div className="step-n">04</div><h3>Record</h3>
-                <p>Record your choice, expected outcome, and review date.</p>
-              </div>
-              <div className="stage">
-                <div className="node">
-                  <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M21 12a9 9 0 1 1-3-6.7M21 4v4h-4" />
-                  </svg>
-                </div>
-                <div className="step-n">05</div><h3>Review</h3>
-                <p>Record what happened, add new evidence, and choose whether to keep, revise or retire the direction.</p>
-              </div>
+            <div className="lifecycle-product-grid" data-reveal>
+              <ol className="lifecycle-steps" aria-label="The five stages of a decision">
+                <li><span className="step-n" aria-hidden="true">01</span><div><h3>Listen</h3><p>Pull requests, feedback, data, and ideas into one place.</p></div></li>
+                <li><span className="step-n" aria-hidden="true">02</span><div><h3>Score</h3><p>Weigh each option against the criteria your team cares about.</p></div></li>
+                <li><span className="step-n" aria-hidden="true">03</span><div><h3>Decide</h3><p>Rank with a clear, shared rationale anyone can trace.</p></div></li>
+                <li className="record-step"><span className="step-n" aria-hidden="true">04</span><div><h3>Record</h3><p>Record your choice, expected outcome, and review date.</p></div></li>
+                <li><span className="step-n" aria-hidden="true">05</span><div><h3>Review</h3><p>Record what happened, add new evidence, and choose whether to keep, revise or retire the direction.</p></div></li>
+              </ol>
+              <figure className="lifecycle-product">
+                <div className="lifecycle-product-label"><span aria-hidden="true" /><span><strong>Record</strong> · fictional Relay example</span></div>
+                <a href="/demo/relay-saved-decision.png" target="_blank" rel="noopener noreferrer" aria-label="View the captured fictional Relay decision summary at full size in a new tab">
+                  <img src="/demo/relay-saved-decision.png" alt="Fictional Relay Round B decision at a glance, with the chosen checklist, reasoning, next test and review status." width="938" height="401" loading="lazy" />
+                </a>
+                <figcaption><p>A saved draft keeps the choice, evidence and next test together.</p><div><p>Fictional example. No real participants or measured results.</p><a href="/demo/relay-saved-decision.png" target="_blank" rel="noopener noreferrer" aria-label="View full-size example: captured fictional Relay decision, opens in a new tab">View full-size example ↗</a></div></figcaption>
+              </figure>
             </div>
             <div className="loop-back" data-reveal>
               <svg viewBox="0 0 40 14" fill="none" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -210,6 +154,19 @@ export function Landing() {
               </svg>
               New findings become part of the next review
             </div>
+          </div>
+        </section>
+
+        {/* ============ WORKED DECISION ============ */}
+        <section className="band worked-decision" aria-labelledby="worked-decision-heading">
+          <div className="wrap worked-decision-grid">
+            <div className="sec-head" data-reveal>
+              <span className="eyebrow">A worked example</span>
+              <h2 id="worked-decision-heading">A smaller test, <span className="br">with the reasoning attached.</span></h2>
+              <p>A fictional team starts with a reminder idea, looks at conflicting evidence, and chooses what to test before committing to a build.</p>
+              <p>The saved draft keeps the original context available for the next discussion.</p>
+            </div>
+            <div data-reveal><RelayDecisionPreview /></div>
           </div>
         </section>
 
