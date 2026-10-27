@@ -134,7 +134,7 @@ export function DialogHost() {
   const accent = danger ? C.danger : C.accent;
 
   return (
-    <div
+    <div className="tz-dialog-scrim"
       onMouseDown={cancel}
       style={{
         position: "fixed", inset: 0, zIndex: 1000,
@@ -144,6 +144,7 @@ export function DialogHost() {
     >
       <div
         ref={boxRef}
+        className="tz-dialog-surface"
         role="dialog"
         aria-modal="true"
         aria-labelledby="dialog-title"

@@ -13,8 +13,8 @@
 /* Mobile uses the page scroll, while the canvas also has overflow:auto.
    Fix actions to the viewport so that ancestor cannot swallow sticky behavior. */
 @media(max-width: 800px) {
-  .tz-candidate-form { padding-bottom: 210px !important; }
-  .tz-candidate-save { position: fixed; left: 0; right: 0; bottom: calc(56px + env(safe-area-inset-bottom)); z-index: 110; margin: 0; padding: 12px 16px; border-radius: 0; }
+  .tz-candidate-form { padding-bottom: calc(var(--candidate-action-height, 210px) + 16px) !important; }
+  .tz-candidate-save { position: fixed; left: 0; right: 0; bottom: var(--mobile-nav-height); z-index: 110; margin: 0; padding: 12px 16px; border-radius: 0; }
   .tz-candidate-save > div { flex-basis: 100% !important; }
   .tz-candidate-save > button:first-of-type { flex: 1; }
 }

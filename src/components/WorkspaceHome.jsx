@@ -20,8 +20,8 @@ const StatCard = ({ label, value, color }) => {
   );
 };
 
-const ShortcutButton = ({ label, icon, color, onClick }) => (
-  <button onClick={onClick} style={{
+const ShortcutButton = ({ label, icon, color, onClick, className }) => (
+  <button className={className} onClick={onClick} style={{
     flex: 1, minWidth: 120, padding: "14px 16px", border: `1px solid ${color}30`, borderRadius: 10,
     background: `${color}08`, color, fontSize: 12, fontWeight: 600, cursor: "pointer",
     fontFamily: "var(--mono)", transition: "all 0.2s",
@@ -176,7 +176,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
           </div>
         )}
 
-        {/* Shortcuts */}
+        {/* Shortcuts: also expose screens omitted from the mobile tab bar. */}
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <ShortcutButton label="Priorities" color={C.accent} onClick={() => onScreenChange("priorities")} icon={
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
@@ -192,6 +192,9 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
           } />
           <ShortcutButton label="Scenarios" color={C.warn} onClick={() => onScreenChange("scenarios")} icon={
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h10M4 18h6"/></svg>
+          } />
+          <ShortcutButton className="tz-home-mobile-shortcut" label="Settings" color={C.textMuted} onClick={() => onScreenChange("settings")} icon={
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16M8 3v6M16 9v6M9 15v6"/></svg>
           } />
         </div>
       </div>

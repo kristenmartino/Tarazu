@@ -179,7 +179,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onPr
   };
 
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: isMobile ? "0 24px calc(88px + env(safe-area-inset-bottom, 0px))" : "0 24px 24px" }} onChangeCapture={() => { setEdited(true); setSaveMessage(""); }} role="main" id="main-content" tabIndex={-1}>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", padding: "0 24px 24px" }} onChangeCapture={() => { setEdited(true); setSaveMessage(""); }} role="main" id="main-content" tabIndex={-1}>
       {/* Header */}
       <div style={{ padding: "16px 0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>

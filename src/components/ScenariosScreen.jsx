@@ -188,7 +188,7 @@ export const ScenariosScreen = ({ features, scored, sorted, activeWsId, isSigned
               <div style={{ fontSize: 12 }}>Add candidates to see ranking comparisons.</div>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 40px 1fr", gap: 0 }}>
+            <div className="tz-scenario-rankings" style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 40px minmax(0,1fr)", gap: 0 }}>
               <div style={{ fontSize: 9, fontWeight: 600, color: C.textDim, padding: "0 0 8px", fontFamily: "var(--mono)" }}>DEFAULT RICE</div>
               <div />
               <div style={{ fontSize: 9, fontWeight: 600, color: C.textDim, padding: "0 0 8px", fontFamily: "var(--mono)" }}>SCENARIO</div>

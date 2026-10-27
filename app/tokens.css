@@ -32,6 +32,9 @@
   --body: var(--font-body), "Figtree", system-ui, sans-serif;
   --mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
   --maxw: 1180px;
+  /* Fixed mobile navigation: 56px controls, 1px border, plus device inset. */
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --mobile-nav-height: calc(57px + var(--safe-area-bottom));
 
   /* ===== Semantic layer (Phase 2) ===== */
   /* surfaces / elevation */
