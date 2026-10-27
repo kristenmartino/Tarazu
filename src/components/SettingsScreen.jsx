@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useC, useTheme } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { OrgScopeRow } from "./OrgScopeRow";
+import { MobileAccountControls } from "./MobileAccountControls";
 import { UsageMeasurement } from "./UsageMeasurement";
 
 export const SettingsScreen = ({
@@ -10,7 +11,7 @@ export const SettingsScreen = ({
   sortMode, onSortModeChange,
   mapColorBy, mapSizeBy, mapLabelMode,
   onMapColorByChange, onMapSizeByChange, onMapLabelModeChange,
-  isSignedIn, features, guestDemo = false,
+  isSignedIn, features, guestDemo = false, saveTarget, savePendingSync = false, contextSaveStatus, onRetryContextSave,
 }) => {
   const C = useC();
   const { themeName, setThemeName, themes } = useTheme();
@@ -35,6 +36,7 @@ export const SettingsScreen = ({
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <MobileAccountControls guestDemo={guestDemo} contextSaveStatus={contextSaveStatus} savePendingSync={savePendingSync} onRetryContextSave={onRetryContextSave} />
         {/* Appearance */}
         <div style={sectionStyle}>
           <span style={{ fontSize: 11, fontWeight: 700, color: C.text, display: "block", marginBottom: 16 }}>Appearance</span>
@@ -135,7 +137,7 @@ export const SettingsScreen = ({
               { label: "Plan", value: "Free", href: "/pricing", linkSuffix: "see plans" },
               { label: "Framework", value: "RICE", href: "/frameworks/rice", linkSuffix: "guide" },
               { label: "Candidates", value: features.length },
-              { label: "Storage", value: isSignedIn ? "Cloud (Supabase)" : "Local (Browser)" },
+              { label: "Storage", value: (saveTarget ? saveTarget === "cloud" : isSignedIn) ? "Cloud (Supabase)" : savePendingSync ? "Local (Browser) · sync pending" : "Local (Browser)" },
             ].map(r => (
               <div key={r.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${C.border}` }}>
                 <span style={{ fontSize: 10, color: C.textDim, fontFamily: "var(--mono)" }}>{r.label}</span>

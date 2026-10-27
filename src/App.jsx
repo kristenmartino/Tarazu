@@ -49,6 +49,7 @@ const printStyles = `@media print {
 // Always validate a remembered workspace against the current authorized list.
 const workspacePreferenceKey = (userId, orgId) => `tarazu-cloud-workspace:${userId}:${orgId || "personal"}`;
 const migrationPreferenceKey = userId => `tarazu-migration-dismissed:${userId}`;
+const emptyContext = () => ({ productSummary: "", targetUsers: "", strategicPriorities: "", constraints: "", assumptions: "", successMetrics: "" });
 
 const prepareGuestDemo = async (reset = false) => {
   const prepare = () => prepareRelayDemo(localStorage, { reset });
@@ -64,6 +65,9 @@ export default function App({ guestDemo = false }) {
   const [editingFeature, setEditingFeature] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [demoError, setDemoError] = useState("");
+  const [workspaceError, setWorkspaceError] = useState("");
+  const [loadRetry, setLoadRetry] = useState(0);
+  const [workspaceLoading, setWorkspaceLoading] = useState(false);
   const demoMeasured = useRef(false);
   useEffect(() => { if (guestDemo && loaded && !demoMeasured.current) { demoMeasured.current = true; trackUsage("demo_opened", "demo"); } }, [guestDemo, loaded]);
   const [workspaces, setWorkspaces] = useState([]);
@@ -104,12 +108,26 @@ export default function App({ guestDemo = false }) {
   const ctxSaveTimer = useRef(null);
   const settingsSaveTimer = useRef(null);
   const loadedRef = useRef(false);
+  const workspaceLoadSequence = useRef(0);
+  const loadedSnapshot = useRef(null);
   const isMobile = useMedia("(max-width: 800px)");
   const isTablet = useMedia("(max-width: 1024px)") && !isMobile;
   const isOnline = useOnlineStatus();
   const auth = useAuth();
   const { isSignedIn, isLoaded: authLoaded, userId, orgId } = guestDemo
     ? { isSignedIn: false, isLoaded: true, userId: null, orgId: null } : auth;
+  const authScope = `${guestDemo ? "demo" : "app"}:${authLoaded}:${isSignedIn}:${userId || "guest"}:${orgId || "personal"}`;
+  const authScopeRef = useRef(authScope);
+  // Invalidate during render, before an old request can resolve ahead of effects.
+  if (authScopeRef.current !== authScope) {
+    authScopeRef.current = authScope;
+    workspaceLoadSequence.current += 1;
+    loadedRef.current = false;
+    loadedSnapshot.current = null;
+    clearTimeout(saveTimer.current); clearTimeout(ctxSaveTimer.current); clearTimeout(settingsSaveTimer.current);
+  }
+  const departureSnapshotRef = useRef(null);
+  departureSnapshotRef.current = { authScope, wsId: activeWsId, productContext, contextSaveStatus, browserFallback, isOnline };
   const currentSaveScope = `${userId || "guest"}:${orgId || "personal"}:${activeWsId}`;
   const saveScopeRef = useRef(currentSaveScope); saveScopeRef.current = currentSaveScope;
   const editorKey = `${currentSaveScope}:${activeScreen}:${showForm}:${editingFeature?.id || "new"}`;
@@ -117,12 +135,27 @@ export default function App({ guestDemo = false }) {
   if (editorSession.current.key !== editorKey) editorSession.current = { key: editorKey, generation: editorSession.current.generation + 1 };
   const featureWriteQueue = useRef(Promise.resolve());
   const featureWriteRevision = useRef(0);
+  const contextWriteQueue = useRef(Promise.resolve());
+  const contextWriteRevision = useRef(0);
+  const enqueueContextWrite = operation => {
+    const next = contextWriteQueue.current.catch(() => {}).then(operation);
+    contextWriteQueue.current = next;
+    return next;
+  };
   const explicitSaving = useRef(false);
   const enqueueFeatureWrite = operation => {
     const next = featureWriteQueue.current.catch(() => {}).then(operation);
     featureWriteQueue.current = next;
     return next;
   };
+  const captureWorkspaceRequest = useCallback(() => {
+    const requestedScope = currentSaveScope;
+    const generation = workspaceLoadSequence.current;
+    return () => loadedRef.current && saveScopeRef.current === requestedScope && authScopeRef.current === authScope && workspaceLoadSequence.current === generation;
+  }, [currentSaveScope, authScope]);
+  const updateProductContext = useCallback(next => {
+    if (loadedRef.current && authScopeRef.current === authScope && saveScopeRef.current === currentSaveScope) setProductContext(next);
+  }, [authScope, currentSaveScope]);
   const { scored, sorted, maxScore } = useScored(features);
   const displayOrder = useMemo(() => {
     if (sortMode === "rice" || manualOrder.length === 0) return sorted;
@@ -142,74 +175,76 @@ export default function App({ guestDemo = false }) {
     }
   }, [isMobile, isTablet, activeScreen]);
 
-  // ── Init: load data from cloud or localStorage ──
+  // ── Init: required data and context form one authorized snapshot. ──
   useEffect(() => {
-    if (!authLoaded) return;
+    const loadId = ++workspaceLoadSequence.current;
+    const current = () => loadId === workspaceLoadSequence.current && authScopeRef.current === authScope;
     loadedRef.current = false;
-    setLoaded(false);
-    let cancelled = false;
+    loadedSnapshot.current = null;
+    clearTimeout(saveTimer.current); clearTimeout(ctxSaveTimer.current); clearTimeout(settingsSaveTimer.current);
+    setLoaded(false); setWorkspaceLoading(false); setWorkspaceError(""); setContextSaveStatus(null);
+    setPendingSync(false);
+    if (!authLoaded) return;
+    const applySettings = settings => {
+      setViewMode(settings?.viewMode || "list"); setSortMode(settings?.sortMode || "rice");
+      setMapColorBy(settings?.mapColorBy || "tier"); setMapSizeBy(settings?.mapSizeBy || "uniform"); setMapLabelMode(settings?.mapLabelMode || "hover");
+    };
     async function init() {
       if (guestDemo) {
-        try {
-          await prepareGuestDemo();
-          if (cancelled) return;
-          initLocal();
-        } catch (error) {
-          if (!cancelled) setDemoError(error.message || "Browser storage is unavailable.");
-          return;
-        }
+        try { await prepareGuestDemo(); if (!current()) return; initLocal(); }
+        catch (error) { if (current()) setDemoError(error.message || "Browser storage is unavailable."); return; }
       } else if (isSignedIn) {
+        let readingContext = false;
         try {
           let ws = await cloud.fetchWorkspaces();
+          if (!current()) return;
           if (ws.length === 0) {
             const newWs = await cloud.createWorkspace("My Backlog");
+            if (!current()) return;
             ws = [newWs];
           }
-          if (cancelled) return;
-          setWorkspaces(ws.map(w => ({ id: w.id, name: w.name })));
           let rememberedId;
           try { if (userId) rememberedId = localStorage.getItem(workspacePreferenceKey(userId, orgId)); } catch {}
           const activeId = ws.find(w => w.id === rememberedId)?.id || ws[0].id;
-          setActiveWsId(activeId);
           const data = await cloud.fetchFeatures(activeId);
-          if (cancelled) return;
-          setBrowserFallback(false);
-          setFeatures(data.features);
-          setManualOrder(data.manualOrder || []);
-          try { const ctx = await cloud.fetchProductContext(activeId); if (!cancelled) setProductContext(ctx); } catch {}
-          try { const d = await cloud.fetchDecisions(activeId); if (!cancelled) setDecisions(d.decisions || []); } catch { if (!cancelled) setDecisions([]); }
-          try { const s = await cloud.fetchSignals(activeId); if (!cancelled) setSignals(s.signals || []); } catch { if (!cancelled) setSignals([]); }
-          // Load UI settings from cloud
-          try {
-            const settings = await cloud.fetchWorkspaceSettings(activeId);
-            if (!cancelled && settings) {
-              if (settings.viewMode) setViewMode(settings.viewMode);
-              if (settings.sortMode) setSortMode(settings.sortMode);
-              if (settings.mapColorBy) setMapColorBy(settings.mapColorBy);
-              if (settings.mapSizeBy) setMapSizeBy(settings.mapSizeBy);
-              if (settings.mapLabelMode) setMapLabelMode(settings.mapLabelMode);
-            }
-          } catch {}
-          // Check if localStorage has data to migrate
+          if (!current()) return;
+          readingContext = true;
+          const ctx = await cloud.fetchProductContext(activeId);
+          const [d, signalsData, settings] = await Promise.all([
+            cloud.fetchDecisions(activeId).catch(() => ({ decisions: [] })),
+            cloud.fetchSignals(activeId).catch(() => ({ signals: [] })),
+            cloud.fetchWorkspaceSettings(activeId).catch(() => ({})),
+          ]);
+          if (!current()) return;
+          setWorkspaces(ws.map(w => ({ id: w.id, name: w.name })));
+          setActiveWsId(activeId); setBrowserFallback(false);
+          setFeatures(data.features || []); setManualOrder(data.manualOrder || []);
+          setProductContext(ctx || emptyContext()); setDecisions(d.decisions || []); setSignals(signalsData.signals || []);
+          applySettings(settings);
+          loadedSnapshot.current = { authScope, wsId: activeId };
           const localWs = loadWsIndex();
           let migrationDismissed = false;
           try { migrationDismissed = !!userId && localStorage.getItem(migrationPreferenceKey(userId)) === "1"; } catch {}
-          setHasLocalImport(!!localWs?.length);
-          setShowMigration(!!localWs?.length && !migrationDismissed);
+          setHasLocalImport(!!localWs?.length); setShowMigration(!!localWs?.length && !migrationDismissed);
         } catch (err) {
+          if (!current()) return;
+          if (readingContext) {
+            // A failed context read is never an empty context eligible for PUT.
+            setWorkspaceError("Could not load this team's workspace context. Workspace context has not been changed. Check your connection and retry.");
+            return;
+          }
           console.error("Cloud init failed, falling back to localStorage:", err);
           initLocal();
         }
-      } else {
-        initLocal();
-      }
-      if (cancelled) return;
-      loadedRef.current = true;
-      setLoaded(true);
+      } else initLocal();
+      if (!current()) return;
+      setSelectedId(null); setShowForm(false); setEditingFeature(null);
+      setUndoSnapshot(null); setImportData(null); setDragId(null);
+      setFeedbackSummary(null); setFeedbackContext(null);
+      loadedRef.current = true; setLoaded(true);
     }
     function initLocal() {
-      setBrowserFallback(true);
-      setPendingSync(false);
+      setBrowserFallback(true); setPendingSync(false);
       let ws = guestDemo ? [RELAY_DEMO_WORKSPACE] : loadWsIndex();
       if (!ws || ws.length === 0) {
         ws = [{ id: "default", name: "My Backlog" }];
@@ -217,44 +252,22 @@ export default function App({ guestDemo = false }) {
         if (legacy && legacy.length > 0) {
           saveWsFeatures("default", legacy);
           try { localStorage.removeItem(STORAGE_KEY); } catch {}
-        } else {
-          saveWsFeatures("default", []);
-        }
+        } else saveWsFeatures("default", []);
         saveWsIndex(ws);
       }
-      const activeId = guestDemo ? RELAY_DEMO_ID : getActiveWsId() || ws[0].id;
-      setWorkspaces(ws);
-      setActiveWsId(activeId);
+      const remembered = getActiveWsId();
+      const activeId = guestDemo ? RELAY_DEMO_ID : ws.find(w => w.id === remembered)?.id || ws[0].id;
+      setWorkspaces(ws); setActiveWsId(activeId);
       const saved = loadWsFeatures(activeId);
-      if (saved) {
-        setFeatures(saved.features);
-        setManualOrder(saved.manualOrder || []);
-      } else {
-        setFeatures([]);
-      }
-      const ctx = loadWsContext(activeId);
-      if (ctx) setProductContext(ctx);
-      setDecisions(loadWsDecisions(activeId));
-      setSignals(loadWsSignals(activeId));
-      const settings = loadWsSettings(activeId);
-      if (settings) {
-        if (settings.viewMode) setViewMode(settings.viewMode);
-        if (settings.sortMode) setSortMode(settings.sortMode);
-        if (settings.mapColorBy) setMapColorBy(settings.mapColorBy);
-        if (settings.mapSizeBy) setMapSizeBy(settings.mapSizeBy);
-        if (settings.mapLabelMode) setMapLabelMode(settings.mapLabelMode);
-      }
+      setFeatures(saved?.features || []); setManualOrder(saved?.manualOrder || []);
+      setProductContext(loadWsContext(activeId) || emptyContext());
+      setDecisions(loadWsDecisions(activeId)); setSignals(loadWsSignals(activeId));
+      applySettings(loadWsSettings(activeId));
+      loadedSnapshot.current = { authScope, wsId: activeId };
     }
     init();
-    return () => { cancelled = true; };
-    // orgId is a real dependency, not defensive padding: /api/workspaces scopes
-    // its result to the caller's active org, so switching orgs in the top-bar
-    // switcher changes the answer. Without it the effect never re-runs and the
-    // user keeps seeing the previous org's backlog. The switcher's
-    // afterSelect*Url props alone don't cover this — they navigate to /app,
-    // which is the route already mounted, so Next soft-navigates and the
-    // component never remounts.
-  }, [authLoaded, isSignedIn, userId, orgId, guestDemo]);
+    return () => { if (current()) workspaceLoadSequence.current += 1; };
+  }, [authLoaded, isSignedIn, userId, orgId, guestDemo, authScope, loadRetry]);
 
   const dismissMigration = () => {
     try { if (userId) localStorage.setItem(migrationPreferenceKey(userId), "1"); } catch {}
@@ -275,13 +288,15 @@ export default function App({ guestDemo = false }) {
 
   // ── Auto-save ──
   useEffect(() => {
-    if (!loadedRef.current || !activeWsId || explicitSaving.current) return;
+    if (!loadedRef.current || loadedSnapshot.current?.authScope !== authScope || loadedSnapshot.current?.wsId !== activeWsId || !activeWsId || explicitSaving.current) return;
     const requestedScope = currentSaveScope;
     const requestedRevision = featureWriteRevision.current;
+    const requestedGeneration = workspaceLoadSequence.current;
+    const scopeCurrent = () => loadedRef.current && requestedGeneration === workspaceLoadSequence.current && authScopeRef.current === authScope && saveScopeRef.current === requestedScope;
     if (isSignedIn && !browserFallback) {
       clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(async () => {
-        if (saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
+        if (!scopeCurrent() || featureWriteRevision.current !== requestedRevision) return;
         if (!isOnline) {
           saveWsFeatures(activeWsId, features, manualOrder);
           setPendingSync(true);
@@ -289,8 +304,8 @@ export default function App({ guestDemo = false }) {
         }
         try {
           const pendingDeletes = [...deletedIdsRef.current];
-          const idMap = await enqueueFeatureWrite(() => saveScopeRef.current === requestedScope && featureWriteRevision.current === requestedRevision ? cloud.syncFeatures(activeWsId, features, manualOrder, pendingDeletes) : null);
-          if (saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
+          const idMap = await enqueueFeatureWrite(() => scopeCurrent() && featureWriteRevision.current === requestedRevision ? cloud.syncFeatures(activeWsId, features, manualOrder, pendingDeletes) : null);
+          if (!scopeCurrent() || featureWriteRevision.current !== requestedRevision) return;
           pendingDeletes.forEach(id => deletedIdsRef.current.delete(id));
           if (idMap && Object.keys(idMap).length > 0) {
             setFeatures(prev => prev.map(f => idMap[f.id] ? { ...f, id: idMap[f.id] } : f));
@@ -298,7 +313,7 @@ export default function App({ guestDemo = false }) {
             if (selectedId && idMap[selectedId]) setSelectedId(idMap[selectedId]);
           }
         } catch (err) {
-          if (saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
+          if (!scopeCurrent() || featureWriteRevision.current !== requestedRevision) return;
           console.error("Cloud save failed, falling back to localStorage:", err);
           saveWsFeatures(activeWsId, features, manualOrder);
           setPendingSync(true);
@@ -309,46 +324,57 @@ export default function App({ guestDemo = false }) {
     } else {
       saveWsFeatures(activeWsId, features, manualOrder);
     }
-  }, [features, manualOrder, loaded, activeWsId, isSignedIn, isOnline, showToast, currentSaveScope, browserFallback]);
+  }, [features, manualOrder, loaded, activeWsId, isSignedIn, isOnline, showToast, currentSaveScope, browserFallback, workspaceLoading, authScope]);
 
   // ── Auto-save product context ──
   useEffect(() => {
-    if (!loadedRef.current || !activeWsId) return;
+    if (!loadedRef.current || loadedSnapshot.current?.authScope !== authScope || loadedSnapshot.current?.wsId !== activeWsId || !activeWsId) return;
     let cancelled = false;
-    const status = (state, message) => { if (!cancelled) setContextSaveStatus({ state, message }); };
+    const generation = workspaceLoadSequence.current;
+    const revision = ++contextWriteRevision.current;
+    const requestedScope = currentSaveScope;
+    const current = () => !cancelled && loadedRef.current && generation === workspaceLoadSequence.current && saveScopeRef.current === requestedScope && authScopeRef.current === authScope && revision === contextWriteRevision.current;
+    const status = (state, message) => { if (current()) setContextSaveStatus({ state, message }); };
     const saveBrowser = pending => {
+      if (!current()) return;
       try {
         saveWsContextChecked(activeWsId, productContext);
         status(pending ? "pending" : "saved", pending ? "Context saved in this browser; cloud sync is pending." : "Context saved in this browser.");
         if (pending) setPendingSync(true);
-      } catch {
-        status("error", "Context could not be saved. Your changes remain in this tab; copy them before leaving and retry by editing the frame.");
-      }
+      } catch { status("error", "Context could not be saved. Your changes remain in this tab; copy them before leaving and retry by editing the frame."); }
     };
     if (isSignedIn && !browserFallback) {
       status("saving", "Saving workspace context…");
       ctxSaveTimer.current = setTimeout(async () => {
+        if (!current()) return;
         if (!isOnline) { saveBrowser(true); return; }
-        try { await cloud.saveProductContext(activeWsId, productContext); status("saved", "Context saved to this workspace."); }
-        catch { if (!cancelled) saveBrowser(true); }
+        try {
+          await enqueueContextWrite(() => current() ? cloud.saveProductContext(activeWsId, productContext) : undefined);
+          status("saved", "Context saved to this workspace.");
+        } catch { saveBrowser(true); }
       }, 1000);
     } else saveBrowser(false);
     return () => { cancelled = true; clearTimeout(ctxSaveTimer.current); };
-  }, [productContext, loaded, activeWsId, isSignedIn, isOnline, browserFallback]);
+  }, [productContext, loaded, activeWsId, isSignedIn, isOnline, browserFallback, workspaceLoading, authScope, currentSaveScope]);
 
   // ── Auto-save settings ──
   useEffect(() => {
-    if (!loadedRef.current || !activeWsId) return;
+    if (!loadedRef.current || loadedSnapshot.current?.authScope !== authScope || loadedSnapshot.current?.wsId !== activeWsId || !activeWsId) return;
     const settings = { viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode };
+    const generation = workspaceLoadSequence.current;
+    const requestedScope = currentSaveScope;
+    const current = () => loadedRef.current && generation === workspaceLoadSequence.current && authScopeRef.current === authScope && saveScopeRef.current === requestedScope;
     if (isSignedIn && !browserFallback) {
       clearTimeout(settingsSaveTimer.current);
       settingsSaveTimer.current = setTimeout(async () => {
+        if (!current()) return;
         if (!isOnline) {
           saveWsSettings(activeWsId, settings);
           setPendingSync(true);
           return;
         }
         try { await cloud.saveWorkspaceSettings(activeWsId, settings); } catch (err) {
+          if (!current()) return;
           console.error("Settings save failed, falling back to localStorage:", err);
           saveWsSettings(activeWsId, settings);
           setPendingSync(true);
@@ -358,22 +384,25 @@ export default function App({ guestDemo = false }) {
     } else {
       saveWsSettings(activeWsId, settings);
     }
-  }, [viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode, activeWsId, isSignedIn, isOnline, browserFallback]);
+  }, [viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode, loaded, activeWsId, isSignedIn, isOnline, browserFallback, workspaceLoading, authScope, currentSaveScope]);
 
   // ── Reconnect sync: when back online with pending changes ──
   useEffect(() => {
-    if (!isOnline || !pendingSync || !isSignedIn || browserFallback || !activeWsId || !loadedRef.current) return;
+    if (!isOnline || !pendingSync || !isSignedIn || browserFallback || !activeWsId || !loadedRef.current || loadedSnapshot.current?.authScope !== authScope || loadedSnapshot.current?.wsId !== activeWsId) return;
     let cancelled = false;
     const requestedScope = currentSaveScope;
     const requestedRevision = featureWriteRevision.current;
+    const generation = workspaceLoadSequence.current;
+    const contextRevision = contextWriteRevision.current;
+    const current = () => !cancelled && loadedRef.current && generation === workspaceLoadSequence.current && authScopeRef.current === authScope && saveScopeRef.current === requestedScope;
     async function sync() {
       try {
         const pendingDeletes = [...deletedIdsRef.current];
         await enqueueFeatureWrite(() => !cancelled && saveScopeRef.current === requestedScope && featureWriteRevision.current === requestedRevision ? cloud.syncFeatures(activeWsId, features, manualOrder, pendingDeletes) : null);
-        if (cancelled || saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
+        if (!current() || featureWriteRevision.current !== requestedRevision) return;
         pendingDeletes.forEach(id => deletedIdsRef.current.delete(id));
-        await cloud.saveProductContext(activeWsId, productContext);
-        if (cancelled || saveScopeRef.current !== requestedScope || featureWriteRevision.current !== requestedRevision) return;
+        await enqueueContextWrite(() => current() && contextWriteRevision.current === contextRevision ? cloud.saveProductContext(activeWsId, productContext) : undefined);
+        if (contextWriteRevision.current !== contextRevision || !current() || featureWriteRevision.current !== requestedRevision) return;
         await cloud.saveWorkspaceSettings(activeWsId, { viewMode, sortMode, mapColorBy, mapSizeBy, mapLabelMode });
         if (!cancelled && saveScopeRef.current === requestedScope && featureWriteRevision.current === requestedRevision) {
           setPendingSync(false);
@@ -386,7 +415,7 @@ export default function App({ guestDemo = false }) {
     }
     sync();
     return () => { cancelled = true; };
-  }, [isOnline, pendingSync, isSignedIn, activeWsId, features, currentSaveScope, browserFallback]);
+  }, [isOnline, pendingSync, isSignedIn, activeWsId, features, currentSaveScope, browserFallback, workspaceLoading, authScope]);
 
   const addFeature = async (f) => {
     if (!activeWsId || !loadedRef.current) throw new Error("Wait for this workspace to finish loading before saving.");
@@ -478,13 +507,16 @@ export default function App({ guestDemo = false }) {
     setSortMode("manual");
   };
   const handleImportFile = (e) => {
+    const current = captureWorkspaceRequest();
+    if (!current()) return;
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
+      if (!current()) return;
       const result = mapCSVToFeatures(parseCSV(ev.target.result));
       if (result && result.features.length > 0) {
-        setImportData(result);
+        setImportData({ ...result, scope: currentSaveScope });
         setShowForm(false);
       }
     };
@@ -492,25 +524,39 @@ export default function App({ guestDemo = false }) {
     e.target.value = "";
   };
   const confirmImport = () => {
-    if (!importData) return;
+    if (!importData || !loadedRef.current || importData.scope !== saveScopeRef.current) return;
     setFeatures(prev => [...prev, ...importData.features]);
     setImportData(null);
   };
 
-  const workspaceLoadSequence = useRef(0);
   const switchWorkspace = useCallback(async (wsId) => {
-    if (guestDemo) return;
+    if (guestDemo || authScopeRef.current !== authScope || loadedSnapshot.current?.authScope !== authScope) return;
+    // Async workspace creation may hold an older callback. Depart with the
+    // latest source context, never the context captured before that request.
+    const source = departureSnapshotRef.current;
+    if (source?.authScope !== authScope || source.wsId !== loadedSnapshot.current.wsId) return;
     const loadId = ++workspaceLoadSequence.current;
+    const current = () => loadId === workspaceLoadSequence.current && authScopeRef.current === authScope;
+    loadedRef.current = false;
+    clearTimeout(saveTimer.current); clearTimeout(ctxSaveTimer.current); clearTimeout(settingsSaveTimer.current);
+    setWorkspaceLoading(true); setWorkspaceError(""); setContextSaveStatus(null);
     if (isSignedIn) {
       try {
+        // A workspace change must not discard an edit still in the debounce window.
+        if (!source.browserFallback && source.contextSaveStatus?.state !== "saved") {
+          if (!source.isOnline) throw new Error("Wait until you are online and the workspace context has saved before switching.");
+          await enqueueContextWrite(() => current() ? cloud.saveProductContext(source.wsId, source.productContext) : undefined);
+          if (!current()) return;
+          setContextSaveStatus({ state: "saved", message: "Context saved to this workspace." });
+        }
         const [data, ctx, d, signalsData, settings] = await Promise.all([
           cloud.fetchFeatures(wsId),
-          cloud.fetchProductContext(wsId).catch(() => ({})),
+          cloud.fetchProductContext(wsId),
           cloud.fetchDecisions(wsId).catch(() => ({ decisions: [] })),
           cloud.fetchSignals(wsId).catch(() => ({ signals: [] })),
           cloud.fetchWorkspaceSettings(wsId).catch(() => ({})),
         ]);
-        if (loadId !== workspaceLoadSequence.current) return;
+        if (!current()) return;
         // Commit one workspace snapshot together; never expose mixed AI context.
         setBrowserFallback(false);
         setFeatures(data.features || []);
@@ -524,14 +570,12 @@ export default function App({ guestDemo = false }) {
         setMapSizeBy(settings?.mapSizeBy || "uniform");
         setMapLabelMode(settings?.mapLabelMode || "hover");
       } catch (err) {
-        if (loadId !== workspaceLoadSequence.current) return;
+        if (!current()) return;
         console.error("Failed to load workspace:", err);
-        setBrowserFallback(true);
-        setProductContext({});
-        setFeatures([]);
-        setManualOrder([]);
-        setDecisions([]);
-        setSignals([]);
+        loadedRef.current = true;
+        setWorkspaceLoading(false);
+        setWorkspaceError("Could not load the selected workspace or finish saving the current context. Your previous workspace and changes are still open. Check your connection and select the workspace again to retry.");
+        return;
       }
     } else {
       if (loaded && activeWsId) saveWsFeatures(activeWsId, features, manualOrder);
@@ -550,6 +594,9 @@ export default function App({ guestDemo = false }) {
       setMapSizeBy(settings?.mapSizeBy || "uniform");
       setMapLabelMode(settings?.mapLabelMode || "hover");
     }
+    loadedSnapshot.current = { authScope, wsId };
+    loadedRef.current = true;
+    setWorkspaceLoading(false); setPendingSync(false);
     setActiveWsId(wsId);
     if (!isSignedIn) storeActiveWsId(wsId);
     else if (userId) {
@@ -558,17 +605,22 @@ export default function App({ guestDemo = false }) {
     setSelectedId(null);
     setShowForm(false);
     setEditingFeature(null);
-  }, [isSignedIn, userId, orgId, loaded, activeWsId, features, manualOrder, guestDemo]);
+    setUndoSnapshot(null); setImportData(null); setDragId(null);
+    setFeedbackSummary(null); setFeedbackContext(null);
+  }, [isSignedIn, userId, orgId, loaded, activeWsId, features, manualOrder, guestDemo, authScope]);
 
   const addWorkspace = async () => {
     if (guestDemo) return;
+    const requestedAuth = authScope;
+    const generation = workspaceLoadSequence.current;
+    const current = () => authScopeRef.current === requestedAuth && generation === workspaceLoadSequence.current;
     const name = await dialog.prompt({ title: "New workspace", label: "Workspace name", placeholder: "e.g. Q3 Roadmap", confirmText: "Create" });
-    if (!name?.trim()) return;
+    if (!name?.trim() || !current()) return;
     if (isSignedIn) {
       try {
         const ws = await cloud.createWorkspace(name.trim());
-        const updated = [...workspaces, { id: ws.id, name: ws.name }];
-        setWorkspaces(updated);
+        if (!current()) return;
+        setWorkspaces(previous => [...previous, { id: ws.id, name: ws.name }]);
         switchWorkspace(ws.id);
       } catch (err) {
         console.error("Failed to create workspace:", err);
@@ -584,6 +636,9 @@ export default function App({ guestDemo = false }) {
   };
   const deleteWorkspace = async (wsId) => {
     if (guestDemo) return;
+    const requestedAuth = authScope;
+    const generation = workspaceLoadSequence.current;
+    const current = () => authScopeRef.current === requestedAuth && generation === workspaceLoadSequence.current;
     if (workspaces.length <= 1) return;
     const ws = workspaces.find(w => w.id === wsId);
     const ok = await dialog.confirm({
@@ -592,7 +647,7 @@ export default function App({ guestDemo = false }) {
       confirmText: "Delete",
       danger: true,
     });
-    if (!ok) return;
+    if (!ok || !current()) return;
     if (isSignedIn) {
       try { await cloud.deleteWorkspaceApi(wsId); } catch (err) { console.error(err); return; }
     } else {
@@ -603,6 +658,7 @@ export default function App({ guestDemo = false }) {
       removeWsSettings(wsId);
       localStorage.removeItem(`prioritize-ws-${wsId}-briefs`);
     }
+    if (!current()) return;
     const updated = workspaces.filter(w => w.id !== wsId);
     setWorkspaces(updated);
     if (!isSignedIn) saveWsIndex(updated);
@@ -610,34 +666,45 @@ export default function App({ guestDemo = false }) {
   };
   const renameWorkspace = async (wsId, newName) => {
     if (guestDemo) return;
+    const requestedAuth = authScope;
     const ws = workspaces.find(w => w.id === wsId);
     const name = newName || await dialog.prompt({ title: "Rename workspace", label: "Workspace name", defaultValue: ws?.name, confirmText: "Rename" });
-    if (!name?.trim()) return;
+    if (!name?.trim() || authScopeRef.current !== requestedAuth) return;
     if (isSignedIn) {
       try { await cloud.renameWorkspaceApi(wsId, name.trim()); } catch (err) { console.error(err); return; }
     }
-    const updated = workspaces.map(w => w.id === wsId ? { ...w, name: name.trim() } : w);
-    setWorkspaces(updated);
-    if (!isSignedIn) saveWsIndex(updated);
+    if (authScopeRef.current !== requestedAuth) return;
+    setWorkspaces(previous => {
+      const updated = previous.map(w => w.id === wsId ? { ...w, name: name.trim() } : w);
+      if (!isSignedIn) saveWsIndex(updated);
+      return updated;
+    });
   };
 
   const handleMigration = async () => {
+    const requestedAuth = authScope;
+    const current = () => authScopeRef.current === requestedAuth;
     const localWs = loadWsIndex();
     if (!localWs) return;
     try {
       for (const lw of localWs) {
+        if (!current()) return;
         const ws = await cloud.createWorkspace(lw.name);
+        if (!current()) return;
         const saved = loadWsFeatures(lw.id);
         if (saved?.features) {
           for (const f of saved.features) {
+            if (!current()) return;
             await cloud.upsertFeature(ws.id, f);
           }
         }
       }
       // Keep the browser copy available for offline fallback and review.
+      if (!current()) return;
       dismissMigration();
       // Reload cloud data
       const ws = await cloud.fetchWorkspaces();
+      if (!current()) return;
       setWorkspaces(ws.map(w => ({ id: w.id, name: w.name })));
     } catch (err) {
       console.error("Migration failed:", err);
@@ -647,26 +714,32 @@ export default function App({ guestDemo = false }) {
 
   // ── Load feedback data for current workspace ──
   useEffect(() => {
-    if (!loaded || !activeWsId) return;
+    const current = captureWorkspaceRequest();
+    if (!loaded || !activeWsId || !current()) return;
+    let cancelled = false;
+    const applySummary = value => { if (!cancelled && current()) setFeedbackSummary(value); };
+    const applyContext = value => { if (!cancelled && current()) setFeedbackContext(value); };
     if (isSignedIn) {
-      cloud.fetchFeedbackSummary(activeWsId).then(setFeedbackSummary).catch(() => setFeedbackSummary(null));
-      cloud.fetchFeedbackContext(activeWsId).then(setFeedbackContext).catch(() => setFeedbackContext(null));
+      cloud.fetchFeedbackSummary(activeWsId).then(applySummary).catch(() => applySummary(null));
+      cloud.fetchFeedbackContext(activeWsId).then(applyContext).catch(() => applyContext(null));
     } else {
       const scoreEvents = feedbackLocal.loadScoreEvents(activeWsId);
       const analysisEvents = feedbackLocal.loadAnalysisEvents(activeWsId);
-      setFeedbackSummary(computeSummaryMetrics(scoreEvents, analysisEvents));
-      setFeedbackContext({
+      applySummary(computeSummaryMetrics(scoreEvents, analysisEvents));
+      applyContext({
         scoreCalibration: buildScoreCalibration(scoreEvents),
         analysisContext: buildAnalysisContext(analysisEvents),
       });
     }
-  }, [loaded, activeWsId, isSignedIn]);
+    return () => { cancelled = true; };
+  }, [loaded, activeWsId, isSignedIn, captureWorkspaceRequest, workspaceLoading]);
 
   const refreshFeedback = useCallback(() => {
-    if (!activeWsId) return;
+    const current = captureWorkspaceRequest();
+    if (!activeWsId || !current()) return;
     if (isSignedIn) {
-      cloud.fetchFeedbackSummary(activeWsId).then(setFeedbackSummary).catch(() => {});
-      cloud.fetchFeedbackContext(activeWsId).then(setFeedbackContext).catch(() => {});
+      cloud.fetchFeedbackSummary(activeWsId).then(value => { if (current()) setFeedbackSummary(value); }).catch(() => {});
+      cloud.fetchFeedbackContext(activeWsId).then(value => { if (current()) setFeedbackContext(value); }).catch(() => {});
     } else {
       const scoreEvents = feedbackLocal.loadScoreEvents(activeWsId);
       const analysisEvents = feedbackLocal.loadAnalysisEvents(activeWsId);
@@ -676,7 +749,7 @@ export default function App({ guestDemo = false }) {
         analysisContext: buildAnalysisContext(analysisEvents),
       });
     }
-  }, [activeWsId, isSignedIn]);
+  }, [activeWsId, isSignedIn, captureWorkspaceRequest]);
 
   // ── Feedback handlers ──
   const handleScoreEvent = useCallback(async (events) => {
@@ -723,20 +796,24 @@ export default function App({ guestDemo = false }) {
 
   // ── Decision handlers ──
   const handleAddDecision = useCallback(async (decision) => {
+    const current = captureWorkspaceRequest();
+    if (!current()) return;
     if (isSignedIn && activeWsId) {
       const result = await cloud.createDecision(activeWsId, decision);
-      setDecisions(prev => [...prev, result]);
+      if (current()) setDecisions(prev => [...prev, result]);
     } else {
       const newDecision = { ...decision, id: `dec-${Date.now()}`, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
       setDecisions(prev => { const updated = [...prev, newDecision]; saveWsDecisions(activeWsId, updated); return updated; });
     }
-  }, [isSignedIn, activeWsId]);
+  }, [isSignedIn, activeWsId, captureWorkspaceRequest]);
 
   const handleUpdateDecision = useCallback(async (decisionId, updates) => {
+    const current = captureWorkspaceRequest();
+    if (!current()) return;
     if (isSignedIn && activeWsId) {
       try {
         const result = await cloud.updateDecision(activeWsId, decisionId, updates);
-        setDecisions(prev => prev.map(d => d.id === decisionId ? { ...result, reviews: d.reviews || [] } : d));
+        if (current()) setDecisions(prev => prev.map(d => d.id === decisionId ? { ...result, reviews: d.reviews || [] } : d));
       } catch (err) { console.error("Update decision failed:", err); throw err; }
     } else {
       setDecisions(prev => {
@@ -745,14 +822,16 @@ export default function App({ guestDemo = false }) {
         return updated;
       });
     }
-  }, [isSignedIn, activeWsId]);
+  }, [isSignedIn, activeWsId, captureWorkspaceRequest]);
 
   const handleReviewDecision = useCallback(async (decisionId, input) => {
+    const current = captureWorkspaceRequest();
+    if (!current()) return;
     const scope = currentSaveScope;
     if (!activeWsId) throw new Error('Choose a workspace first.');
     if (isSignedIn) {
       const review = await cloud.createDecisionReview(activeWsId, decisionId, input);
-      if (saveScopeRef.current === scope) setDecisions(prev => prev.map(d => d.id === decisionId ? { ...d, reviews: [...(d.reviews || []), review] } : d));
+      if (current() && saveScopeRef.current === scope) setDecisions(prev => prev.map(d => d.id === decisionId ? { ...d, reviews: [...(d.reviews || []), review] } : d));
       return review;
     }
     const append = () => {
@@ -766,39 +845,46 @@ export default function App({ guestDemo = false }) {
       // Write before displaying success: a full or blocked browser store must
       // leave the review draft open and the original record untouched.
       localStorage.setItem(key, JSON.stringify(updated));
-      if (saveScopeRef.current === scope) setDecisions(updated);
+      if (current() && saveScopeRef.current === scope) setDecisions(updated);
       return review;
     };
     return navigator.locks ? navigator.locks.request(`tarazu-review:${activeWsId}`, append) : append();
-  }, [isSignedIn, activeWsId, currentSaveScope, decisions, signals]);
+  }, [isSignedIn, activeWsId, currentSaveScope, decisions, signals, captureWorkspaceRequest]);
 
   const handleDeleteDecision = useCallback(async (decisionId) => {
+    const current = captureWorkspaceRequest();
+    if (!current()) return;
     if (isSignedIn && activeWsId) {
       try { await cloud.deleteDecisionApi(activeWsId, decisionId); } catch (err) { console.error(err); return; }
     }
+    if (!current()) return;
     setDecisions(prev => {
       const updated = prev.filter(d => d.id !== decisionId);
       if (!isSignedIn) saveWsDecisions(activeWsId, updated);
       return updated;
     });
-  }, [isSignedIn, activeWsId]);
+  }, [isSignedIn, activeWsId, captureWorkspaceRequest]);
 
   // ── Signal handlers ──
   const handleAddSignal = useCallback(async (signal) => {
+    const current = captureWorkspaceRequest();
+    if (!current()) return;
     if (isSignedIn && activeWsId) {
       const result = await cloud.createSignal(activeWsId, signal);
-      setSignals(prev => [result, ...prev]);
+      if (current()) setSignals(prev => [result, ...prev]);
     } else {
       const newSignal = { ...signal, id: `sig-${Date.now()}`, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
       setSignals(prev => { const updated = [newSignal, ...prev]; saveWsSignals(activeWsId, updated); return updated; });
     }
-  }, [isSignedIn, activeWsId]);
+  }, [isSignedIn, activeWsId, captureWorkspaceRequest]);
 
   const handleUpdateSignal = useCallback(async (signalId, updates) => {
+    const current = captureWorkspaceRequest();
+    if (!current()) return;
     if (isSignedIn && activeWsId) {
       try {
         const result = await cloud.updateSignal(activeWsId, signalId, updates);
-        setSignals(prev => prev.map(s => s.id === signalId ? result : s));
+        if (current()) setSignals(prev => prev.map(s => s.id === signalId ? result : s));
       } catch (err) { console.error("Update signal failed:", err); }
     } else {
       setSignals(prev => {
@@ -807,25 +893,31 @@ export default function App({ guestDemo = false }) {
         return updated;
       });
     }
-  }, [isSignedIn, activeWsId]);
+  }, [isSignedIn, activeWsId, captureWorkspaceRequest]);
 
   const handleDeleteSignal = useCallback(async (signalId) => {
+    const current = captureWorkspaceRequest();
+    if (!current()) return;
     if (isSignedIn && activeWsId) {
       try { await cloud.deleteSignalApi(activeWsId, signalId); } catch (err) { console.error(err); return; }
     }
+    if (!current()) return;
     setSignals(prev => {
       const updated = prev.filter(s => s.id !== signalId);
       if (!isSignedIn) saveWsSignals(activeWsId, updated);
       return updated;
     });
-  }, [isSignedIn, activeWsId]);
+  }, [isSignedIn, activeWsId, captureWorkspaceRequest]);
 
   const handleImportSignals = useCallback(async (signalsList) => {
+    const current = captureWorkspaceRequest();
+    if (!current()) return;
     if (isSignedIn && activeWsId) {
       try {
         await cloud.importSignals(activeWsId, signalsList);
+        if (!current()) return;
         const fresh = await cloud.fetchSignals(activeWsId);
-        setSignals(fresh.signals || []);
+        if (current()) setSignals(fresh.signals || []);
       } catch (err) { console.error("Import signals failed:", err); }
     } else {
       setSignals(prev => {
@@ -835,7 +927,7 @@ export default function App({ guestDemo = false }) {
         return updated;
       });
     }
-  }, [isSignedIn, activeWsId]);
+  }, [isSignedIn, activeWsId, captureWorkspaceRequest]);
 
   const activeWs = workspaces.find(w => w.id === activeWsId);
   const ownDecisionStarted = useRef(false);
@@ -857,30 +949,32 @@ export default function App({ guestDemo = false }) {
   }, []);
 
   const handleLoadSamples = useCallback(() => {
+    if (!loadedRef.current || saveScopeRef.current !== currentSaveScope) return;
     if (guestDemo) { showToast("Use Restart demo above to restore the complete Relay example."); return; }
     const examples = sampleBacklogFor(features);
     if (!examples) {
       showToast("Your candidates are unchanged. Create an empty workspace to try examples.");
       return;
     }
-    setUndoSnapshot({ features, selectedId, manualOrder, sortMode });
+    setUndoSnapshot({ features, selectedId, manualOrder, sortMode, scope: currentSaveScope });
     setFeatures(examples);
     setActiveScreen("priorities");
     setSelectedId(null);
     setManualOrder([]);
     setSortMode("rice");
-  }, [features, selectedId, manualOrder, sortMode, showToast, guestDemo]);
+  }, [features, selectedId, manualOrder, sortMode, showToast, guestDemo, currentSaveScope]);
 
   const handleClear = useCallback(() => {
-    setUndoSnapshot({ features, selectedId, manualOrder, sortMode });
+    if (!loadedRef.current || saveScopeRef.current !== currentSaveScope) return;
+    setUndoSnapshot({ features, selectedId, manualOrder, sortMode, scope: currentSaveScope });
     setFeatures([]);
     setSelectedId(null);
     setManualOrder([]);
     setSortMode("rice");
-  }, [features, selectedId, manualOrder, sortMode]);
+  }, [features, selectedId, manualOrder, sortMode, currentSaveScope]);
 
   const handleUndo = useCallback(() => {
-    if (!undoSnapshot) return;
+    if (!undoSnapshot || !loadedRef.current || undoSnapshot.scope !== saveScopeRef.current) return;
     setFeatures(undoSnapshot.features);
     setSelectedId(undoSnapshot.selectedId);
     setManualOrder(undoSnapshot.manualOrder);
@@ -928,9 +1022,9 @@ export default function App({ guestDemo = false }) {
     }
   };
 
-  if (!loaded) return (
+  if (!loaded || loadedSnapshot.current?.authScope !== authScope) return (
     <main className="tz-app" style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
-      {demoError ? <section style={{ maxWidth: 500, padding: 24 }}><h1>Relay demo could not open</h1><p role="alert">{demoError} Allow browser storage and try again, or restart the example.</p><button onClick={() => window.location.reload()}>Try again</button> <button onClick={restartDemo}>Restart demo</button> <Link href="/app">Open your workspace</Link><DialogHost /></section> : <p role="status" style={{ fontSize: 14, color: C.textMuted }}>Loading your workspace…</p>}
+      {workspaceError ? <section style={{ maxWidth: 500, padding: 24 }}><h1>Workspace could not open</h1><p role="alert">{workspaceError}</p><button onClick={() => setLoadRetry(n => n + 1)}>Retry workspace load</button></section> : demoError ? <section style={{ maxWidth: 500, padding: 24 }}><h1>Relay demo could not open</h1><p role="alert">{demoError} Allow browser storage and try again, or restart the example.</p><button onClick={() => window.location.reload()}>Try again</button> <button onClick={restartDemo}>Restart demo</button> <Link href="/app">Open your workspace</Link><DialogHost /></section> : <p role="status" style={{ fontSize: 14, color: C.textMuted }}>Loading your workspace…</p>}
     </main>
   );
 
@@ -946,6 +1040,8 @@ export default function App({ guestDemo = false }) {
       {isSignedIn && showMigration && <MigrationBanner onConfirm={handleMigration} onDismiss={dismissMigration} />}
 
       {isSignedIn && hasLocalImport && !showMigration && activeScreen === "settings" && <div style={{ padding: "10px 20px", borderBottom: `1px solid ${C.border}` }}><button onClick={() => setShowMigration(true)} style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text, borderRadius: 6, padding: "8px 12px", cursor: "pointer", fontSize: 14 }}>Review browser data for import</button></div>}
+      {workspaceError && <p role="alert" style={{ margin: 0, padding: "12px 20px", color: C.text }}>{workspaceError}</p>}
+      {workspaceLoading && <p role="status" style={{ margin: 0, padding: "12px 20px" }}>Loading selected workspace…</p>}
       {/* Top bar */}
       <header role="banner" style={{
         height: 48, padding: "0 20px", borderBottom: `1px solid ${C.border}`,
@@ -1052,6 +1148,7 @@ export default function App({ guestDemo = false }) {
           />
         )}
 
+        <div style={{ display: "contents" }} inert={workspaceLoading ? "" : undefined} aria-busy={workspaceLoading || undefined}>
         <ErrorBoundary name="Content">
         {(isMobile || isTablet) && activeScreen === "advisor" ? (
           <div role="main" id="main-content" tabIndex={-1} style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: 20 }}>
@@ -1061,14 +1158,14 @@ export default function App({ guestDemo = false }) {
             <AdvisorPanel
               signals={signals} decisions={decisions} workspaceId={activeWsId}
               scored={scored}
-              productContext={productContext} onProductContextChange={setProductContext}
+              productContext={productContext} onProductContextChange={updateProductContext}
               onAnalysisEvent={handleAnalysisEvent} onAnalysisFeedback={handleAnalysisFeedback}
               feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
               onAddDecision={handleAddDecision} onScreenChange={handleScreenChange}
             />
           </div>
         ) : (
-        <CenterCanvas guestDemo={guestDemo}
+        <CenterCanvas key={currentSaveScope} guestDemo={guestDemo} settingsScope={currentSaveScope}
           onStoryActiveChange={setQuickStoryActive}
           activeScreen={activeScreen}
           saveTarget={isSignedIn && isOnline && !pendingSync && !browserFallback ? "cloud" : "browser"}
@@ -1086,7 +1183,7 @@ export default function App({ guestDemo = false }) {
           importData={importData} onConfirmImport={confirmImport} onCancelImport={() => setImportData(null)}
           onImportFile={() => fileInputRef.current?.click()}
           onExportCSV={() => exportCSV(displayOrder, activeWs?.name, C)}
-          contextSaveStatus={contextSaveStatus} productContext={productContext} onProductContextChange={setProductContext} onScoreEvent={handleScoreEvent}
+          contextSaveStatus={contextSaveStatus} productContext={productContext} onProductContextChange={updateProductContext} onScoreEvent={handleScoreEvent}
           onResolveScores={handleResolveScores} feedbackContext={feedbackContext}
           isMobile={isMobile}
           mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode}
@@ -1105,16 +1202,17 @@ export default function App({ guestDemo = false }) {
         />
         )}
         </ErrorBoundary>
+        </div>
 
         {!isMobile && !isTablet && !(showForm && activeScreen === "priorities") && (
-          <div hidden={storyFocused} style={{ display: storyFocused ? "none" : "contents" }}>
+          <div hidden={storyFocused} inert={workspaceLoading ? "" : undefined} style={{ display: storyFocused ? "none" : "contents" }}>
           <ErrorBoundary name="Detail Panel">
           <RightRail
             selectedFeature={selectedFeature} onDeselect={() => setSelectedId(null)}
             scored={scored} maxScore={maxScore}
             onEditFeature={editFeature} onDeleteFeature={deleteFeature}
             onRevert={handleRevert}
-            productContext={productContext} onProductContextChange={setProductContext}
+            productContext={productContext} onProductContextChange={updateProductContext}
             onAnalysisEvent={handleAnalysisEvent}
             onAnalysisFeedback={handleAnalysisFeedback}
             feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
@@ -1129,13 +1227,14 @@ export default function App({ guestDemo = false }) {
 
       {/* Tablet: right rail as overlay when candidate selected */}
       {isTablet && selectedFeature && !showForm && !storyFocused && (
+        <div style={{ display: "contents" }} inert={workspaceLoading ? "" : undefined}>
         <ErrorBoundary name="Detail Panel">
         <RightRail
           selectedFeature={selectedFeature} onDeselect={() => setSelectedId(null)}
           scored={scored} maxScore={maxScore}
           onEditFeature={editFeature} onDeleteFeature={deleteFeature}
           onRevert={handleRevert}
-          productContext={productContext} onProductContextChange={setProductContext}
+          productContext={productContext} onProductContextChange={updateProductContext}
           onAnalysisEvent={handleAnalysisEvent}
           onAnalysisFeedback={handleAnalysisFeedback}
           feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
@@ -1144,17 +1243,19 @@ export default function App({ guestDemo = false }) {
           signals={signals} decisions={decisions} onScreenChange={handleScreenChange}
         />
         </ErrorBoundary>
+        </div>
       )}
 
       {/* Mobile: right rail as bottom sheet overlay when candidate selected */}
       {isMobile && selectedFeature && !showForm && !storyFocused && (
+        <div style={{ display: "contents" }} inert={workspaceLoading ? "" : undefined}>
         <ErrorBoundary name="Detail Panel">
         <RightRail
           selectedFeature={selectedFeature} onDeselect={() => setSelectedId(null)}
           scored={scored} maxScore={maxScore}
           onEditFeature={editFeature} onDeleteFeature={deleteFeature}
           onRevert={handleRevert}
-          productContext={productContext} onProductContextChange={setProductContext}
+          productContext={productContext} onProductContextChange={updateProductContext}
           onAnalysisEvent={handleAnalysisEvent}
           onAnalysisFeedback={handleAnalysisFeedback}
           feedbackContext={feedbackContext} feedbackSummary={feedbackSummary}
@@ -1163,6 +1264,7 @@ export default function App({ guestDemo = false }) {
           signals={signals} decisions={decisions} onScreenChange={handleScreenChange}
         />
         </ErrorBoundary>
+        </div>
       )}
 
       {/* Mobile: bottom tab bar */}

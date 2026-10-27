@@ -6,6 +6,7 @@
 // (no provider) useC() returns the default palette, so the front door stays on
 // the default brand. Used by the in-app ClerkWrapper AND the /sign-in & /sign-up
 // ClerkAuthProvider. (NB palette↔token naming: C.blue is the brand brass.)
+const viewportCard = { maxWidth: "calc(100vw - 32px)", maxHeight: "calc(100dvh - 32px)", minWidth: 0, boxSizing: "border-box", overflowY: "auto" };
 export const clerkAppearance = (C) => ({
   variables: {
     colorPrimary: C.blue,             // brand brass
@@ -22,7 +23,7 @@ export const clerkAppearance = (C) => ({
     fontFamily: "var(--body)",        // the real Figtree (next/font) via the token
   },
   elements: {
-    card: { backgroundColor: C.surface, borderColor: C.border },
+    card: { ...viewportCard, backgroundColor: C.surface, borderColor: C.border },
     headerTitle: { color: C.text },
     headerSubtitle: { color: C.textMuted },
     socialButtonsBlockButton: { borderColor: C.border, color: C.text },
@@ -43,6 +44,10 @@ export const clerkAppearance = (C) => ({
     // sits beside the Pricing / RICE Guide links, so it borrows their muted
     // mono treatment instead of Clerk's default button styling.
     organizationSwitcherTrigger: {
+      maxWidth: "100%",
+      minWidth: 0,
+      whiteSpace: "normal",
+      overflowWrap: "anywhere",
       color: C.textMuted,
       fontFamily: "var(--mono)",
       fontSize: "11px",
@@ -50,7 +55,7 @@ export const clerkAppearance = (C) => ({
       borderRadius: "6px",
       "&:hover": { backgroundColor: C.surfaceSunken, color: C.text },
     },
-    organizationSwitcherPopoverCard: { backgroundColor: C.surface, borderColor: C.border },
+    organizationSwitcherPopoverCard: { ...viewportCard, backgroundColor: C.surface, borderColor: C.border },
     organizationSwitcherPopoverActionButton: { color: C.text },
     organizationSwitcherPopoverActionButtonText: { color: C.text },
     organizationSwitcherPopoverActionButtonIcon: { color: C.textMuted },
@@ -59,7 +64,7 @@ export const clerkAppearance = (C) => ({
     organizationPreviewSecondaryIdentifier: { color: C.textMuted },
 
     // In-app <UserButton/> popover (used at /app)
-    userButtonPopoverCard: { backgroundColor: C.surface, borderColor: C.border },
+    userButtonPopoverCard: { ...viewportCard, backgroundColor: C.surface, borderColor: C.border },
     userButtonPopoverActionButton: { color: C.text },
     userButtonPopoverActionButtonText: { color: C.text },
     userButtonPopoverActionButtonIcon: { color: C.textMuted },

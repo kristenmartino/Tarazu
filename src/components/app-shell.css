@@ -36,3 +36,22 @@
   .tz-shortcuts-panel { box-sizing:border-box; max-height:calc(100dvh - 32px - var(--safe-area-bottom)); overflow-y:auto; }
   .tzui-modal { box-sizing:border-box; max-height:calc(100dvh - 48px - var(--safe-area-bottom)); overflow-y:auto; }
 }
+
+/* Account entry points live in Settings on phones and rotated small screens. */
+.tz-mobile-account { display:none; border:1px solid var(--border); border-radius:12px; padding:20px; background:var(--surface-raised); min-width:0; }
+.tz-mobile-account h3 { font:650 18px/1.3 var(--display); margin:0 0 16px; }
+.tz-mobile-account h4 { font:600 14px/1.4 var(--body); margin:0 0 5px; }
+.tz-mobile-account-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px 16px; min-width:0; }
+.tz-mobile-account-row+ .tz-mobile-account-row { border-top:1px solid var(--border); margin-top:17px; padding-top:17px; }
+.tz-mobile-account-row>div:first-child { flex:1 1 150px; min-width:0; }
+.tz-mobile-account-name { color:var(--text); font:14px/1.5 var(--body); overflow-wrap:anywhere; margin:0; }
+.tz-mobile-account-note { color:var(--text-soft); font:12px/1.6 var(--body); margin:5px 0 0; overflow-wrap:anywhere; }
+.tz-mobile-account-control { min-width:0; max-width:100%; }
+.tz-mobile-team-row .tz-mobile-account-control { flex:1 1 100%; }
+@media(max-width:800px), (max-width:1024px) and (max-height:600px) { .tz-mobile-account { display:block; } }
+
+.tz-mobile-account-control[aria-disabled="true"] { opacity:.55; }
+
+.tz-mobile-account-warning { margin-top:16px; padding-top:12px; border-top:1px solid var(--border); }
+.tz-mobile-account-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.tz-mobile-account-actions button { color:var(--text); background:var(--surface-raised); border:1px solid var(--border); border-radius:6px; padding:9px 12px; font:12px/1.4 var(--body); cursor:pointer; }
