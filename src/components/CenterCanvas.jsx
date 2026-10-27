@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
+import { DecisionFrame } from "./DecisionFrame";
 import { Form } from "./Form";
 import { Card } from "./Card";
 import { ImportPanel } from "./ImportPanel";
@@ -38,7 +39,7 @@ export const CenterCanvas = ({
   undoSnapshot, onUndo, onLoadSamples, onClear,
   importData, onConfirmImport, onCancelImport,
   onImportFile, onExportCSV,
-  productContext, onProductContextChange, onScoreEvent, onResolveScores, feedbackContext,
+  productContext, contextSaveStatus, onProductContextChange, onScoreEvent, onResolveScores, feedbackContext,
   isMobile,
   mapColorBy, mapSizeBy, mapLabelMode,
   onMapColorByChange, onMapSizeByChange, onMapLabelModeChange,
@@ -131,10 +132,10 @@ export const CenterCanvas = ({
   });
 
   // Non-priorities screens
-  if (activeScreen === "home") return <WorkspaceHome key={`${activeWsId}:${guestDemo}`} onStoryActiveChange={onStoryActiveChange} guestDemo={guestDemo} scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} isSignedIn={isSignedIn} onOpenDecision={(decisionId) => { const record = decisionId ? decisions.find(d => d.id === decisionId) : relayStoryDecision(decisions); setStoryDecisionId(record?.id || null); onScreenChange("decisions"); }} onInspectCandidate={() => { onScreenChange("priorities"); const reminder = features.find(f => f.id === relay.features[0].id) || features.find(f => f.description === relay.features[0].description && f.name === relay.features[0].name); if (reminder) onEditFeature(reminder); }} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
+  if (activeScreen === "home") return <WorkspaceHome key={`${activeWsId}:${guestDemo}`} onStoryActiveChange={onStoryActiveChange} productContext={productContext} onProductContextChange={onProductContextChange} contextSaveStatus={contextSaveStatus} guestDemo={guestDemo} scored={scored} decisions={decisions} signals={signals} activeWs={activeWs} isSignedIn={isSignedIn} onOpenDecision={(decisionId) => { const record = decisionId ? decisions.find(d => d.id === decisionId) : relayStoryDecision(decisions); setStoryDecisionId(record?.id || null); onScreenChange("decisions"); }} onInspectCandidate={() => { onScreenChange("priorities"); const reminder = features.find(f => f.id === relay.features[0].id) || features.find(f => f.description === relay.features[0].description && f.name === relay.features[0].name); if (reminder) onEditFeature(reminder); }} onScreenChange={onScreenChange} onLoadSamples={onLoadSamples} onAddCandidate={() => { onScreenChange("priorities"); onEditingFeature(null); onShowForm(true); }} />;
   if (activeScreen === "decisions") return <DecisionsScreen key={activeWsId} signals={signals} onReview={onReviewDecision} initialExpandedId={storyDecisionId} decisions={decisions} scored={scored} onAdd={onAddDecision} onUpdate={onUpdateDecision} onDelete={onDeleteDecision} />;
   if (activeScreen === "signals") return <SignalsScreen signals={signals} scored={scored} onAdd={onAddSignal} onUpdate={onUpdateSignal} onDelete={onDeleteSignal} onImport={onImportSignals} />;
-  if (activeScreen === "validate") return <ValidationWorkspace key={`${activeWsId}:${isSignedIn}`} workspaceId={activeWsId} isSignedIn={isSignedIn} isMobile={isMobile} scored={scored} signals={signals} productContext={productContext} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
+  if (activeScreen === "validate") return <ValidationWorkspace key={`${activeWsId}:${isSignedIn}`} workspaceId={activeWsId} isSignedIn={isSignedIn} isMobile={isMobile} scored={scored} signals={signals} productContext={productContext} onProductContextChange={onProductContextChange} contextSaveStatus={contextSaveStatus} guestDemo={guestDemo} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
   if (activeScreen === "scenarios") return <ScenariosScreen features={features} scored={scored} sorted={sorted} activeWsId={activeWsId} isSignedIn={isSignedIn} onSelect={onSelect} isMobile={isMobile} />;
   if (activeScreen === "settings") return <SettingsScreen guestDemo={guestDemo} activeWs={activeWs} onRenameWorkspace={onRenameWorkspace} onClear={onClear} onDeleteWorkspace={() => onDeleteWorkspace(activeWs?.id)} sortMode={sortMode} onSortModeChange={onSortModeChange} mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode} onMapColorByChange={onMapColorByChange} onMapSizeByChange={onMapSizeByChange} onMapLabelModeChange={onMapLabelModeChange} isSignedIn={isSignedIn} features={features} />;
   if (activeScreen !== "priorities") {
@@ -340,6 +341,7 @@ export const CenterCanvas = ({
           </section>
         )}
 
+        <DecisionFrame key={`frame-${activeWsId}`} compact context={productContext} onChange={onProductContextChange} fictional={guestDemo} saveStatus={contextSaveStatus} />
         {!showForm && unifiedFilters}
         {showForm && <Form saveTarget={saveTarget} savePendingSync={savePendingSync} key={`${activeWsId}:${isSignedIn}:${editingFeature?.id || "new"}`} onAdd={onAddFeature} onCancel={() => { onShowForm(false); onEditingFeature(null); }} editFeature={editingFeature} scored={scored} features={features} signals={signals} decisions={decisions} workspaceId={activeWsId} onProductContextChange={onProductContextChange} productContext={productContext} onScoreEvent={onScoreEvent} onResolveScores={onResolveScores} feedbackContext={feedbackContext} />}
         {importData && <ImportPanel importData={importData} onConfirm={onConfirmImport} onCancel={onCancelImport} />}

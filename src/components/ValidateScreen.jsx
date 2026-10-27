@@ -1,8 +1,14 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useC } from "../ThemeProvider";
 import { Pill } from "./Pill";
 import { signalSnapshot, briefFingerprint } from "../../lib/validation-brief";
 import { dialog } from "./dialog";
+import { NextTestPlan, RecordedComparisonContext } from "./DecisionPlan";
+import { DecisionFrame } from "./DecisionFrame";
+import { normalizeNextTest } from "../../lib/decision-plan";
+import { normalizeScoringSettings } from "../../lib/scoring-basis";
+import { validationBriefText } from "../../lib/decision-text";
+import { serializeDateOnly } from "../dateOnly";
 import { trackUsage } from "../../lib/usage-events";
 import {
   ASSUMPTION_CATEGORIES,
@@ -12,7 +18,7 @@ import {
 
 const defaultScores = () => Object.fromEntries(VALIDATE_DIMENSIONS.map((d) => [d.key, null]));
 
-export const ValidateScreen = ({ scored = [], signals = [], productContext, onAddDecision, onScreenChange, briefs = [], onSaveBrief, storageLabel = "Saved", isMobile = false }) => {
+export const ValidateScreen = ({ scored = [], signals = [], productContext, onProductContextChange, contextSaveStatus, guestDemo = false, onAddDecision, onScreenChange, briefs = [], onSaveBrief, storageLabel = "Saved", isMobile = false }) => {
   const C = useC();
   const inputStyle = { width: "100%", padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 14, fontFamily: "var(--body)", outline: "none", boxSizing: "border-box" };
   const labelStyle = { fontSize: 12, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 4 };
@@ -37,6 +43,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
   const [evidenceReviewed, setEvidenceReviewed] = useState(false);
   const [risks, setRisks] = useState("");
   const [nextActions, setNextActions] = useState("");
+  const [nextTest, setNextTest] = useState(() => normalizeNextTest());
   const [saving, setSaving] = useState(false);
   const [currentBrief, setCurrentBrief] = useState(null);
   const [baseline, setBaseline] = useState(null);
@@ -57,9 +64,15 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
   const currentDraft = {
     mode, candidateId, ideaName, ideaDesc, manualName, manualDesc, assumptions, scores,
     evidenceReviewed, attachedSignals: [...attachedSignals.map(signalSnapshot), ...missingSignals],
-    productContext: Object.fromEntries(["productSummary", "targetUsers", "strategicPriorities", "constraints", "assumptions", "successMetrics"].map(k => [k, productContext?.[k] || ""])),
-    risks, nextActions,
+    productContext: { ...Object.fromEntries(["productSummary", "targetUsers", "strategicPriorities", "constraints", "assumptions", "successMetrics"].map(k => [k, productContext?.[k] || ""])), scoring: normalizeScoringSettings(productContext?.scoring) },
+    risks, nextActions, nextTest,
   };
+  const contextSignature = briefFingerprint({ productContext: currentDraft.productContext });
+  const previousContext = useRef(contextSignature);
+  useEffect(() => {
+    if (previousContext.current !== contextSignature) setEvidenceReviewed(false);
+    previousContext.current = contextSignature;
+  }, [contextSignature]);
   const signature = briefFingerprint(currentDraft);
   const dirty = baseline === null ? edited : signature !== baseline;
   useEffect(() => {
@@ -82,18 +95,21 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
       const live = signals.find(s => s.id === saved.id);
       return live && briefFingerprint(signalSnapshot(live)) === briefFingerprint(saved);
     });
-    const contextUnchanged = briefFingerprint(draft.productContext) === briefFingerprint(currentDraft.productContext);
+    // Legacy records did not capture scoring context. Use current context only
+    // as an editing baseline; an unchanged save returns the raw record below.
+    const editorDraft = { ...draft, nextTest: normalizeNextTest(draft.nextTest), productContext: { ...draft.productContext, scoring: normalizeScoringSettings(draft.productContext.scoring || productContext?.scoring) } };
+    const contextUnchanged = briefFingerprint({ productContext: editorDraft.productContext }) === briefFingerprint({ productContext: currentDraft.productContext });
     const linkedCandidate = draft.mode === "candidate" ? scored.find(f => f.id === draft.candidateId) : null;
     const candidateUnchanged = draft.mode !== "candidate" || (linkedCandidate && linkedCandidate.name === draft.ideaName && (linkedCandidate.description || "") === draft.ideaDesc);
     setEvidenceReviewed(draft.evidenceReviewed && unchanged && contextUnchanged && Boolean(candidateUnchanged));
-    setRisks(draft.risks); setNextActions(draft.nextActions);
-    setBaseline(briefFingerprint(draft)); setEdited(false); setSaveError(""); setSaveMessage("");
+    setRisks(draft.risks); setNextActions(draft.nextActions); setNextTest(normalizeNextTest(draft.nextTest));
+    setBaseline(briefFingerprint(editorDraft)); setEdited(false); setSaveError(""); setSaveMessage("");
   };
   const startNew = async () => {
     if (saving || !(await canLeave())) return;
     setCurrentBrief(null); setMode("manual"); setCandidateId(""); setManualName(""); setManualDesc("");
     setAssumptions({}); setScores(defaultScores()); setAttached([]); setEvidenceReviewed(false);
-    setRisks(""); setNextActions(""); setBaseline(null); setEdited(false); setSaveMessage(""); setSaveError("");
+    setRisks(""); setNextActions(""); setNextTest(normalizeNextTest()); setBaseline(null); setEdited(false); setSaveMessage(""); setSaveError("");
   };
   const persistBrief = async () => {
     if (!onSaveBrief) return null;
@@ -117,53 +133,30 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
 
   const scoreSummary = `${recommendation} — ${assessedCount}/${VALIDATE_DIMENSIONS.length} dimensions assessed${average === null ? "" : `; average ${averageLabel}`}. ${reason}`;
 
-  const briefText = useMemo(() => {
-    const lines = [];
-    lines.push(`Idea: ${ideaName || "(unnamed)"}`);
-    if (ideaDesc) lines.push(`Description: ${ideaDesc}`);
-    lines.push(`Assessment: ${scoreSummary}`);
-    lines.push("");
-    lines.push("Opportunity scores:");
-    VALIDATE_DIMENSIONS.forEach((d) => lines.push(`  - ${d.label}: ${scores[d.key] == null ? "Not assessed" : `${scores[d.key]}/5`}`));
-    const filledAssumptions = ASSUMPTION_CATEGORIES.filter((c) => (assumptions[c.key] || "").trim());
-    if (filledAssumptions.length) {
-      lines.push("");
-      lines.push("Key assumptions:");
-      filledAssumptions.forEach((c) => lines.push(`  - ${c.label}: ${assumptions[c.key].trim()}`));
-    }
-    if (attachedSignals.length) {
-      lines.push("");
-      lines.push(`Attached evidence (${attachedSignals.length}; review ${evidenceReviewed ? "completed" : "pending"}):`);
-      attachedSignals.forEach((s) => lines.push(`  - ${s.title}${s.source ? ` (${s.source})` : ""}${s.confidence_impact ? ` — ${s.confidence_impact}` : ""}`));
-    }
-    if (missingSignals.length) {
-      lines.push(""); lines.push("Unavailable sources (saved reference only; excluded from the current evidence assessment):");
-      missingSignals.forEach(s => lines.push(`  - ${s.title}${s.source ? ` (${s.source})` : ""}`));
-    }
-    if (risks.trim()) { lines.push(""); lines.push(`Risks / unknowns: ${risks.trim()}`); }
-    if (nextActions.trim()) { lines.push(""); lines.push(`Next validation actions: ${nextActions.trim()}`); }
-    return lines.join("\n");
-  }, [ideaName, ideaDesc, scoreSummary, scores, assumptions, attachedSignals, missingSignals, evidenceReviewed, risks, nextActions]);
+  const briefText = validationBriefText(currentDraft, { recommendation, assessedCount, average, reason }, missingSignals);
 
   const handleSave = async () => {
     if (!canSave || saving) return;
     setSaving(true); setSaveError("");
     try {
       const savedBrief = await persistBrief();
+      const frozenDraft = savedBrief?.draft || currentDraft;
       const payload = {
         title: `Validation: ${ideaName}`,
         chosen_candidate_id: candidate?.id || null,
         chosen_candidate_name: ideaName,
         framework_used: "Tarazu Validate",
         summary_rationale: scoreSummary,
-        final_rationale: briefText,
+        final_rationale: validationBriefText(frozenDraft, { recommendation, assessedCount, average, reason }, missingSignals),
         evidence_count: attachedSignals.length,
         tradeoffs_considered: risks.trim(),
         risks_accepted: "",
-        expected_outcome: nextActions.trim(),
+        expected_outcome: "",
+        ...(frozenDraft.nextTest?.owner?.trim() ? { owner: frozenDraft.nextTest.owner.trim() } : {}),
+        review_date: serializeDateOnly(frozenDraft.nextTest?.reviewDate),
         status: "draft",
         recommendation_snapshot: {
-          ...(savedBrief ? { validation_brief: { id: savedBrief.id, revision: savedBrief.revision, draft: savedBrief.draft } } : {}),
+          validation_brief: savedBrief ? { id: savedBrief.id, revision: savedBrief.revision, draft: savedBrief.draft } : { draft: frozenDraft },
           framework: "Tarazu Validate",
           recommendation,
           average,
@@ -194,7 +187,7 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
           <Pill color={C.purple} dimColor={C.purpleDim} small>BETA</Pill>
         </div>
         <p style={{ fontSize: 14, color: C.textMuted, margin: 0 }}>
-          Assess your assumptions and evidence before deciding whether to build, pivot, or park.
+          Investigate a question, problem or proposed test. Leave ratings unassessed when you do not know; saving a brief is not a build commitment.
         </p>
       </div>
 
@@ -254,11 +247,11 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div>
                 <label htmlFor="validate-idea-name" style={labelStyle}>IDEA NAME</label>
-                <input id="validate-idea-name" value={manualName} onChange={(e) => { setManualName(e.target.value); setEvidenceReviewed(false); }} placeholder="e.g. Slack weekly digest" style={inputStyle} />
+                <input id="validate-idea-name" value={manualName} onChange={(e) => { setManualName(e.target.value); setEvidenceReviewed(false); }} placeholder="e.g. Why do approvals stall?" style={inputStyle} />
               </div>
               <div>
                 <label htmlFor="validate-idea-desc" style={labelStyle}>DESCRIPTION (OPTIONAL)</label>
-                <textarea id="validate-idea-desc" value={manualDesc} onChange={(e) => { setManualDesc(e.target.value); setEvidenceReviewed(false); }} rows={2} placeholder="What is it, in one or two sentences?" style={{ ...inputStyle, resize: "vertical" }} />
+                <textarea id="validate-idea-desc" value={manualDesc} onChange={(e) => { setManualDesc(e.target.value); setEvidenceReviewed(false); }} rows={2} placeholder="What question, problem or possible response are you investigating?" style={{ ...inputStyle, resize: "vertical" }} />
               </div>
             </div>
           )}
@@ -269,11 +262,17 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
           )}
         </section>
 
+        <section aria-label="Brief comparison context">
+          <DecisionFrame compact context={productContext} onChange={onProductContextChange} fictional={guestDemo} saveStatus={contextSaveStatus} />
+          {currentBrief && !currentBrief.draft.productContext?.scoring && <p className="tz-workflow-note">This older brief did not preserve comparison context. The frame above is current workspace context for editing, not historical evidence. An unchanged save keeps the original revision.</p>}
+          {currentBrief?.draft.productContext?.scoring && <details><summary>Comparison context preserved in revision {currentBrief.revision}</summary><RecordedComparisonContext scoring={currentBrief.draft.productContext.scoring} /></details>}
+        </section>
+
         {/* 2. Assumptions */}
         <section style={{ border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, padding: 16 }}>
           <div style={sectionLabel}>Key assumptions</div>
           <p style={{ fontSize: 11, color: C.textDim, margin: "6px 0 12px", lineHeight: 1.5 }}>What has to be true for this idea to work?</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))", gap: 12 }}>
             {ASSUMPTION_CATEGORIES.map((cat) => (
               <div key={cat.key}>
                 <label htmlFor={`assume-${cat.key}`} style={labelStyle}>{cat.label.toUpperCase()}</label>
@@ -358,15 +357,17 @@ export const ValidateScreen = ({ scored = [], signals = [], productContext, onAd
           <p style={{ fontSize: 12, color: C.textMuted, margin: "8px 0 0", lineHeight: 1.5 }}>{reason}</p>
         </section>
 
+        <NextTestPlan plan={nextTest} onChange={setNextTest} />
+
         {/* 6. Risks + next actions */}
-        <section style={{ border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, padding: 16, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
+        <section style={{ border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface, padding: 16, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 260px), 1fr))", gap: 12 }}>
           <div>
             <label htmlFor="validate-risks" style={labelStyle}>RISKS / UNKNOWNS</label>
             <textarea id="validate-risks" value={risks} onChange={(e) => setRisks(e.target.value)} rows={3} placeholder="What could make this wrong?" style={{ ...inputStyle, resize: "vertical" }} />
           </div>
           <div>
             <label htmlFor="validate-next" style={labelStyle}>NEXT VALIDATION ACTIONS</label>
-            <textarea id="validate-next" value={nextActions} onChange={(e) => setNextActions(e.target.value)} rows={3} placeholder="What would de-risk this fastest?" style={{ ...inputStyle, resize: "vertical" }} />
+            <textarea id="validate-next" value={nextActions} onChange={(e) => setNextActions(e.target.value)} rows={3} placeholder="Keep your existing free-text next steps or supporting notes here." style={{ ...inputStyle, resize: "vertical" }} />
           </div>
         </section>
 

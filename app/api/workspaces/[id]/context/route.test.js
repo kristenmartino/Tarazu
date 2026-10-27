@@ -171,3 +171,20 @@ describe("PUT /api/workspaces/[id]/context", () => {
     expect(data.error).toBe("Update failed");
   });
 });
+
+
+it("persists optional decision framing in scoring_settings and rejects oversized framing before a write", async () => {
+  const eq = vi.fn().mockResolvedValue({ error: null });
+  const update = vi.fn().mockReturnValue({ eq });
+  mockSupabase.from.mockReturnValue({ update });
+  const scoring = { decisionQuestion: "Which response should we test?", problem: "Request context is missing", audience: "Admins", timeframe: "30 days", impactMetric: "Completeness; baseline unknown", effortBands: { 35: "Five person-days" } };
+  expect((await PUT(makeRequest({ constraints: "Keep existing constraints", scoring }), makeParams("ws-1"))).status).toBe(200);
+  expect(update).toHaveBeenCalledWith(expect.objectContaining({ constraints: "Keep existing constraints", scoring_settings: scoring }));
+  update.mockClear();
+  expect((await PUT(makeRequest({ scoring: { decisionQuestion: "x".repeat(701) } }), makeParams("ws-1"))).status).toBe(400);
+  expect(update).not.toHaveBeenCalled();
+  mockSupabase.from.mockReturnValue({ select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ single: vi.fn().mockResolvedValue({ data: { scoring_settings: scoring, constraints: "Keep existing constraints" }, error: null }) }) }) });
+  const loaded = await (await GET({}, makeParams("ws-1"))).json();
+  expect(loaded.scoring).toEqual(scoring);
+  expect(loaded.constraints).toBe("Keep existing constraints");
+});

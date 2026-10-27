@@ -1,0 +1,21 @@
+.tz-decision-frame,.tz-next-test-plan { min-width:0; border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:9px; padding:20px; background:var(--surface-raised); color:var(--text); }
+.tz-frame-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.tz-workflow-eyebrow { margin:0 0 9px; color:var(--text-accent); font:500 10px/1.5 var(--mono); letter-spacing:.09em; text-transform:uppercase; }
+.tz-frame-heading h3,.tz-next-test-plan h3 { margin:0; font:650 24px/1.25 var(--display); letter-spacing:-.02em; overflow-wrap:anywhere; }
+.tz-workflow-button { padding:9px 12px; border:1px solid var(--border); border-radius:6px; background:transparent; color:var(--text-accent); font:600 12px/1.5 var(--body); cursor:pointer; flex:none; }
+.tz-workflow-button:hover { background:var(--accent-subtle); }
+.tz-frame-outcome { color:var(--text); font:14px/1.65 var(--body); margin:15px 0; }
+.tz-frame-outcome strong { font-weight:600; }
+.tz-frame-context { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:14px; margin:0; }
+.tz-frame-context dt,.tz-recorded-plan dt { color:var(--text-soft); font:500 11px/1.5 var(--body); margin-bottom:4px; }
+.tz-frame-context dd,.tz-recorded-plan dd { margin:0; color:var(--text); font:14px/1.6 var(--body); white-space:pre-wrap; overflow-wrap:anywhere; }
+.tz-workflow-note { color:var(--text-soft); font:12px/1.6 var(--body); margin:12px 0 0; }
+.tz-workflow-error { color:var(--danger); font:13px/1.6 var(--body); margin:12px 0 0; }
+.tz-workflow-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:15px; margin-top:18px; }
+.tz-workflow-form label { min-width:0; display:grid; gap:6px; align-content:start; color:var(--text); font:500 13px/1.5 var(--body); }
+.tz-workflow-form textarea,.tz-workflow-form input { box-sizing:border-box; min-width:0; width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:6px; background:var(--surface-sunken); color:var(--text); font:400 14px/1.55 var(--body); resize:vertical; }
+.tz-workflow-form textarea::placeholder { color:var(--text-soft); opacity:1; }
+.tz-frame-compact { padding:16px 18px; }
+.tz-frame-compact h3 { font-size:20px; }
+.tz-recorded-plan { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr)); gap:14px 22px; margin:12px 0; }
+@media(max-width:600px) { .tz-decision-frame,.tz-next-test-plan { padding:17px 15px; } .tz-frame-heading { flex-wrap:wrap; gap:12px; } .tz-frame-heading h3 { font-size:22px; } .tz-frame-compact h3 { font-size:19px; } .tz-frame-context { grid-template-columns:1fr; gap:12px; } .tz-workflow-form { grid-template-columns:1fr; } }
