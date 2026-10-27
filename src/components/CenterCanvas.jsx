@@ -304,7 +304,7 @@ export const CenterCanvas = ({
       </div>
 
       {/* Content area */}
-      <div ref={measureRef} style={{ flex: 1, overflowY: "auto", maxHeight: isMobile ? "none" : "calc(100vh - 48px - 52px)", padding: 20, display: "flex", flexDirection: "column", gap: 12, paddingBottom: isMobile ? 72 : 20 }}>
+      <div ref={measureRef} style={{ flex: 1, overflowY: "auto", maxHeight: isMobile ? "none" : "calc(100vh - 48px - 52px)", padding: 20, display: "flex", flexDirection: "column", gap: 12, paddingBottom: 20 }}>
         <div data-print-only style={{ display: "none", padding: "0 0 12px", borderBottom: "2px solid #333", marginBottom: 8 }}>
           <h1 style={{ fontSize: 18, fontWeight: 800, margin: "0 0 4px", color: "#1a1a1a" }}>{activeWs?.name || "Priorities"}</h1>
           <p style={{ fontSize: 11, color: "#666", margin: 0, fontFamily: "var(--mono)" }}>

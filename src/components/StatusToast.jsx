@@ -20,7 +20,7 @@ export const StatusToast = ({ message, type = "info", onDismiss, duration = 3000
   const colors = COLORS[type] || COLORS.info;
 
   return (
-    <div role="status" aria-live="polite" style={{
+    <div className="tz-status-toast" role="status" aria-live="polite" style={{
       position: "fixed", bottom: 24, right: 24, zIndex: 1000,
       padding: "10px 18px", borderRadius: 10,
       background: colors.bg, border: `1px solid ${colors.border}30`,

@@ -50,7 +50,7 @@ export const ShortcutsOverlay = ({ onClose }) => {
         position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
         background: "rgba(0,0,0,0.5)", zIndex: 999,
       }} />
-      <div ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" tabIndex={-1} style={{
+      <div className="tz-shortcuts-panel" ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="shortcuts-title" tabIndex={-1} style={{
         position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
         width: 340, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14,
         boxShadow: `0 16px 48px ${C.bg}90`, zIndex: 1000, padding: 24,

@@ -57,14 +57,14 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
   // Mobile: bottom tab bar
   if (isMobile) {
     return (
-      <div data-no-print role="navigation" aria-label="Main navigation" style={{
-        position: "fixed", bottom: 0, left: 0, right: 0, height: 56,
+      <div className="tz-mobile-nav" data-no-print role="navigation" aria-label="Main navigation" style={{
+        position: "fixed", bottom: 0, left: 0, right: 0, height: "var(--mobile-nav-height)", boxSizing: "border-box",
         background: C.navBg, borderTop: `1px solid ${C.navBorder}`,
         display: "flex", alignItems: "center", justifyContent: "space-around",
-        zIndex: 100, paddingBottom: "env(safe-area-inset-bottom)",
+        zIndex: 100, paddingBottom: "var(--safe-area-bottom)",
       }}>
-        {/* Mobile bottom bar omits Validate/Scenarios/Settings to avoid crowding;
-            those stay desktop/tablet-first. Validate is reachable on the vertical rail. */}
+        {/* Home shortcuts expose Validate, Scenarios and Settings without
+            crowding the five mobile navigation tabs. */}
         {[...NAV_ITEMS.filter(n => n.id !== "settings" && n.id !== "scenarios" && n.id !== "validate"), ADVISOR_ITEM].map(item => (
           <button key={item.id} onClick={() => item.enabled && onScreenChange(item.id)}
             aria-current={activeScreen === item.id ? "page" : undefined}
@@ -83,16 +83,16 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
     );
   }
 
-  // Desktop: vertical rail
+  // Desktop and landscape/tablet: keep the tab list independently scrollable.
   return (
-    <div data-no-print role="navigation" aria-label="Main navigation" style={{
-      width: 64, height: "calc(100vh - 48px)", position: "sticky", top: 48,
+    <div className="tz-vertical-nav" data-no-print role="navigation" aria-label="Main navigation" style={{
+      width: 64, height: "calc(100dvh - 48px)", position: "sticky", top: 48, zIndex: 40,
       background: C.navBg, borderRight: `1px solid ${C.navBorder}`,
-      display: "flex", flexDirection: "column", alignItems: "center", padding: "16px 0 12px",
+      display: "flex", flexDirection: "column", alignItems: "center", padding: "16px 0 12px", paddingBottom: "calc(12px + var(--safe-area-bottom))",
       gap: 8, flexShrink: 0, boxSizing: "border-box",
     }}>
       {/* Workspace switcher */}
-      {!guestDemo && <div ref={dropdownRef} onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); setWsDropdownOpen(false); dropdownRef.current?.querySelector("button")?.focus(); } }} style={{ position: "relative", width: "100%" }}>
+      {!guestDemo && <div ref={dropdownRef} onKeyDown={e => { if (e.key === "Escape") { e.stopPropagation(); setWsDropdownOpen(false); dropdownRef.current?.querySelector("button")?.focus(); } }} style={{ position: "relative", width: "100%", flexShrink: 0 }}>
         <button onClick={() => setWsDropdownOpen(!wsDropdownOpen)} aria-expanded={wsDropdownOpen} title={activeWs?.name || "Workspace"} style={{
           width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
           padding: "10px 0", border: "none",
@@ -106,7 +106,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
           <span style={{ fontSize: 7, color: C.textDim }}>{wsDropdownOpen ? "▲" : "▼"}</span>
         </button>
         {wsDropdownOpen && (
-          <div style={{
+          <div className="tz-rail-workspace-menu" style={{
             position: "absolute", top: 0, left: "calc(100% + 8px)", minWidth: 200,
             background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10,
             boxShadow: `0 8px 24px color-mix(in srgb, var(--surface-base) 50%, transparent)`, zIndex: 200, overflow: "hidden",
@@ -134,7 +134,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
       </div>}
 
       {/* Nav items */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 4, width: "100%" }}>
+      <div className="tz-vertical-nav-items" style={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 4, width: "100%", flex: "1 1 auto", minHeight: 0, overflowY: "auto" }}>
         {(advisorInNav ? [...NAV_ITEMS.slice(0, -1), ADVISOR_ITEM, NAV_ITEMS[NAV_ITEMS.length - 1]] : NAV_ITEMS).map(item => {
           const isActive = activeScreen === item.id;
           return (
@@ -142,7 +142,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
               aria-current={isActive ? "page" : undefined}
               style={{
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
-                padding: "10px 0", border: "none", width: "100%",
+                padding: "10px 0", border: "none", width: "100%", flexShrink: 0,
                 background: isActive ? C.accentGlow : "transparent",
                 borderLeft: isActive ? `2px solid ${C.accent}` : "2px solid transparent",
                 color: isActive ? C.accent : C.textDim,
@@ -158,7 +158,7 @@ export const LeftRail = ({ activeScreen, onScreenChange, activeWs, workspaces, o
         })}
       </div>
 
-      <div style={{ marginTop: "auto" }}>
+      <div style={{ marginTop: "auto", flexShrink: 0 }}>
         {!guestDemo && <AuthButton />}
       </div>
     </div>

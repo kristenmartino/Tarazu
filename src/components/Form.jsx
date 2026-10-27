@@ -17,6 +17,23 @@ import { MAX_CLAIMS } from '../../lib/scoring-claims';
 
 export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEvent, onResolveScores, feedbackContext, scored = [], features = [], signals = [], decisions = [], workspaceId, onProductContextChange, saveTarget = "browser", savePendingSync = false }) => {
   const C = useC();
+  const formRef = useRef(null);
+  const actionRef = useRef(null);
+  useEffect(() => {
+    const form = formRef.current;
+    const actions = actionRef.current;
+    if (!form || !actions) return;
+    const root = form.closest(".tz-app");
+    const measure = () => {
+      const height = `${actions.getBoundingClientRect().height}px`;
+      form.style.setProperty("--candidate-action-height", height);
+      root?.style.setProperty("--candidate-action-height", height);
+    };
+    measure();
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
+    observer?.observe(actions);
+    return () => { observer?.disconnect(); root?.style.removeProperty("--candidate-action-height"); };
+  }, []);
   const { isGuestDemo } = useAuth();
   const [name, setName] = useState(editFeature?.name || ""); const [desc, setDesc] = useState(editFeature?.description || "");
   const [scoringBasis, setScoringBasis] = useState(() => normalizeCandidateBasis(editFeature?.scoringBasis));
@@ -122,7 +139,7 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
   const inputStyle = { padding: "10px 14px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.bg, color: C.text, outline: "none", fontFamily: "var(--body)", fontSize: 14 };
 
   return (
-    <div className="tz-candidate-form" role="form" aria-label={editFeature ? "Edit candidate" : "New candidate"} style={{ padding: 20, minWidth: 0, border: `1px solid ${C.borderActive}`, borderRadius: 12, background: C.surface, animation: "slideUp 0.25s ease" }}>
+    <div ref={formRef} className="tz-candidate-form" role="form" aria-label={editFeature ? "Edit candidate" : "New candidate"} style={{ padding: 20, minWidth: 0, border: `1px solid ${C.borderActive}`, borderRadius: 12, background: C.surface, animation: "slideUp 0.25s ease" }}>
       <fieldset disabled={saving} style={{ border: 0, padding: 0, margin: 0, minWidth: 0, display: "flex", flexDirection: "column", gap: 14 }}>
         <input autoFocus={!editFeature} value={name} onChange={ev => setName(ev.target.value)} placeholder="Candidate name" aria-label="Candidate name" style={{ ...inputStyle, fontSize: 14 }} onFocus={ev => ev.target.style.borderColor = C.accent} onBlur={ev => ev.target.style.borderColor = C.border} />
         <textarea value={desc} onChange={ev => setDesc(ev.target.value)} placeholder="Brief description (optional)" aria-label="Candidate description" rows={2} style={{ ...inputStyle, fontSize: 15, resize: "vertical" }} onFocus={ev => ev.target.style.borderColor = C.accent} onBlur={ev => ev.target.style.borderColor = C.border} />
@@ -167,8 +184,8 @@ export const Form = ({ onAdd, onCancel, editFeature, productContext, onScoreEven
           <p>Use the shared scoring basis and candidate answers to record the audience, period, delivery scope and assumptions. Capture supporting or conflicting evidence in Signals. The initial 50s are placeholders to review. AI suggestions are editable estimates; inspect their justification before accepting them.</p>
         </details>
         <div style={{ fontSize: 14, color: C.textMuted, lineHeight: 1.6 }}>Current ranking: <strong style={{ color: C.text }}>#{previewRank} of {previewTotal}</strong> · RICE {preview.toLocaleString()}<br />Band-based prioritization index, not measured return or financial value.</div>
-        <div className="tz-candidate-save" style={{ background: C.surface, borderTop: `1px solid ${C.border}` }}>
-          <div style={{ flex: '1 1 180px', fontSize: 14 }}><strong role="status">{saving ? 'Saving…' : dirty ? 'Unsaved changes' : savedTo === 'cloud' ? 'Saved to cloud' : pendingSync ? 'Saved in this browser · pending sync' : 'Saved in this browser'}</strong><p style={{ margin: '3px 0 0', color: C.textMuted, fontSize: 13 }}>{saving ? 'Keeping your reasoning and scores together.' : dirty ? 'Answers and accepted suggestions stay in this draft until saved.' : savedTo === 'cloud' ? 'Your candidate is saved to this workspace.' : 'Available on this device.'}</p>{saveError && <p role="alert" style={{ color: C.danger, margin: '6px 0 0' }}>{saveError}</p>}</div>
+        <div ref={actionRef} className="tz-candidate-save" style={{ background: C.surface, borderTop: `1px solid ${C.border}` }}>
+          <div tabIndex={saveError ? 0 : undefined} role={saveError ? 'region' : undefined} aria-label={saveError ? 'Save status and error' : undefined} style={{ flex: '1 1 180px', fontSize: 14 }}><strong role="status">{saving ? 'Saving…' : dirty ? 'Unsaved changes' : savedTo === 'cloud' ? 'Saved to cloud' : pendingSync ? 'Saved in this browser · pending sync' : 'Saved in this browser'}</strong><p style={{ margin: '3px 0 0', color: C.textMuted, fontSize: 13 }}>{saving ? 'Keeping your reasoning and scores together.' : dirty ? 'Answers and accepted suggestions stay in this draft until saved.' : savedTo === 'cloud' ? 'Your candidate is saved to this workspace.' : 'Available on this device.'}</p>{saveError && <p role="alert" style={{ color: C.danger, margin: '6px 0 0' }}>{saveError}</p>}</div>
           <button type="button" onClick={submit} disabled={!name.trim() || saving} style={{ padding: '11px 16px', border: 'none', borderRadius: 7, background: name.trim() ? C.accent : C.border, color: C.bg, fontSize: 14, fontWeight: 700, cursor: saving ? 'wait' : 'pointer' }}>{saving ? 'Saving…' : editFeature ? 'Save Changes' : 'Add Candidate'}</button>
           <button type="button" onClick={onCancel} disabled={saving} style={{ ...inputStyle, cursor: 'pointer' }}>Cancel</button>
         </div>

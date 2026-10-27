@@ -16,7 +16,7 @@ export const SettingsScreen = ({
   const { themeName, setThemeName, themes } = useTheme();
   const sectionStyle = { padding: 20, border: `1px solid ${C.border}`, borderRadius: 12, background: C.surface };
   const labelStyle = { fontSize: 9, fontWeight: 600, color: C.textDim, letterSpacing: "0.08em", fontFamily: "var(--mono)", marginBottom: 6 };
-  const selectStyle = { padding: "8px 12px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "var(--mono)", outline: "none", cursor: "pointer", width: "100%" };
+  const selectStyle = { padding: "8px 12px", border: `1px solid ${C.border}`, borderRadius: 8, background: C.surfaceSunken, color: C.text, fontSize: 11, fontFamily: "var(--mono)", outline: "none", cursor: "pointer", width: "100%", minWidth: 0, boxSizing: "border-box" };
   const inputStyle = { ...selectStyle, cursor: "text" };
   const [wsName, setWsName] = useState(activeWs?.name || "");
   const [confirmClear, setConfirmClear] = useState(false);
@@ -96,7 +96,7 @@ export const SettingsScreen = ({
         {/* Display */}
         <div style={sectionStyle}>
           <span style={{ fontSize: 11, fontWeight: 700, color: C.text, display: "block", marginBottom: 16 }}>Map Display Defaults</span>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+          <div className="tz-settings-display-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
             <div>
               <div style={labelStyle}>COLOR BY</div>
               <select value={mapColorBy} onChange={e => onMapColorByChange(e.target.value)} style={selectStyle}>
@@ -170,7 +170,7 @@ export const SettingsScreen = ({
         <div style={{ ...sectionStyle, borderColor: "color-mix(in srgb, var(--danger) 19%, transparent)" }}>
           <span style={{ fontSize: 11, fontWeight: 700, color: C.danger, display: "block", marginBottom: 16 }}>Danger Zone</span>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0" }}>
+            <div className="tz-settings-action-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0" }}>
               <div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Clear all candidates</div>
                 <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>Remove all candidates from this workspace</div>
@@ -184,7 +184,7 @@ export const SettingsScreen = ({
                 <button onClick={() => setConfirmClear(true)} style={{ padding: "6px 12px", border: `1px solid color-mix(in srgb, var(--danger) 19%, transparent)`, borderRadius: 6, background: C.dangerDim, color: C.danger, fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "var(--mono)" }}>Clear</button>
               )}
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderTop: `1px solid ${C.border}` }}>
+            <div className="tz-settings-action-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 0", borderTop: `1px solid ${C.border}` }}>
               <div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: C.text }}>Delete workspace</div>
                 <div style={{ fontSize: 10, color: C.textDim, marginTop: 2 }}>Permanently delete this workspace and all data</div>

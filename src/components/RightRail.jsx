@@ -89,9 +89,9 @@ export const RightRail = ({
           background: "rgba(0,0,0,0.5)", zIndex: 199,
         }} />
         {/* Panel */}
-        <div ref={panelRef} role="dialog" aria-modal="true" aria-label="Candidate detail" tabIndex={-1} style={{
+        <div className={isMobile ? "tz-candidate-sheet" : undefined} ref={panelRef} role="dialog" aria-modal="true" aria-label="Candidate detail" tabIndex={-1} style={{
           position: "fixed", top: isMobile ? "10%" : 0, right: 0, bottom: 0,
-          width: isMobile ? "100%" : 360, background: C.surface,
+          width: isMobile ? "100%" : 360, boxSizing: "border-box", background: C.surface,
           borderLeft: `1px solid ${C.border}`,
           borderTopLeftRadius: isMobile ? 16 : 0,
           borderTopRightRadius: isMobile ? 16 : 0,

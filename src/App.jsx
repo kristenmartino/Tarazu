@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import Link from "next/link";
+import "./components/app-shell.css";
 import { sampleBacklogFor } from "./sample-backlog";
 import { useC } from "./ThemeProvider";
 import { exportCSV, parseCSV, mapCSVToFeatures } from "./utils";
@@ -934,7 +935,7 @@ export default function App({ guestDemo = false }) {
   );
 
   return (
-    <div className="tz-app" style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
+    <div className={`tz-app${isMobile ? " tz-app-mobile" : ""}`} style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "var(--body)" }}>
       <style>{printStyles}</style>
       <style>{animStyles}</style>
       <style>{`.tz-app :is(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid ${C.accent} !important; outline-offset: 3px; }`}</style>
@@ -987,7 +988,7 @@ export default function App({ guestDemo = false }) {
               <span style={{ fontSize: 8, color: C.textDim }}>{mobileWsOpen ? "▲" : "▼"}</span>
             </button>
             {mobileWsOpen && (
-              <div style={{
+              <div className="tz-mobile-workspace-menu" style={{
                 position: "absolute", top: "calc(100% + 4px)", right: 0, minWidth: 200,
                 background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10,
                 boxShadow: `0 8px 24px color-mix(in srgb, var(--surface-base) 50%, transparent)`, zIndex: 300, overflow: "hidden",
@@ -1053,7 +1054,7 @@ export default function App({ guestDemo = false }) {
 
         <ErrorBoundary name="Content">
         {(isMobile || isTablet) && activeScreen === "advisor" ? (
-          <div role="main" id="main-content" tabIndex={-1} style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: "20px 20px 88px" }}>
+          <div role="main" id="main-content" tabIndex={-1} style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: C.text, margin: 0 }}>Advisor</h2>
             </div>

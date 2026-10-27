@@ -1,0 +1,38 @@
+/* One page-level reservation for the fixed bar, shared by every app screen.
+   Individual screens keep their ordinary content padding. */
+.tz-app-mobile { box-sizing:border-box; padding-bottom:var(--mobile-nav-height); }
+.tz-app-mobile #main-content { min-width:0; }
+.tz-app-mobile :is(button,a,input,textarea,select,summary) { scroll-margin-block-end:calc(var(--mobile-nav-height) + 12px); }
+.tz-scenario-rankings>* { min-width:0; }
+.tz-home-mobile-shortcut { display:none !important; }
+
+@media(max-width:800px) {
+  .tz-home-mobile-shortcut { display:flex !important; }
+  .tz-mobile-workspace-menu { box-sizing:border-box; max-width:calc(100vw - 32px); max-height:calc(100dvh - 64px - var(--mobile-nav-height)); overflow-y:auto !important; overflow-x:hidden !important; }
+  .tz-mobile-workspace-menu button { overflow-wrap:anywhere; }
+  .tz-candidate-save { box-sizing:border-box; max-height:min(40dvh,calc(100dvh - var(--mobile-nav-height) - 96px)); overflow-y:auto; }
+  .tz-candidate-save>div { max-height:20dvh; overflow-y:auto; overflow-wrap:anywhere; }
+  .tz-candidate-form :is(button,a,input,textarea,select,summary):not(.tz-candidate-save *) { scroll-margin-block-end:calc(var(--mobile-nav-height) + var(--candidate-action-height, 210px) + 12px); }
+  .tz-candidate-sheet { padding-bottom:calc(20px + var(--safe-area-bottom)) !important; }
+  .tz-dialog-scrim { box-sizing:border-box; padding-bottom:calc(20px + var(--safe-area-bottom)) !important; }
+  .tz-dialog-surface { box-sizing:border-box; max-height:calc(100dvh - 40px - var(--safe-area-bottom)); overflow-y:auto; overflow-wrap:anywhere; }
+  .tz-dialog-surface>div:last-child { flex-wrap:wrap; }
+  .tz-shortcuts-panel { box-sizing:border-box; width:min(340px,calc(100vw - 32px)) !important; max-height:calc(100dvh - 32px - var(--safe-area-bottom)); overflow-y:auto; }
+  .tzui-modal { box-sizing:border-box; max-height:calc(100dvh - 48px - var(--safe-area-bottom)); overflow-y:auto; }
+  .tz-status-toast { box-sizing:border-box; bottom:calc(var(--mobile-nav-height) + 12px) !important; left:16px; right:16px !important; max-width:calc(100vw - 32px) !important; overflow-wrap:anywhere; pointer-events:none; }
+  .tz-app-mobile:has(.tz-candidate-form) .tz-status-toast { bottom:calc(var(--mobile-nav-height) + var(--candidate-action-height, 210px) + 12px) !important; }
+  .tz-settings-action-row { flex-wrap:wrap; gap:12px; }
+  .tz-settings-action-row>div:first-child { flex:1 1 140px; min-width:0; }
+  .tz-settings-display-grid { grid-template-columns:repeat(auto-fit,minmax(min(100%,130px),1fr)) !important; }
+}
+@media print { .tz-app-mobile { padding-bottom:0; } }
+
+/* A rotated phone uses the vertical rail; popovers still need viewport bounds. */
+.tz-rail-workspace-menu { box-sizing:border-box; max-width:calc(100vw - 96px); max-height:calc(100dvh - 84px - var(--safe-area-bottom)); overflow-y:auto !important; overflow-x:hidden !important; }
+.tz-rail-workspace-menu button { min-width:0; overflow-wrap:anywhere; }
+@media(min-width:801px) and (max-height:600px) {
+  .tz-dialog-scrim { box-sizing:border-box; padding-bottom:calc(20px + var(--safe-area-bottom)) !important; }
+  .tz-dialog-surface { box-sizing:border-box; max-height:calc(100dvh - 40px - var(--safe-area-bottom)); overflow-y:auto; overflow-wrap:anywhere; }
+  .tz-shortcuts-panel { box-sizing:border-box; max-height:calc(100dvh - 32px - var(--safe-area-bottom)); overflow-y:auto; }
+  .tzui-modal { box-sizing:border-box; max-height:calc(100dvh - 48px - var(--safe-area-bottom)); overflow-y:auto; }
+}
