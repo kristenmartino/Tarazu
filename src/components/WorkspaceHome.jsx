@@ -2,6 +2,7 @@ import { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useC } from "../ThemeProvider";
 import { getTier } from "../utils";
+import { DecisionFrame } from "./DecisionFrame";
 import { Pill } from "./Pill";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { trackUsage } from "../../lib/usage-events";
@@ -33,7 +34,7 @@ const ShortcutButton = ({ label, icon, color, onClick }) => (
   </button>
 );
 
-export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate, isSignedIn, onInspectCandidate, onOpenDecision, onStoryActiveChange, guestDemo = false }) => {
+export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenChange, onLoadSamples, onAddCandidate, isSignedIn, onInspectCandidate, onOpenDecision, onStoryActiveChange, guestDemo = false, productContext, onProductContextChange, contextSaveStatus }) => {
   const C = useC();
   const [storyStep, setStoryStep] = useState(null);
   const startButton = useRef(null);
@@ -89,6 +90,7 @@ export const WorkspaceHome = ({ scored, decisions, signals, activeWs, onScreenCh
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 16 }}>
+        {!guestDemo && <DecisionFrame context={productContext} onChange={onProductContextChange} saveStatus={contextSaveStatus} />}
         {scored.length === 0 && (
           <OnboardingPanel guestDemo={guestDemo} onAddCandidate={onAddCandidate} onLoadSamples={onLoadSamples} isSignedIn={isSignedIn} />
         )}

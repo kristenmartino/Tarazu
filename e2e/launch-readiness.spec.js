@@ -33,7 +33,7 @@ test("demo handoff opens a blank candidate while keeping both demo and ordinary 
   await page.getByRole("button",{name:"+ Add Candidate",exact:true}).click();
   await page.getByRole("textbox",{name:"Candidate name",exact:true}).fill("Existing guest idea");
   await page.getByRole("button",{name:"Add Candidate",exact:true}).click();
-  await expect(page.getByRole("status").filter({hasText:"Saved in this browser"})).toBeVisible();
+  await expect(page.getByRole("status").filter({hasText:/^Saved in this browser$/})).toBeVisible();
   await page.goto("/demo");
   await page.getByRole("region",{name:"Guest demo",exact:true}).getByRole("link",{name:"Start your own decision",exact:true}).click();
   await expect(page.getByRole("region",{name:"Your own decision",exact:true})).toContainText("Existing candidates stay in place");
@@ -56,7 +56,7 @@ test("demo handoff opens a blank candidate while keeping both demo and ordinary 
 test("candidate child actions and workspace picker work from the keyboard", async ({page}) => {
   await page.goto("/app"); await nav(page,"Priorities").click({timeout:45000});
   await page.getByRole("button",{name:"Load Example Backlog",exact:true}).click();
-  const edit = page.getByRole("button",{name:/^Edit /}).first();
+  const edit = page.getByRole("button",{name:"Edit Feature Editing",exact:true});
   await edit.focus(); await page.keyboard.press("Enter");
   await expect(page.getByRole("textbox",{name:"Candidate name",exact:true})).toBeVisible();
   await page.getByRole("button",{name:"Cancel",exact:true}).click();
@@ -106,6 +106,10 @@ test("sign-in handoff retains the own-decision destination in no-auth guest depl
   const signIn=page.getByRole("region",{name:"Guest demo",exact:true}).getByRole("link",{name:"Sign in first",exact:true});
   await expect(signIn).toHaveAttribute("href","/sign-in?start=decision");
   await signIn.click();
+  // This crosses a cold server-rendered auth route and its guest redirect.
+  // Assert the actual destination, allowing the same cold-compile budget as
+  // other app-entry checks; a broken redirect still fails this URL contract.
+  await expect(page).toHaveURL(/\/app(?:\?start=decision)?$/, {timeout:45000});
   await expect(page.getByRole("region",{name:"Your own decision",exact:true})).toBeVisible();
   await expect(page.getByRole("textbox",{name:"Candidate name",exact:true})).toHaveValue("");
 });

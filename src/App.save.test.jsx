@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, waitFor, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, waitFor, screen, fireEvent, cleanup, act } from "@testing-library/react";
 import { useState } from "react";
 const { auth, api, localSave, network } = vi.hoisted(() => ({
   auth: { isSignedIn: true, isLoaded: true, userId: "user", orgId: "org" },
@@ -22,13 +22,13 @@ vi.mock("./components/LeftRail", () => ({ LeftRail: () => null }));
 vi.mock("./components/RightRail", () => ({ RightRail: () => null }));
 vi.mock("./components/ThemeMenu", () => ({ ThemeMenu: () => null }));
 vi.mock("./components/OrgSwitcher", () => ({ OrgSwitcher: () => null }));
-vi.mock("./components/CenterCanvas", () => ({ CenterCanvas: function SaveHarness({ showForm, onShowForm, onAddFeature, features, onEditingFeature, saveTarget, savePendingSync, decisions, onReviewDecision }) {
+vi.mock("./components/CenterCanvas", () => ({ CenterCanvas: function SaveHarness({ showForm, onShowForm, onAddFeature, features, onEditingFeature, saveTarget, savePendingSync, decisions, onReviewDecision, productContext, onProductContextChange, contextSaveStatus, onSwitchWorkspace }) {
   const [error, setError] = useState("");
   const [name, setName] = useState("Draft candidate");
-  return <main><button onClick={() => onReviewDecision("decision", {action:"keep",outcome:"Unknown",next_action:"Collect evidence",signal_ids:[]}).catch(e=>setError(e.message))}>Save test review</button><p>{decisions.reduce((n,d)=>n+(d.reviews?.length || 0),0)} reviews saved</p><p>Save target: {saveTarget}{savePendingSync ? " · pending sync" : ""}</p><input aria-label="Draft name" value={name} onChange={e => setName(e.target.value)} /><button onClick={() => onShowForm(true)}>Edit draft</button><button onClick={() => { onEditingFeature({ id: "second", name: "Another candidate" }); onShowForm(true); }}>Edit another candidate</button>{showForm && <><p>Editor draft retained</p><button onClick={() => onAddFeature({ id: "candidate", name, reach: 55, impact: 55, confidence: 20, effort: 35 }).catch(e => setError(e.message))}>Save candidate</button></>}{error && <p role="alert">{error}</p>}<p>{features.length} candidates saved</p></main>;
+  return <main><p>Frame question: {productContext?.scoring?.decisionQuestion || "Not recorded"}</p><button onClick={() => onProductContextChange({ ...productContext, scoring: { ...productContext?.scoring, decisionQuestion: "Test draft question" } })}>Change context</button><button onClick={() => onSwitchWorkspace("other")}>Switch context workspace</button>{contextSaveStatus?.message && <p role={contextSaveStatus.state === "error" ? "alert" : "status"}>{contextSaveStatus.message}</p>}<button onClick={() => onReviewDecision("decision", {action:"keep",outcome:"Unknown",next_action:"Collect evidence",signal_ids:[]}).catch(e=>setError(e.message))}>Save test review</button><p>{decisions.reduce((n,d)=>n+(d.reviews?.length || 0),0)} reviews saved</p><p>Save target: {saveTarget}{savePendingSync ? " · pending sync" : ""}</p><input aria-label="Draft name" value={name} onChange={e => setName(e.target.value)} /><button onClick={() => onShowForm(true)}>Edit draft</button><button onClick={() => { onEditingFeature({ id: "second", name: "Another candidate" }); onShowForm(true); }}>Edit another candidate</button>{showForm && <><p>Editor draft retained</p><button onClick={() => onAddFeature({ id: "candidate", name, reach: 55, impact: 55, confidence: 20, effort: 35 }).catch(e => setError(e.message))}>Save candidate</button></>}{error && <p role="alert">{error}</p>}<p>{features.length} candidates saved</p></main>;
 } }));
 import App from "./App";
-import { saveWsIndex, saveWsFeatures, saveWsDecisions } from "../lib/local-storage";
+import { saveWsIndex, saveWsFeatures, saveWsDecisions, saveWsContext, loadWsContext } from "../lib/local-storage";
 beforeEach(() => {
   vi.clearAllMocks(); localStorage.clear();
   auth.orgId = "org"; auth.isSignedIn = true; network.online = true;
@@ -210,4 +210,68 @@ it("does not acknowledge a guest review when browser storage is full", async () 
   const write=vi.spyOn(Storage.prototype,"setItem").mockImplementation(()=>{throw new Error("Storage full");});
   try { fireEvent.click(button);expect(await screen.findByRole("alert")).toHaveProperty("textContent","Storage full");expect(screen.getByText("0 reviews saved")).toBeTruthy();expect(localStorage.getItem("prioritize-ws-workspace-decisions")).toBe(stored); }
   finally { write.mockRestore(); }
+});
+
+
+describe("checked shared-frame persistence", () => {
+  it("retains a guest frame after quota failure, reports it, and acknowledges only a successful retry", async () => {
+    auth.isSignedIn = false;
+    saveWsIndex([{ id: "workspace", name: "Browser" }]);
+    localStorage.setItem("prioritize-active-workspace", "workspace");
+    saveWsFeatures("workspace", []);
+    saveWsContext("workspace", { constraints: "Keep unrelated context", scoring: { decisionQuestion: "Durable question" } });
+    render(<App />);
+    await screen.findByText("Frame question: Durable question");
+    const realWrite = Storage.prototype.setItem;
+    const write = vi.spyOn(Storage.prototype, "setItem").mockImplementation(function(key, value) {
+      if (key.endsWith("-context")) throw new Error("Quota");
+      return realWrite.call(this, key, value);
+    });
+    try {
+      fireEvent.click(screen.getByRole("button", { name: "Change context" }));
+      expect(await screen.findByRole("alert")).toHaveProperty("textContent", expect.stringContaining("Context could not be saved"));
+      expect(screen.getByText("Frame question: Test draft question")).toBeTruthy();
+      expect(loadWsContext("workspace").scoring.decisionQuestion).toBe("Durable question");
+      expect(screen.queryByText("Context saved in this browser.")).toBeNull();
+    } finally { write.mockRestore(); }
+    fireEvent.click(screen.getByRole("button", { name: "Change context" }));
+    expect(await screen.findByText("Context saved in this browser.")).toBeTruthy();
+    expect(loadWsContext("workspace")).toMatchObject({ constraints: "Keep unrelated context", scoring: { decisionQuestion: "Test draft question" } });
+  });
+
+  it("reports failed cloud and browser context writes without acknowledging durability", async () => {
+    api.saveProductContext.mockRejectedValue(new Error("Cloud unavailable"));
+    render(<App />);
+    await screen.findByRole("button", { name: "Change context" });
+    const realWrite = Storage.prototype.setItem;
+    const write = vi.spyOn(Storage.prototype, "setItem").mockImplementation(function(key, value) {
+      if (key.endsWith("-context")) throw new Error("Quota");
+      return realWrite.call(this, key, value);
+    });
+    try {
+      fireEvent.click(screen.getByRole("button", { name: "Change context" }));
+      const error = await screen.findByRole("alert", {}, { timeout: 2500 });
+      expect(error.textContent).toContain("Context could not be saved");
+      expect(screen.queryByText("Context saved to this workspace.")).toBeNull();
+      expect(screen.queryByText("Context saved in this browser; cloud sync is pending.")).toBeNull();
+      expect(screen.getByText("Frame question: Test draft question")).toBeTruthy();
+    } finally { write.mockRestore(); }
+  });
+
+  it("keeps a completed old-workspace context request from acknowledging the new workspace", async () => {
+    let finishOld;
+    api.fetchWorkspaces.mockResolvedValue([{ id: "workspace", name: "First" }, { id: "other", name: "Second" }]);
+    api.fetchProductContext.mockImplementation(async id => ({ scoring: { decisionQuestion: id === "other" ? "Second workspace question" : "First workspace question" } }));
+    api.saveProductContext.mockImplementation(id => new Promise(resolve => { if (id === "workspace") finishOld = resolve; }));
+    render(<App />);
+    await screen.findByText("Frame question: First workspace question");
+    fireEvent.click(screen.getByRole("button", { name: "Change context" }));
+    await waitFor(() => expect(api.saveProductContext).toHaveBeenCalledWith("workspace", expect.objectContaining({ scoring: expect.objectContaining({ decisionQuestion: "Test draft question" }) })), { timeout: 2500 });
+    fireEvent.click(screen.getByRole("button", { name: "Switch context workspace" }));
+    await screen.findByText("Frame question: Second workspace question");
+    await act(async () => finishOld());
+    expect(screen.getByText("Saving workspace context…")).toBeTruthy();
+    expect(screen.queryByText("Context saved to this workspace.")).toBeNull();
+    expect(screen.getByText("Frame question: Second workspace question")).toBeTruthy();
+  });
 });

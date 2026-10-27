@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { decisionBriefMarkdown, decisionReviewState, latestReview } from "../../lib/decision-record";
+import { decisionBriefMarkdown, decisionReviewState, latestReview, getDecisionBrief } from "../../lib/decision-record";
 import { formatDateOnly } from "../dateOnly";
 import { ReadableText } from "./DecisionRationale";
 
@@ -41,6 +41,9 @@ export function DecisionReview({ decision, signals = [], onReview }) {
   const busy = useRef(false);
   const restoreFocus = useRef(false);
   const sectionRef = useRef(null);
+  const preserved = getDecisionBrief(decision);
+  const originalPlan = preserved.testPlan;
+  const originalTarget = typeof preserved.comparisonContext?.impactMetric === "string" ? preserved.comparisonContext.impactMetric.trim() : "";
   const state = decisionReviewState(decision);
   const latest = latestReview(decision);
   const reviews = Array.isArray(decision.reviews) ? [...decision.reviews].filter(r => r && typeof r === "object").sort((a,b) => (Date.parse(b.reviewed_at) || 0) - (Date.parse(a.reviewed_at) || 0) || String(b.id || "").localeCompare(String(a.id || ""))) : [];
@@ -65,6 +68,7 @@ export function DecisionReview({ decision, signals = [], onReview }) {
     <p role="status" className="tz-decision-source">{message}</p>
     {editing && <form id={`review-form-${decision.id}`} onSubmit={save} className="tz-review-form">
       <div className="tz-review-expected"><h4>Originally expected</h4><ReadableText text={decision.expected_outcome || "No expected outcome was recorded."} /></div>
+      {(originalPlan || originalTarget) && <div className="tz-review-expected"><h4>Original learning context</h4><p className="tz-decision-source">Context from the frozen brief, not a current test or an observed result.</p><dl className="tz-recorded-plan">{originalTarget && <div><dt>Original target outcome and baseline</dt><dd>{originalTarget}</dd></div>}{originalPlan && <><div><dt>Original test question</dt><dd>{originalPlan.hypothesis || "Not recorded"}</dd></div><div><dt>Original decision rule</dt><dd>{originalPlan.decisionRule || "Not recorded"}</dd></div></>}</dl></div>}
       <label htmlFor={`review-outcome-${decision.id}`}>What happened?<span>Report what happened, or write “Not tested yet”.</span></label>
       <textarea id={`review-outcome-${decision.id}`} ref={outcomeRef} value={form.outcome} onChange={e => set("outcome", e.target.value)} rows={3} maxLength={12000} required disabled={pending} />
       <fieldset disabled={pending}><legend>What should happen to this direction?</legend><div className="tz-review-choices">{Object.entries(actionLabel).map(([value,label]) => <label key={value}><input type="radio" name={`review-action-${decision.id}`} value={value} checked={form.action === value} onChange={() => set("action",value)} />{label}</label>)}</div></fieldset>

@@ -52,3 +52,23 @@ describe("workspace brief API", () => {
     expect((await POST(request({ draft: draftFixture() }), params)).status).toBe(500);
   });
 });
+
+
+it("preserves an optional partial test and frozen comparison frame without adding columns or requiring ratings", async () => {
+  const draft = draftFixture();
+  draft.nextTest = { hypothesis: "What blocks action?", reviewDate: "2026-12-18" };
+  draft.productContext.scoring = { decisionQuestion: "What should we test first?", audience: "Admins" };
+  expect((await POST(request({ draft }), params)).status).toBe(201);
+  expect(query.insert).toHaveBeenCalledWith(expect.objectContaining({ draft, workspace_id: "ws1" }));
+  const revised = { ...draft, nextTest: { ...draft.nextTest, method: "Review a paper prototype" } };
+  expect((await PATCH(request({ draft: revised, revision: 1 }), params)).status).toBe(200);
+  expect(query.update).toHaveBeenCalledWith(expect.objectContaining({ draft: revised, revision: 2 }));
+  query.insert.mockClear(); query.update.mockClear();
+  for (const nextTest of [{ reviewDate: "2026-02-30" }, { observedResult: "Unpersisted field" }]) {
+    const invalid = { ...draft, nextTest };
+    expect((await POST(request({ draft: invalid }), params)).status).toBe(400);
+    expect((await PATCH(request({ draft: invalid, revision: 1 }), params)).status).toBe(400);
+  }
+  expect(query.insert).not.toHaveBeenCalled();
+  expect(query.update).not.toHaveBeenCalled();
+});

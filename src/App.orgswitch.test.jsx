@@ -89,6 +89,7 @@ vi.mock("../lib/local-storage", () => ({
   saveWsIndex: () => {},
   saveWsFeatures: () => {},
   saveWsContext: () => {},
+  saveWsContextChecked: () => true,
   saveWsDecisions: () => {},
   saveWsSignals: () => {},
   saveWsSettings: () => {},

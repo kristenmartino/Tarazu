@@ -1,5 +1,7 @@
 import { ASSUMPTION_CATEGORIES, VALIDATE_DIMENSIONS } from "../validate/validationScore";
 import "./decision-story.css";
+import { NextTestPlan, RecordedComparisonContext } from "./DecisionPlan";
+import { hasNextTest } from "../../lib/decision-plan";
 import { evidenceGroups } from "../../lib/decision-record";
 import { isGeneratedBriefText } from "../../lib/decision-text";
 export { isGeneratedBriefText } from "../../lib/decision-text";
@@ -43,6 +45,7 @@ export function DecisionRationale({ decision:d }) {
   const nextMatches=Boolean(draft?.nextActions && expectedOutcome.trim()===draft.nextActions.trim());
   return <div className="tz-decision-story">
     {draft&&<p className="tz-decision-source">Problem and evidence from the saved brief.{Number.isInteger(count)&&<> Assessment: {count}/{VALIDATE_DIMENSIONS.length} dimensions assessed{status?` · ${status}`:""}.</>}</p>}
+    {draft&&<section aria-label="Recorded comparison context"><h3>Recorded comparison context</h3><RecordedComparisonContext scoring={raw.productContext?.scoring}/><p className="tz-decision-source">Preserved with this brief; later workspace edits do not update this record.</p></section>}
     {draft?.assumptions?.problem&&<section aria-label="Problem"><h3>Problem</h3><ReadableText text={draft.assumptions.problem}/>{ASSUMPTION_CATEGORIES.some(c=>c.key!=="problem"&&draft.assumptions[c.key])&&<details><summary>Audience and original assumptions</summary>{ASSUMPTION_CATEGORIES.filter(c=>c.key!=="problem"&&draft.assumptions[c.key]).map(c=><div key={c.key}><h4>{c.label}</h4><ReadableText text={draft.assumptions[c.key]}/></div>)}</details>}</section>}
     {draft&&<section aria-label="Evidence"><h3>Evidence</h3><p className="tz-decision-source">{draft.evidenceReviewed===true?"Marked reviewed in this brief; not independently verified.":draft.evidenceReviewed===false?"Evidence review incomplete.":"Evidence review not recorded."}</p>
       {evidence.length > 0 && <p className="tz-decision-source">Groups refer to the originating candidate{typeof raw.ideaName === "string" && raw.ideaName ? `, ${raw.ideaName}` : ""}. The chosen option is recorded below.</p>}
@@ -50,6 +53,6 @@ export function DecisionRationale({ decision:d }) {
       <div className="tz-evidence-unknowns"><h4>Unknowns</h4><ReadableText text={draft.risks || "Unknowns not recorded in this brief."}/></div>
     </section>}
     <section aria-label="Decision"><h3>Decision</h3>{d.chosen_candidate_name&&<p><strong>Chosen: {d.chosen_candidate_name}</strong></p>}{d.summary_rationale&&<ReadableText text={d.summary_rationale}/>}<p className="tz-decision-source">Status: {d.status || "not recorded"}.</p>{d.final_rationale&&(generated?<details><summary>Full recorded rationale</summary><ReadableText text={d.final_rationale}/></details>:<div><h4>Recorded rationale</h4><ReadableText text={d.final_rationale}/></div>)}{expectedOutcome&&!nextMatches&&<div><h4>Recorded expected outcome</h4><ReadableText text={expectedOutcome}/></div>}{d.tradeoffs_considered&&<details><summary>Tradeoffs considered</summary><ReadableText text={d.tradeoffs_considered}/></details>}{d.risks_accepted&&<details><summary>Risks accepted</summary><ReadableText text={d.risks_accepted}/></details>}</section>
-    {draft?.nextActions&&<section aria-label="Next test"><h3>Next test</h3>{!nextMatches&&<p className="tz-decision-source">Proposed in the saved brief:</p>}<ReadableText text={draft.nextActions}/></section>}
+    {(draft?.nextActions||hasNextTest(raw?.nextTest))&&<section aria-label="Next test"><h3>Next test</h3><p className="tz-decision-source">{hasNextTest(raw?.nextTest)?"Original proposed test from the saved brief; no observed result is implied.":!nextMatches?"Proposed in the saved brief:":""}</p><NextTestPlan plan={raw?.nextTest}/>{draft?.nextActions&&<>{hasNextTest(raw?.nextTest)&&<h4>Next-action notes from saved brief</h4>}<ReadableText text={draft.nextActions}/></>}</section>}
   </div>;
 }

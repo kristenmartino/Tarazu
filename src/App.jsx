@@ -3,7 +3,7 @@ import Link from "next/link";
 import { sampleBacklogFor } from "./sample-backlog";
 import { useC } from "./ThemeProvider";
 import { exportCSV, parseCSV, mapCSVToFeatures } from "./utils";
-import { load, saveWsIndex, loadWsIndex, saveWsFeatures, saveWsFeaturesChecked, loadWsFeatures, removeWsFeatures, saveWsContext, loadWsContext, removeWsContext, getActiveWsId, setActiveWsId as storeActiveWsId, STORAGE_KEY, saveWsDecisions, loadWsDecisions, removeWsDecisions, saveWsSignals, loadWsSignals, removeWsSignals, saveWsSettings, loadWsSettings, removeWsSettings } from "../lib/local-storage";
+import { load, saveWsIndex, loadWsIndex, saveWsFeatures, saveWsFeaturesChecked, loadWsFeatures, removeWsFeatures, saveWsContext, saveWsContextChecked, loadWsContext, removeWsContext, getActiveWsId, setActiveWsId as storeActiveWsId, STORAGE_KEY, saveWsDecisions, loadWsDecisions, removeWsDecisions, saveWsSignals, loadWsSignals, removeWsSignals, saveWsSettings, loadWsSettings, removeWsSettings } from "../lib/local-storage";
 import * as cloud from "../lib/cloud-storage";
 import { prepareRelayDemo, RELAY_DEMO_ID, RELAY_DEMO_WORKSPACE } from "../lib/relay-demo";
 import { trackUsage } from "../lib/usage-events";
@@ -75,6 +75,7 @@ export default function App({ guestDemo = false }) {
   const [hasLocalImport, setHasLocalImport] = useState(false);
   const [browserFallback, setBrowserFallback] = useState(false);
   const [productContext, setProductContext] = useState({ productSummary: "", targetUsers: "", strategicPriorities: "", constraints: "", assumptions: "", successMetrics: "" });
+  const [contextSaveStatus, setContextSaveStatus] = useState(null);
   const [feedbackSummary, setFeedbackSummary] = useState(null);
   const [feedbackContext, setFeedbackContext] = useState(null);
   const [undoSnapshot, setUndoSnapshot] = useState(null);
@@ -312,24 +313,26 @@ export default function App({ guestDemo = false }) {
   // ── Auto-save product context ──
   useEffect(() => {
     if (!loadedRef.current || !activeWsId) return;
+    let cancelled = false;
+    const status = (state, message) => { if (!cancelled) setContextSaveStatus({ state, message }); };
+    const saveBrowser = pending => {
+      try {
+        saveWsContextChecked(activeWsId, productContext);
+        status(pending ? "pending" : "saved", pending ? "Context saved in this browser; cloud sync is pending." : "Context saved in this browser.");
+        if (pending) setPendingSync(true);
+      } catch {
+        status("error", "Context could not be saved. Your changes remain in this tab; copy them before leaving and retry by editing the frame.");
+      }
+    };
     if (isSignedIn && !browserFallback) {
-      clearTimeout(ctxSaveTimer.current);
+      status("saving", "Saving workspace context…");
       ctxSaveTimer.current = setTimeout(async () => {
-        if (!isOnline) {
-          saveWsContext(activeWsId, productContext);
-          setPendingSync(true);
-          return;
-        }
-        try { await cloud.saveProductContext(activeWsId, productContext); } catch (err) {
-          console.error("Context save failed, falling back to localStorage:", err);
-          saveWsContext(activeWsId, productContext);
-          setPendingSync(true);
-        }
+        if (!isOnline) { saveBrowser(true); return; }
+        try { await cloud.saveProductContext(activeWsId, productContext); status("saved", "Context saved to this workspace."); }
+        catch { if (!cancelled) saveBrowser(true); }
       }, 1000);
-      return () => clearTimeout(ctxSaveTimer.current);
-    } else {
-      saveWsContext(activeWsId, productContext);
-    }
+    } else saveBrowser(false);
+    return () => { cancelled = true; clearTimeout(ctxSaveTimer.current); };
   }, [productContext, loaded, activeWsId, isSignedIn, isOnline, browserFallback]);
 
   // ── Auto-save settings ──
@@ -1082,7 +1085,7 @@ export default function App({ guestDemo = false }) {
           importData={importData} onConfirmImport={confirmImport} onCancelImport={() => setImportData(null)}
           onImportFile={() => fileInputRef.current?.click()}
           onExportCSV={() => exportCSV(displayOrder, activeWs?.name, C)}
-          productContext={productContext} onProductContextChange={setProductContext} onScoreEvent={handleScoreEvent}
+          contextSaveStatus={contextSaveStatus} productContext={productContext} onProductContextChange={setProductContext} onScoreEvent={handleScoreEvent}
           onResolveScores={handleResolveScores} feedbackContext={feedbackContext}
           isMobile={isMobile}
           mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode}
