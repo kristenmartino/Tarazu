@@ -28,7 +28,7 @@ const SIDE_BY_SIDE_MIN_W = 740;
 const MAP_EXPANDED_KEY = "tz-priorities-map-expanded";
 
 export const CenterCanvas = ({
-  activeScreen, saveTarget, savePendingSync, guestDemo = false, onStoryActiveChange,
+  activeScreen, settingsScope, saveTarget, savePendingSync, guestDemo = false, onStoryActiveChange,
   features, scored, sorted, displayOrder, maxScore,
   selectedId, onSelect,
   showForm, onShowForm, editingFeature, onEditingFeature,
@@ -137,7 +137,7 @@ export const CenterCanvas = ({
   if (activeScreen === "signals") return <SignalsScreen signals={signals} scored={scored} onAdd={onAddSignal} onUpdate={onUpdateSignal} onDelete={onDeleteSignal} onImport={onImportSignals} />;
   if (activeScreen === "validate") return <ValidationWorkspace key={`${activeWsId}:${isSignedIn}`} workspaceId={activeWsId} isSignedIn={isSignedIn} isMobile={isMobile} scored={scored} signals={signals} productContext={productContext} onProductContextChange={onProductContextChange} contextSaveStatus={contextSaveStatus} guestDemo={guestDemo} onAddDecision={onAddDecision} onScreenChange={onScreenChange} />;
   if (activeScreen === "scenarios") return <ScenariosScreen features={features} scored={scored} sorted={sorted} activeWsId={activeWsId} isSignedIn={isSignedIn} onSelect={onSelect} isMobile={isMobile} />;
-  if (activeScreen === "settings") return <SettingsScreen guestDemo={guestDemo} activeWs={activeWs} onRenameWorkspace={onRenameWorkspace} onClear={onClear} onDeleteWorkspace={() => onDeleteWorkspace(activeWs?.id)} sortMode={sortMode} onSortModeChange={onSortModeChange} mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode} onMapColorByChange={onMapColorByChange} onMapSizeByChange={onMapSizeByChange} onMapLabelModeChange={onMapLabelModeChange} isSignedIn={isSignedIn} features={features} />;
+  if (activeScreen === "settings") return <SettingsScreen key={settingsScope || activeWsId} onRetryContextSave={() => onProductContextChange({ ...productContext })} contextSaveStatus={contextSaveStatus} saveTarget={saveTarget} savePendingSync={savePendingSync} guestDemo={guestDemo} activeWs={activeWs} onRenameWorkspace={onRenameWorkspace} onClear={onClear} onDeleteWorkspace={() => onDeleteWorkspace(activeWs?.id)} sortMode={sortMode} onSortModeChange={onSortModeChange} mapColorBy={mapColorBy} mapSizeBy={mapSizeBy} mapLabelMode={mapLabelMode} onMapColorByChange={onMapColorByChange} onMapSizeByChange={onMapSizeByChange} onMapLabelModeChange={onMapLabelModeChange} isSignedIn={isSignedIn} features={features} />;
   if (activeScreen !== "priorities") {
     const ph = PLACEHOLDER_SCREENS[activeScreen];
     if (ph) return (
